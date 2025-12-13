@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { socket } from "../services/socket";
 import { useNavigate } from 'react-router-dom';
 
 import { Username } from "../components/Username"
@@ -22,7 +23,8 @@ export default function HomePage() {
         }
 
         // handle joining lobby logic
-        console.log("Joining Lobby!")
+        socket.emit("join_room", lobbyCode);
+        console.log(`Joined room: ${lobbyCode}`);
     }
 
     const handleCreateLobby = () => {
