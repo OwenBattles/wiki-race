@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom';
 
 import { Username } from "../components/Username"
 import { JoinLobby } from "../components/JoinLobby"
@@ -7,6 +8,8 @@ import { CreateLobby } from "../components/createLobby"
 export default function HomePage() {
     const [username, setUsername] = useState("")
     const [lobbyCode, setLobbyCode] = useState("")
+
+    const navigate = useNavigate();
 
     const handleJoinLobby = () => {
         if (!username) {
@@ -42,6 +45,7 @@ export default function HomePage() {
                 onJoin={handleJoinLobby}
             />
             <CreateLobby onCreate={handleCreateLobby}/>
+            <button onClick={() => navigate('/gamepage')}>Go to GamePage</button>
         </div> 
     )
 }
