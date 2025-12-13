@@ -41,8 +41,6 @@ app.get('/api/wiki/:page', async (req, res) => {
 
     const $ = cheerio.load(rawHtml);
 
-    // 1. UPDATE: Remove ONLY the truly useless stuff.
-    // notice we REMOVED '.thumb', 'img', and '.infobox' from this list
     const selectorsToRemove = [
       '.mw-parser-output .navbox', 
       '.mw-editsection',           
@@ -52,16 +50,13 @@ app.get('/api/wiki/:page', async (req, res) => {
       '.noprint',
       'style', 
       'script',
-      'link' // Remove external CSS links
+      'link' 
     ];
     
     selectorsToRemove.forEach((selector) => {
       $(selector).remove();
     });
 
-    // 2. FIX IMAGE URLs (Critical Step)
-    // Wikipedia images often start with "//upload.wikimedia.org"
-    // We need to prepend "https:" to make them load
     $('img').each((i, img) => {
       const src = $(img).attr('src');
       const srcset = $(img).attr('srcset');
@@ -76,24 +71,19 @@ app.get('/api/wiki/:page', async (req, res) => {
         $(img).attr('srcset', newSrcset);
       }
       
-      // Optional: Disable lazy loading attributes that might break
       $(img).removeAttr('loading'); 
     });
 
-    // 3. FIX LINKS (Same as before)
     $('a').each((i, link) => {
       const href = $(link).attr('href');
       
-      // If it's a file link (clicking an image), disable it or make it unclickable
       if (href && href.startsWith('/wiki/File:')) {
-        $(link).removeAttr('href'); // Make the image unclickable (purely visual)
+        $(link).removeAttr('href'); 
         $(link).css('pointer-events', 'none');
       } 
-      // Standard wiki links
+
       else if (href && href.startsWith('/wiki/') && !href.includes(':')) {
-         // keep it as is, or rewrite if you handle it differently
       } 
-      // External links/Red links
       else {
         $(link).replaceWith($(link).text()); 
       }
