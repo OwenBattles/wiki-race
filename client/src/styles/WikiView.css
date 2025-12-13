@@ -1,64 +1,146 @@
-/* Scope everything to the container so it doesn't break your Lobby UI */
+/* client/src/WikiView.css */
+
+/* 1. Base Layout */
 .wiki-view-container {
-    /* The Classic Wikipedia Font Stack */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Lato, Helvetica, Arial, sans-serif;
-    font-size: 16px; /* Wikipedia uses 14px or 16px depending on user settings */
-    line-height: 1.6;
-    color: #202122; /* Dark gray, not pure black */
-    background-color: #ffffff;
+  font-family: sans-serif;
+  font-size: 16px; /* Wikipedia standard */
+  line-height: 1.6;
+  color: #202122;
+  background-color: #ffffff;
+  padding-left: 20%;
+  padding-right: 20%;
+}
+
+/* 2. The "Infobox" (The table on the right in your screenshot) */
+.wiki-view-container .infobox {
+  border: 1px solid #a2a9b1;
+  background-color: #f8f9fa;
+  color: black;
+  margin: 0.5em 0 0.5em 1em;
+  padding: 0.2em;
+  float: right; /* This makes it sit on the right side */
+  clear: right;
+  width: 22em; /* Standard width */
+  font-size: 88%;
+  line-height: 1.5em;
+}
+
+.wiki-view-container .infobox td,
+.wiki-view-container .infobox th {
+  vertical-align: top;
+  text-align: left;
+}
+
+.wiki-view-container .infobox caption {
+  font-size: 125%;
+  font-weight: bold;
+  padding: 0.2em;
+  text-align: center;
+}
+
+/* 3. The "Table of Contents" (The box with the list of sections) */
+.wiki-view-container .toc {
+  background-color: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 7px;
+  font-size: 95%;
+  display: table; /* Shrink to fit content */
+  margin-bottom: 1em;
+}
+
+.wiki-view-container .toc h2 {
+  font-family: sans-serif;
+  font-size: 100%;
+  font-weight: bold;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+
+.wiki-view-container .toc ul {
+  list-style-image: none;
+  list-style-type: none;
+  margin: 0.3em 0;
+  padding-left: 2em;
+}
+
+/* 4. Images & Thumbnails (If you decide to keep images) */
+.wiki-view-container .thumb {
+  margin-bottom: 0.5em;
+  border: 1px solid #c8ccd1;
+  background-color: #f8f9fa;
+  font-size: 94%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.wiki-view-container .tright {
+  float: right;
+  clear: right;
+  margin: 0.5em 0 1.3em 1.4em;
+}
+
+/* 5. Headings */
+.wiki-view-container h1,
+.wiki-view-container h2 {
+  font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+  border-bottom: 1px solid #a2a9b1;
+  font-weight: normal;
+  margin-bottom: 0.25em;
+  margin-top: 1em;
+}
+
+.wiki-view-container h1 { font-size: 1.8em; }
+.wiki-view-container h2 { font-size: 1.5em; }
+
+/* 6. Standard Links */
+.wiki-view-container a {
+  color: #3366cc;
+  text-decoration: none;
+}
+.wiki-view-container a:hover {
+  text-decoration: underline;
+}
+
+/* 7. Mobile Responsiveness */
+/* On small screens, force the infobox to stack instead of float */
+@media (max-width: 768px) {
+  .wiki-view-container .infobox {
+    float: none;
+    width: 100%;
+    margin: 0;
   }
-  
-  /* 1. Headings */
-  .wiki-view-container h1,
-  .wiki-view-container h2 {
-    font-family: 'Linux Libertine', 'Georgia', 'Times', serif; /* Serif for headers */
-    border-bottom: 1px solid #a2a9b1; /* The classic gray underline */
-    padding-bottom: 7px;
-    margin-bottom: 1rem;
-    margin-top: 1.5rem;
-    font-weight: 400; /* Wikipedia headers aren't bold, just serif */
-  }
-  
-  .wiki-view-container h1 { font-size: 1.8em; }
-  .wiki-view-container h2 { font-size: 1.5em; }
-  .wiki-view-container h3 { font-size: 1.2em; font-weight: bold; }
-  
-  /* 2. Links (The most important part) */
-  .wiki-view-container a {
-    color: #3366cc; /* Modern Wikipedia blue */
-    text-decoration: none;
-  }
-  
-  .wiki-view-container a:hover {
-    text-decoration: underline;
-  }
-  
-  .wiki-view-container a:visited {
-    color: #795cb2; /* Wikipedia visited purple */
-  }
-  
-  /* 3. Paragraph Spacing */
-  .wiki-view-container p {
-    margin: 0.5em 0 1em 0;
-  }
-  
-  /* 4. Lists */
-  .wiki-view-container ul,
-  .wiki-view-container ol {
-    margin: 0.3em 0 0 1.6em;
-    padding: 0;
-    list-style-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='13'%3E%3Ccircle cx='2.5' cy='9' r='2.5' fill='%23202122'/%3E%3C/svg%3E"); /* That specific wiki bullet point */
-  }
-  
-  /* 5. Blockquotes / Indented text */
-  .wiki-view-container blockquote {
-    border-left: 4px solid #eaecf0;
-    margin: 1em 1.6em;
-    padding: 0 1em;
-    color: #54595d;
-  }
-  
-  /* 6. Superscripts (References like [1]) - Hide them if you didn't strip them */
-  .wiki-view-container sup.reference {
-    display: none;
-  }
+}
+
+/* Make images responsive so they don't overflow */
+.wiki-view-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Style the thumbnail caption box */
+.wiki-view-container .thumb {
+  border: 1px solid #c8ccd1;
+  background-color: #f8f9fa;
+  margin-bottom: 0.5em;
+  /* Float logic handled by .tright/.tleft classes from Wikipedia */
+}
+
+.wiki-view-container .thumbinner {
+  padding: 3px;
+  text-align: center;
+}
+
+.wiki-view-container .thumbcaption {
+  font-size: 94%;
+  padding: 3px;
+  text-align: left;
+  line-height: 1.4em;
+}
+
+/* Ensure the infobox image centers correctly */
+.wiki-view-container .infobox img {
+  display: block;
+  margin: 0 auto;
+}
