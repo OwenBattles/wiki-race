@@ -5,18 +5,18 @@ import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { InGameHeader } from '../components/InGameHeader';
 import { useWikiPage } from '../hooks/useWikiPage';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function GamePage() {
     const location = useLocation();
     // Default to empty object to prevent crash if accessing directly
     const { username, lobbyCode, initHostStatus } = location.state || {};
 
-    // 1. STATE LIFTED UP
     // We hold the HTML here so both Socket and Hook can touch it
     const [htmlContent, setHtmlContent] = useState(""); 
     const [currentTitle, setCurrentTitle] = useState("");
     
-    // 2. USE THE HOOK (Assuming you updated it to accept setters, or just use fetchPage)
     // If your hook manages state internally, you might need to change it. 
     // For now, let's assume 'fetchPage' returns the new HTML or we pass 'setHtmlContent' to it.
     const { fetchPage, isLoading } = useWikiPage(setHtmlContent, setCurrentTitle);
@@ -56,6 +56,8 @@ export default function GamePage() {
         }
 
         return () => { 
+            console.log("Component unmounting - User leaving room...");
+            socket.emit("leave_room", lobbyCode);
             socket.off('update_player_list', handlePlayerUpdate);
             socket.off('game_started', handleGameStart);
         };
@@ -64,12 +66,7 @@ export default function GamePage() {
     const handleStartGame = () => {
         // MATCH THE BACKEND VARIABLE NAMES
         // Send 'startPage' and 'endPage', not 'startingPoint'
-        socket.emit("start_game", { 
-            roomCode: lobbyCode, // Backend might expect 'roomCode', not 'lobbyCode'
-            startPage, 
-            endPage 
-        });
-        // Remove setGameState("PLAYING") from here. Wait for the socket event!
+        socket.emit("start_game", { lobbyCode, startPage, endPage });
     }
 
     return (

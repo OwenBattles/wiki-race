@@ -8,25 +8,25 @@ module.exports = (io) => {
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username }) => {
-      const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const lobbyCode = Math.random().toString(36).substring(2, 6).toUpperCase();
       
       // Safety check: rare collision
-      if (rooms[roomCode]) {
+      if (rooms[lobbyCode]) {
           socket.emit('error', 'Room generation failed, try again');
           return;
       }
 
-      rooms[roomCode] = [];
+      rooms[lobbyCode] = [];
       
       // Join & Setup Host
-      socket.join(roomCode);
-      rooms[roomCode].push({ id: socket.id, username, isHost: true });
+      socket.join(lobbyCode);
+      rooms[lobbyCode].push({ id: socket.id, username, isHost: true });
       
-      console.log(`User ${username} created room: ${roomCode}`);
+      console.log(`User ${username} created room: ${lobbyCode}`);
       
       // Send the new code back to the creator so they can share it
-      socket.emit('room_created', roomCode); 
-      io.to(roomCode).emit('update_player_list', rooms[roomCode]);
+      socket.emit('room_created', lobbyCode); 
+      io.to(lobbyCode).emit('update_player_list', rooms[lobbyCode]);
     });
 
     // CHECK IF LOBBY CODE IS VALID
@@ -59,8 +59,8 @@ module.exports = (io) => {
     });
 
     // GET PLAYERS IN A LOBBY
-    socket.on('request_player_list', (roomCode) => {
-      const room = rooms[roomCode];
+    socket.on('request_player_list', (lobbyCode) => {
+      const room = rooms[lobbyCode];
       if (room) {
           // Send the list ONLY to the person who asked
           socket.emit('update_player_list', room);
@@ -85,12 +85,53 @@ module.exports = (io) => {
       } 
     });
 
+    // START GAME
+    socket.on('start_game', async ({ lobbyCode, startPage, endPage }) => {
+      const room = rooms[lobbyCode];
+      if (!room) return;
+
+      console.log(`Starting game in ${lobbyCode}: ${startPage} -> ${endPage}`);
+
+      try {
+          // CORRECT: Use the helper that returns a string
+          const startHtml = await fetchWikiHtml(startPage);
+
+          room.targetPage = endPage;
+          room.startPage = startPage;
+          room.gameState = "RACING";
+
+          io.to(lobbyCode).emit('game_started', {
+              startPage,
+              endPage,
+              initialHtml: startHtml // Send the raw HTML string
+          });
+
+      } catch (error) {
+          console.error("Start Game Error:", error);
+          socket.emit('error', "Could not load the starting page.");
+      }
+    });
+
+    // HANDLE LEAVE GAME
+    socket.on('leave_game', (roomCode) => {
+      // Reuse your disconnect logic here, or just:
+      console.log("Bro just left the room");
+      const room = rooms[roomCode];
+      if (room) {
+          const index = room.findIndex(p => p.id === socket.id);
+          if (index !== -1) {
+              room.splice(index, 1);
+              io.to(roomCode).emit('update_player_list', room);
+          }
+      }
+    });
+
     // HANDLE DISCONNECT 
     socket.on('disconnect', () => {
       console.log(`User Disconnected: ${socket.id}`);
 
-      for (const roomCode in rooms) {
-        const room = rooms[roomCode];
+      for (const lobbyCode in rooms) {
+        const room = rooms[lobbyCode];
         
         const playerIndex = room.findIndex(p => p.id === socket.id);
         
@@ -104,44 +145,15 @@ module.exports = (io) => {
           }
 
           if (room.length === 0) {
-              delete rooms[roomCode];
-              console.log(`Room ${roomCode} deleted (empty)`);
+              delete rooms[lobbyCode];
+              console.log(`Room ${lobbyCode} deleted (empty)`);
           } else {
-              io.to(roomCode).emit('update_player_list', room);
-              console.log(`${player.username} left room ${roomCode}`);
+              io.to(lobbyCode).emit('update_player_list', room);
+              console.log(`${player.username} left room ${lobbyCode}`);
           }
           
           break; 
         }
-      }
-    });
-
-    // START GAME
-    socket.on('start_game', async ({ roomCode, startPage, endPage }) => {
-      const room = rooms[roomCode];
-      if (!room) return;
-
-      // ... host validation logic ...
-
-      console.log(`Starting game in ${roomCode}: ${startPage} -> ${endPage}`);
-
-      try {
-          // CORRECT: Use the helper that returns a string
-          const startHtml = await fetchWikiHtml(startPage);
-
-          room.targetPage = endPage;
-          room.startPage = startPage;
-          room.gameState = "RACING";
-
-          io.to(roomCode).emit('game_started', {
-              startPage,
-              endPage,
-              initialHtml: startHtml // Send the raw HTML string
-          });
-
-      } catch (error) {
-          console.error("Start Game Error:", error);
-          socket.emit('error', "Could not load the starting page.");
       }
     });
   });
