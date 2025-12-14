@@ -9,6 +9,7 @@ import { CreateLobby } from "../components/createLobby"
 export default function HomePage() {
     const [username, setUsername] = useState("");
     const [lobbyCode, setLobbyCode] = useState("");
+    const [isHost, setIsHost] = useState(false);
     const [validLobbyCode, setValidLobbyCode] = useState(false);
     const [validUsername, setValidUsername] = useState(false);
     const canJoinLobby = validLobbyCode; // && validUsername;
@@ -20,12 +21,12 @@ export default function HomePage() {
     useEffect(() => {
         // Listen for successful creation
         socket.on('room_created', (lobbyCode) => {
-             navigate('/game', { state: { username: username, lobbyCode: lobbyCode } });
+             navigate('/game', { state: { username: username, lobbyCode: lobbyCode, initHostStatus: true } });
         });
 
         // Listen for successful join
         socket.on('join_success', (lobbyCode) => {
-             navigate('/game', { state: { username: username, lobbyCode: lobbyCode } });
+             navigate('/game', { state: { username: username, lobbyCode: lobbyCode, initHostStatus: false } });
         });
 
         // Listen for valid lobby code

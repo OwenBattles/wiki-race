@@ -10,14 +10,14 @@ import { InGameHeader } from '../components/InGameHeader';
 
 export default function GamePage() {
     const location = useLocation();
-    const { username, lobbyCode } = location.state || {};
+    const { username, lobbyCode, initHostStatus } = location.state || {};
 
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     // Possible states: "LOBBY", "PLAYING", "FINISHED"
     const [gameState, setGameState] = useState("LOBBY");
     const [players, setPlayers] = useState([]); 
-    const [isHost, setIsHost] = useState(false);
+    const [isHost, setIsHost] = useState(initHostStatus);
 
     useEffect(() => {
         
