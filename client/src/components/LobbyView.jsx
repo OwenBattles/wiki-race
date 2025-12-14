@@ -8,6 +8,12 @@ export function LobbyView({ lobbyCode, players, isHost, onStartGame }) {
             <LobbyCode lobbyCode={lobbyCode} />
             <GameLink />
             <GameRange />
+            <h1>Players: {players.length}</h1>
+            <ul>
+            {players.map((item, id) => (
+                <li key={id}>{item.username}</li>
+            ))}
+            </ul>
             {isHost ? (
                     <button 
                         onClick={onStartGame}

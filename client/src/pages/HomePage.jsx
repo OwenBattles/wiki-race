@@ -15,8 +15,6 @@ export default function HomePage() {
 
     const navigate = useNavigate();
 
-    console.log(validLobbyCode, validUsername)
-
     useEffect(() => {
         // Listen for successful creation
         socket.on('room_created', (lobbyCode) => {

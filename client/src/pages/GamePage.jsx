@@ -20,23 +20,21 @@ export default function GamePage() {
     const [isHost, setIsHost] = useState(initHostStatus);
 
     useEffect(() => {
-        // Define the handler so we can cleanly remove it later
-        const handlePlayerUpdate = (updatedPlayers) => {
+        socket.on('update_player_list', (updatedPlayers) => {
             setPlayers(updatedPlayers);
-
             const me = updatedPlayers.find(p => p.id === socket.id);
             
             if (me) {
                 setIsHost(me.isHost);
             }
-        };
+        });
 
-        socket.on('update_player_list', handlePlayerUpdate);
+        socket.emit('request_player_list', lobbyCode);
 
         return () => {
-            socket.off('update_player_list', handlePlayerUpdate);
+            socket.off('update_player_list');
         };
-    }, []); 
+    }, [lobbyCode]);
 
     return (
         <div>

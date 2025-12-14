@@ -56,6 +56,15 @@ module.exports = (io) => {
       }
     });
 
+    // GET PLAYERS IN A LOBBY
+    socket.on('request_player_list', (roomCode) => {
+      const room = rooms[roomCode];
+      if (room) {
+          // Send the list ONLY to the person who asked
+          socket.emit('update_player_list', room);
+      }
+  });
+
     // JOIN LOBBY
     socket.on('join_lobby', ({ lobbyCode, username }) => {
       console.log("Attempting join:", lobbyCode);
