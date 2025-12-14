@@ -1,30 +1,37 @@
 import { useState, useEffect } from 'react';
-import { useWikiPage } from '../hooks/useWikiPage';
+import { useLocation } from 'react-router-dom';
 
-import { SetupView } from '../components/SetupView';
+import { useWikiPage } from '../hooks/useWikiPage';
+import { socket } from "../services/socket"
+
+import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { InGameHeader } from '../components/InGameHeader';
 
 export default function GamePage() {
+    const location = useLocation();
+    const { username, lobbyCode } = location.state || {};
+
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
-    // Possible states: "SETUP", "PLAYING", "FINISHED"
-    const [gameState, setGameState] = useState("SETUP");
-    const [startingPoint, setStartingPoint] = useState("");
-    const [endingPoint, setEndingPoint] = useState("")
+    // Possible states: "LOBBY", "PLAYING", "FINISHED"
+    const [gameState, setGameState] = useState("LOBBY");
+    const [players, setPlayers] = useState([]); 
+    const [isHost, setIsHost] = useState(false);
 
     useEffect(() => {
-        fetchPage("Avocado"); // Hardcoded start for now
-    }, [fetchPage]);
-
-    const handleStartGame = () => {
-        setGameState("PLAYING");
-    }
+        
+    }, [lobbyCode, username]);
 
     return (
         <div>
-            {gameState == "SETUP" &&
-                <SetupView />
+            {gameState == "LOBBY" &&
+                <LobbyView 
+                    lobbyCode={lobbyCode}
+                    players={players}
+                    isHost={isHost}
+                    onStartGame={() => socket.emit("start_game", lobbyCode)}
+                />
             }
 
             {gameState == "PLAYING" && 

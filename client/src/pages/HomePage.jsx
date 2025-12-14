@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { socket } from "../services/socket";
 import { useNavigate } from 'react-router-dom';
 
@@ -7,47 +7,88 @@ import { JoinLobby } from "../components/JoinLobby"
 import { CreateLobby } from "../components/createLobby"
 
 export default function HomePage() {
-    const [username, setUsername] = useState("")
-    const [lobbyCode, setLobbyCode] = useState("")
+    const [username, setUsername] = useState("");
+    const [lobbyCode, setLobbyCode] = useState("");
+    const [validLobbyCode, setValidLobbyCode] = useState(false);
+    const [validUsername, setValidUsername] = useState(false);
+    const canJoinLobby = validLobbyCode; // && validUsername;
 
     const navigate = useNavigate();
 
-    const handleJoinLobby = () => {
-        if (!username) {
-            alert("Please enter a Username")
-            return
-        }
-        if (!lobbyCode) {
-            alert("Please enter a Lobby Code")
-            return
-        }
+    console.log(validLobbyCode, validUsername)
 
-        // handle joining lobby logic
-        socket.emit("join_room", lobbyCode);
-        console.log(`Joined room: ${lobbyCode}`);
-    }
+    useEffect(() => {
+        // Listen for successful creation
+        socket.on('room_created', (lobbyCode) => {
+             navigate('/game', { state: { username: username, lobbyCode: lobbyCode } });
+        });
 
-    const handleCreateLobby = () => {
+        // Listen for successful join
+        socket.on('join_success', (lobbyCode) => {
+             navigate('/game', { state: { username: username, lobbyCode: lobbyCode } });
+        });
+
+        // Listen for valid lobby code
+        socket.on('lobby_check_result', ({ found, message }) => {
+            if (found) {
+                setValidLobbyCode(true);
+                console.log(message); // "Lobby found"
+            } else {
+                setValidLobbyCode(false);
+                console.log(message); // "Lobby not found"
+            }
+        });
+
+        // Listen for unique username
+        socket.on('check_username', ({ found, message}) => {
+            if (!found) {
+                setValidUsername(true);
+            } else {
+                setValidUsername(false);
+            }
+        });
+
+        // Listen for errors 
+        socket.on('error', (msg) => {
+            alert(msg); // Or show a nice toast notification
+        });
+
+        return () => {
+            socket.off('room_created');
+            socket.off('join_success');
+            socket.off('error');
+        };
+    }, [navigate]);
+
+    const handleCreate = () => {
         if (!username) {
-            alert("Please enter a Username")
-            return
-        }
-        
-        // handle lobby creation
-        console.log("Creating Lobby!")
+            alert("Enter a Username");
+            return;
+        } 
+        socket.emit('create_room', { username: username });
+    };
+
+    const handleJoin = () => {
+        if (!username) alert("Enter a Username");
+        socket.emit('join_lobby', { lobbyCode: lobbyCode, username: username});
+    };
+
+    const checkLobby = (newLobbyCode) => {
+        socket.emit('find_lobby', newLobbyCode);
     }
 
     return (
         <div>
             <p1>Wiki-Race</p1>
-            <Username value={username} onChange={setUsername} />
+            <Username value={username} setUsername={setUsername}/>
             <JoinLobby 
                 lobbyCode={lobbyCode}
                 setLobbyCode={setLobbyCode}
-                onJoin={handleJoinLobby}
+                checkLobbyCode={checkLobby}
+                onJoin={handleJoin}
+                isValidLobbyCode={canJoinLobby}
             />
-            <CreateLobby onCreate={handleCreateLobby}/>
-            <button onClick={() => navigate('/gamepage')}>Go to GamePage</button>
+            <CreateLobby onCreate={handleCreate}/>
         </div> 
     )
 }

@@ -1,5 +1,5 @@
-export function LobbyCode() {
+export function LobbyCode({ lobbyCode }) {
     return (
-        <h3>Lobby Code</h3>
+        <h3>Lobby Code: {lobbyCode}</h3>
     )
 }
