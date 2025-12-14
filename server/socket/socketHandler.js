@@ -112,10 +112,21 @@ module.exports = (io) => {
       }
     });
 
+    // HANDLE GAME WIN
+    socket.on('game_won', (lobbyCode) => {
+      const room = rooms[lobbyCode];
+      if (room) {
+          const index = room.findIndex(p => p.id === socket.id);
+          if (index !== -1) {
+              room.splice(index, 1);
+              io.to(lobbyCode).emit('game_over', room);
+          }
+      }
+    })
+
     // HANDLE LEAVE GAME
     socket.on('leave_game', (roomCode) => {
       // Reuse your disconnect logic here, or just:
-      console.log("Bro just left the room");
       const room = rooms[roomCode];
       if (room) {
           const index = room.findIndex(p => p.id === socket.id);

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { socket } from "../services/socket"; // Ensure this path is correct
 import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
+import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
 import { useWikiPage } from '../hooks/useWikiPage';
-import { useNavigate } from 'react-router-dom';
 
 
 export default function GamePage() {
@@ -21,7 +21,7 @@ export default function GamePage() {
     // For now, let's assume 'fetchPage' returns the new HTML or we pass 'setHtmlContent' to it.
     const { fetchPage, isLoading } = useWikiPage(setHtmlContent, setCurrentTitle);
 
-    const [gameState, setGameState] = useState("LOBBY");
+    const [gameState, setGameState] = useState("LOBBY"); // LOBBY, PLAYING, FINISHED
     const [players, setPlayers] = useState([]); 
     const [isHost, setIsHost] = useState(initHostStatus);
     
@@ -29,6 +29,7 @@ export default function GamePage() {
     const [startPage, setStartPage] = useState(""); 
     const [endPage, setEndPage] = useState("");
     const [targetPage, setTargetPage] = useState(""); // Add this missing state
+    const hasWonRef = useRef(false);
 
     useEffect(() => {
         // PLAYER LIST UPDATE
@@ -44,11 +45,16 @@ export default function GamePage() {
             setTargetPage(endPage);
             setCurrentTitle(startPage);
             setHtmlContent(initialHtml); // Inject socket data into state
-            setGameState("PLAYING");     // NOW we switch screens
+            setGameState("PLAYING");     
         };
+
+        const handleGameOver = () => {
+            setGameState("FINISHED");
+        }
 
         socket.on('update_player_list', handlePlayerUpdate);
         socket.on("game_started", handleGameStart);
+        socket.on("game_over", handleGameOver)
         
         // Initial fetch
         if (lobbyCode) {
@@ -60,12 +66,19 @@ export default function GamePage() {
             socket.emit("leave_room", lobbyCode);
             socket.off('update_player_list', handlePlayerUpdate);
             socket.off('game_started', handleGameStart);
+            socket.off('game_over', handleGameOver);
         };
     }, [lobbyCode]);
 
+    useEffect(() => {
+        if (targetPage && !hasWonRef.current && currentTitle === targetPage) {
+            hasWonRef.current = true;
+            socket.emit('game_won', lobbyCode);
+        }
+    }, [currentTitle, targetPage]);
+
+
     const handleStartGame = () => {
-        // MATCH THE BACKEND VARIABLE NAMES
-        // Send 'startPage' and 'endPage', not 'startingPoint'
         socket.emit("start_game", { lobbyCode, startPage, endPage });
     }
 
@@ -89,6 +102,14 @@ export default function GamePage() {
                         htmlContent={htmlContent} 
                         onNavigate={(title) => fetchPage(title)} // Hook handles logic
                         isLoading={isLoading}
+                    />
+                </div>
+            )}
+
+            {gameState === "FINISHED" && (
+                <div>
+                    <GameOverView 
+                        players={players}
                     />
                 </div>
             )}

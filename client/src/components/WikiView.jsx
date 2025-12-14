@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import "../styles/WikiView.css"
 
-export function WikiView({ htmlContent, onNavigate, isLoading }) {
+export function WikiView({ htmlContent, onNavigate, isLoading, updateHistory }) {
     const containerRef = useRef(null);
 
     const handleClick = (e) => {
@@ -14,6 +14,7 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
         const href = anchor.getAttribute('href');
         if (href.startsWith('/wiki/')) {
             const title = decodeURIComponent(href.replace('/wiki/', ''));
+            updateHistory(title);
             onNavigate(title);
         }
     };
