@@ -1,6 +1,55 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+// This just takes a string title and returns the cleaned HTML string
+const fetchAndClean = async (pageTitle) => {
+  const wikipediaApiUrl = `https://en.wikipedia.org/w/api.php`;
+  
+  const response = await axios.get(wikipediaApiUrl, {
+      params: {
+          action: 'parse',
+          page: pageTitle,
+          format: 'json',
+          origin: '*' 
+      },
+      headers: { 'User-Agent': 'wiki-race-game' }
+  });
+
+  const data = response.data;
+  if (data.error) throw new Error('Page not found');
+
+  const rawHtml = data.parse.text['*'];
+  const $ = cheerio.load(rawHtml);
+
+  // --- YOUR EXISTING CLEANING LOGIC ---
+  const selectorsToRemove = ['.mw-parser-output .navbox', '.mw-editsection', '.reference', '.reflist', '.mw-empty-elt', '.noprint', 'style', 'script', 'link'];
+  selectorsToRemove.forEach((s) => $(s).remove());
+
+  $('img').each((i, img) => {
+      const src = $(img).attr('src');
+      if (src && src.startsWith('//')) $(img).attr('src', 'https:' + src);
+      $(img).removeAttr('loading'); 
+  });
+
+  $('a').each((i, link) => {
+      const href = $(link).attr('href');
+      if (href && href.startsWith('/wiki/File:')) {
+          $(link).removeAttr('href'); 
+          $(link).css('pointer-events', 'none');
+      } else if (href && href.startsWith('/wiki/') && !href.includes(':')) {
+          // keep valid links
+      } else {
+          $(link).replaceWith($(link).text()); 
+      }
+  });
+
+  // RETURN the string directly
+  return $('.mw-parser-output').html();
+};
+
+// 2. EXPORT THE HELPER (For Socket.io)
+exports.fetchWikiHtml = fetchAndClean;
+
 exports.getWikiPage = async (req, res) => {
     const pageTitle = req.params.page;
 
@@ -15,7 +64,7 @@ exports.getWikiPage = async (req, res) => {
             origin: '*' 
           },
           headers: {
-            'User-Agent': 'Velocipedia/1.0 (your_email@example.com)' 
+            'User-Agent': 'wiki-race' 
           }
         });
     

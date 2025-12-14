@@ -2,12 +2,12 @@ import { LobbyCode } from "./LobbyCode"
 import { GameLink } from "./GameLink"
 import { GameRange } from "./GameRange"
 
-export function LobbyView({ lobbyCode, players, isHost, onStartGame }) {
+export function LobbyView({ lobbyCode, players, isHost, onStartGame, setStart, setEnd }) {
     return (
         <div>
             <LobbyCode lobbyCode={lobbyCode} />
             <GameLink />
-            <GameRange />
+            <GameRange setStart={setStart} setEnd={setEnd}/>
             <h1>Players: {players.length}</h1>
             <ul>
             {players.map((item, id) => (

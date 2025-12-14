@@ -1,3 +1,5 @@
+const { fetchWikiHtml } = require('../controllers/wikiController');
+
 // Store room state in memory
 const rooms = {}; 
 
@@ -111,6 +113,35 @@ module.exports = (io) => {
           
           break; 
         }
+      }
+    });
+
+    // START GAME
+    socket.on('start_game', async ({ roomCode, startPage, endPage }) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+
+      // ... host validation logic ...
+
+      console.log(`Starting game in ${roomCode}: ${startPage} -> ${endPage}`);
+
+      try {
+          // CORRECT: Use the helper that returns a string
+          const startHtml = await fetchWikiHtml(startPage);
+
+          room.targetPage = endPage;
+          room.startPage = startPage;
+          room.gameState = "RACING";
+
+          io.to(roomCode).emit('game_started', {
+              startPage,
+              endPage,
+              initialHtml: startHtml // Send the raw HTML string
+          });
+
+      } catch (error) {
+          console.error("Start Game Error:", error);
+          socket.emit('error', "Could not load the starting page.");
       }
     });
   });

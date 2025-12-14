@@ -11,6 +11,7 @@ export default function HomePage() {
     const [lobbyCode, setLobbyCode] = useState("");
     const [validLobbyCode, setValidLobbyCode] = useState(false);
     const [validUsername, setValidUsername] = useState(false);
+
     const canJoinLobby = validLobbyCode; // && validUsername;
 
     const navigate = useNavigate();
@@ -54,6 +55,8 @@ export default function HomePage() {
         return () => {
             socket.off('room_created');
             socket.off('join_success');
+            socket.off('lobby_check_result');
+            socket.off('check_username');
             socket.off('error');
         };
     }, [navigate]);
