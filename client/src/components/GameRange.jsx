@@ -1,6 +1,6 @@
 import { WikiSearchInput } from "./WikiSearchInput";
 
-export function GameRange({ setStart, setEnd }) {    
+export function GameRange({ isHost, setStart, setEnd }) {    
     return (
         <div className="flex flex-col gap-4 max-w-md mx-auto p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-bold text-gray-700 mb-2">Setup Race</h3>
@@ -10,6 +10,7 @@ export function GameRange({ setStart, setEnd }) {
                 <WikiSearchInput 
                     placeholder="e.g. Batman" 
                     onSelect={setStart} 
+                    disabled={!isHost}
                 />
             </div>
 
@@ -18,6 +19,7 @@ export function GameRange({ setStart, setEnd }) {
                 <WikiSearchInput 
                     placeholder="e.g. Superman" 
                     onSelect={setEnd} 
+                    disabled={!isHost}
                 />
             </div>
         </div>

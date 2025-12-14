@@ -117,9 +117,11 @@ module.exports = (io) => {
       const room = rooms[lobbyCode];
       if (room) {
           const index = room.findIndex(p => p.id === socket.id);
+          const player = room[index].username;
+          console.log(`${player} has won the game`)
           if (index !== -1) {
               room.splice(index, 1);
-              io.to(lobbyCode).emit('game_over', room);
+              io.to(lobbyCode).emit('game_over', room, player);
           }
       }
     })

@@ -29,6 +29,7 @@ export default function GamePage() {
     const [startPage, setStartPage] = useState(""); 
     const [endPage, setEndPage] = useState("");
     const [targetPage, setTargetPage] = useState(""); // Add this missing state
+    const [winner, setWinner] = useState("")
     const hasWonRef = useRef(false);
 
     useEffect(() => {
@@ -48,7 +49,8 @@ export default function GamePage() {
             setGameState("PLAYING");     
         };
 
-        const handleGameOver = () => {
+        const handleGameOver = (lobbyCode, player) => {
+            setWinner(player);
             setGameState("FINISHED");
         }
 
@@ -110,6 +112,7 @@ export default function GamePage() {
                 <div>
                     <GameOverView 
                         players={players}
+                        winner={winner}
                     />
                 </div>
             )}

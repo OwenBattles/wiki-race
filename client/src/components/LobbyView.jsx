@@ -7,7 +7,7 @@ export function LobbyView({ lobbyCode, players, isHost, onStartGame, setStart, s
         <div>
             <LobbyCode lobbyCode={lobbyCode} />
             <GameLink />
-            <GameRange setStart={setStart} setEnd={setEnd}/>
+            <GameRange isHost={isHost} setStart={setStart} setEnd={setEnd}/>
             <h1>Players: {players.length}</h1>
             <ul>
             {players.map((item, id) => (
