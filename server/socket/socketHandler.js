@@ -71,6 +71,37 @@ module.exports = (io) => {
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");
+      } 
+    });
+
+    // HANDLE DISCONNECT 
+    socket.on('disconnect', () => {
+      console.log(`User Disconnected: ${socket.id}`);
+
+      for (const roomCode in rooms) {
+        const room = rooms[roomCode];
+        
+        const playerIndex = room.findIndex(p => p.id === socket.id);
+        
+        if (playerIndex !== -1) {
+          const player = room[playerIndex];
+          
+          room.splice(playerIndex, 1);
+          
+          if (player.isHost && room.length > 0) {
+              room[0].isHost = true; // Promote the next person
+          }
+
+          if (room.length === 0) {
+              delete rooms[roomCode];
+              console.log(`Room ${roomCode} deleted (empty)`);
+          } else {
+              io.to(roomCode).emit('update_player_list', room);
+              console.log(`${player.username} left room ${roomCode}`);
+          }
+          
+          break; 
+        }
       }
     });
   });

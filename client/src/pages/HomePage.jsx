@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { socket } from "../services/socket";
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +9,6 @@ import { CreateLobby } from "../components/createLobby"
 export default function HomePage() {
     const [username, setUsername] = useState("");
     const [lobbyCode, setLobbyCode] = useState("");
-    const [isHost, setIsHost] = useState(false);
     const [validLobbyCode, setValidLobbyCode] = useState(false);
     const [validUsername, setValidUsername] = useState(false);
     const canJoinLobby = validLobbyCode; // && validUsername;
