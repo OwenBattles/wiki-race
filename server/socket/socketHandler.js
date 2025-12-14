@@ -1,14 +1,38 @@
 const { fetchWikiHtml } = require('../controllers/wikiController');
 
 // Store room state in memory
-const rooms = {}; 
+const rooms = {};
+// room: { 
+//   players: [], 
+//   gameState: "", // LOBBY, PLAYING, FINISHED
+//   startPage: "", 
+//   targetPage: "",
+//   powerUpsEnabled: bool, // default false
+// }
+
+// player: { 
+//   id: "", 
+//   username: "", 
+//   isHost: bool, 
+//   isPlaying: bool, 
+//   path : [], 
+//   wins: int, 
+//   powerUps: {}
+//   currentPage: ""
+// }
+
+// powerUps : {
+//   swap : int, // default 0
+//   scramble : int, // default 0
+//   freeze : int, // default 0
+// }
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username }) => {
-      const lobbyCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const lobbyCode = Math.random().toString(36).substring(0, 6).toUpperCase();
       
       // Safety check: rare collision
       if (rooms[lobbyCode]) {
@@ -121,10 +145,22 @@ module.exports = (io) => {
           console.log(`${player} has won the game`)
           if (index !== -1) {
               room.splice(index, 1);
-              io.to(lobbyCode).emit('game_over', room, player);
+              io.to(lobbyCode).emit('game_over', { player });
           }
       }
     })
+
+    // HANDLE RETURN TO LOBBY
+    socket.on('navigate_to_lobby', (lobbyCode) => {
+      const room = rooms[lobbyCode];
+      if (!room) return;
+    
+      room.gameState = "LOBBY";
+      room.startPage = "";
+      room.targetPage = "";
+    
+      io.to(lobbyCode).emit('return_to_lobby');
+    });
 
     // HANDLE LEAVE GAME
     socket.on('leave_game', (roomCode) => {

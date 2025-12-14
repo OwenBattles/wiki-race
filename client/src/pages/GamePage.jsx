@@ -49,14 +49,26 @@ export default function GamePage() {
             setGameState("PLAYING");     
         };
 
-        const handleGameOver = (lobbyCode, player) => {
+        const handleGameOver = ({ player }) => {
             setWinner(player);
             setGameState("FINISHED");
+        }
+
+        const handleReturnToLobby = () => {
+            setStartPage("");
+            setEndPage("");
+            setWinner("");
+            setTargetPage("");
+            setCurrentTitle("");
+            setHtmlContent("");
+            hasWonRef.current = false;
+            setGameState("LOBBY");
         }
 
         socket.on('update_player_list', handlePlayerUpdate);
         socket.on("game_started", handleGameStart);
         socket.on("game_over", handleGameOver)
+        socket.on('return_to_lobby', handleReturnToLobby);
         
         // Initial fetch
         if (lobbyCode) {
@@ -82,6 +94,10 @@ export default function GamePage() {
 
     const handleStartGame = () => {
         socket.emit("start_game", { lobbyCode, startPage, endPage });
+    }
+
+    const handleReturnToLobby = () => {
+        socket.emit("navigate_to_lobby", lobbyCode);
     }
 
     return (
@@ -111,8 +127,10 @@ export default function GamePage() {
             {gameState === "FINISHED" && (
                 <div>
                     <GameOverView 
+                        isHost={isHost}
                         players={players}
                         winner={winner}
+                        onNavigate={handleReturnToLobby}
                     />
                 </div>
             )}
