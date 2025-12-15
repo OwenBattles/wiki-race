@@ -5,6 +5,10 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 const wikiRoutes = require('./routes/wikiRoutes'); 
 
+// 1. Import your socket logic file
+// (Ensure the path matches where you saved that file!)
+const socketHandler = require('./socket/socketHandler'); 
+
 const app = express();
 const PORT = 3000;
 
@@ -22,14 +26,7 @@ const io = new Server(server, {
   }
 });
 
-io.on('connection', (socket) => {
-  console.log(`User Connected: ${socket.id}`);
-  
-  socket.on('join_room', (data) => {
-    socket.join(data);
-    console.log(`User ${socket.id} joined room: ${data}`);
-  });
-});
+socketHandler(io); 
 
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);

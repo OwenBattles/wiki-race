@@ -1,4 +1,4 @@
-export function Username({ value, onChange }) {
+export function UsernameInput({ value, onChange }) {
     return (
         <input 
             placeholder="Enter a Username"

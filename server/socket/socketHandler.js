@@ -32,7 +32,7 @@ module.exports = (io) => {
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username }) => {
-      const lobbyCode = Math.random().toString(36).substring(0, 6).toUpperCase();
+      const lobbyCode = Math.random().toString(36).substring(2, 7).toUpperCase();
       
       // Safety check: rare collision
       if (rooms[lobbyCode]) {

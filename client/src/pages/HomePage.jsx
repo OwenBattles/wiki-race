@@ -1,51 +1,35 @@
-import { useState } from "react"
-import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { GameContext } from '../contexts/GameContext';
 
-import { Username } from "../components/Username"
-import { JoinLobby } from "../components/JoinLobby"
-import { CreateLobby } from "../components/createLobby"
+import { useHomeLogic } from '../hooks/useHomeLogic'; 
+
+import { UsernameInput } from "../components/UsernameInput";
+import { JoinLobby } from "../components/JoinLobby";
+import { CreateLobby } from "../components/CreateLobby"; 
 
 export default function HomePage() {
-    const [username, setUsername] = useState("")
-    const [lobbyCode, setLobbyCode] = useState("")
+    const {
+        username, setUsername,
+        roomCode, setRoomCode,
+    } = useContext(GameContext);
 
-    const navigate = useNavigate();
-
-    const handleJoinLobby = () => {
-        if (!username) {
-            alert("Please enter a Username")
-            return
-        }
-        if (!lobbyCode) {
-            alert("Please enter a Lobby Code")
-            return
-        }
-
-        // handle joining lobby logic
-        console.log("Joining Lobby!")
-    }
-
-    const handleCreateLobby = () => {
-        if (!username) {
-            alert("Please enter a Username")
-            return
-        }
-        
-        // handle lobby creation
-        console.log("Creating Lobby!")
-    }
+    const { handleCreateRoom, handleJoinRoom, error } = useHomeLogic();
 
     return (
         <div>
-            <p1>Wiki-Race</p1>
-            <Username value={username} onChange={setUsername} />
+            <h1>Wiki-Race</h1>
+            
+            {error && <p className="text-red-500">{error}</p>}
+
+            <UsernameInput value={username} onChange={setUsername} />
+            
             <JoinLobby 
-                lobbyCode={lobbyCode}
-                setLobbyCode={setLobbyCode}
-                onJoin={handleJoinLobby}
+                lobbyCode={roomCode}
+                setLobbyCode={setRoomCode}
+                onJoin={(code) => handleJoinRoom(code, username)}
             />
-            <CreateLobby onCreate={handleCreateLobby}/>
-            <button onClick={() => navigate('/gamepage')}>Go to GamePage</button>
+            
+            <CreateLobby onCreate={() => handleCreateRoom(username)}/>
         </div> 
-    )
+    );
 }
