@@ -7,7 +7,8 @@ export const GameContext = createContext();
 export const GameProvider = ({ children }) => {
     const [username, setUsername] = useState("");
     const [roomCode, setRoomCode] = useState("");
-    const [validRoomCode, setValidRoomCode] = useState(false)
+    const [validRoomCode, setValidRoomCode] = useState(false);
+    const [validUsername, setValidUsername] = useState(false);
     const [isHost, setIsHost] = useState(false);
     const [players, setPlayers] = useState([]);
     
@@ -26,9 +27,18 @@ export const GameProvider = ({ children }) => {
         });
 
         socket.on('found_room', (found) => {
-            console.log("we even got here")
             if (found) setValidRoomCode(true);
             if (!found) setValidRoomCode(false);
+        })
+
+        socket.on('username_check_result', ({ found, message }) => {
+            if (!found) {
+                setValidUsername(true);
+                return;
+            } else {
+                setValidUsername(false);
+                alert(message);
+            }
         })
 
         socket.on('update_player_list', (updatedPlayers) => {

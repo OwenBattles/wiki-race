@@ -18,6 +18,10 @@ export const SocketService = {
         socket.emit('find_room', roomCode);
     },
 
+    validateUsername: (roomCode, username) => {
+        socket.emit('check_username', { roomCode, username })
+    },
+
     joinRoom: (roomCode, username) => {
         // Ensure uppercase to match server logic
         socket.emit('join_room', { roomCode, username });
@@ -33,10 +37,12 @@ export const SocketService = {
 
     // --- GAME ACTIONS ---
     setStartPage: (roomCode, startPage) => {
+        console.log("setting start page");
         socket.emit('set_start_page', { roomCode, startPage });
     },
 
     setTargetPage: (roomCode, targetPage) => {
+        console.log("setting target page");
         socket.emit('set_target_page', { roomCode, targetPage });
     },
 

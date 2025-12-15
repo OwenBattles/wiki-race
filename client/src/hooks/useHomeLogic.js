@@ -6,7 +6,7 @@ import { SocketService } from '../services/socketService';
 export function useHomeLogic() {
     const navigate = useNavigate();
     
-    const { roomCode, setRoomCode, setUsername, setIsHost } = useContext(GameContext);
+    const { validUsername, setUsername, setIsHost } = useContext(GameContext);
 
     const [error, setError] = useState("");
 

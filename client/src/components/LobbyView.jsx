@@ -2,6 +2,7 @@ import { TitleEndpoints } from "./TitleEndpoints";
 import { PowerUpSettings } from "./PowerUpSettings";
 
 export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameData, powerUpsAllowed, onStart }) {
+    console.log(gameData.startPage, " => ", gameData.targetPage);
     const canStartGame = gameData.startPage && gameData.targetPage;
     
     return (

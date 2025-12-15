@@ -1,4 +1,4 @@
-import { useEffect, useContext, use } from 'react';
+import { useEffect, useContext } from 'react';
 
 import { GameContext } from '../contexts/GameContext';
 import { useGameLogic } from '../hooks/useGameLogic';
@@ -24,8 +24,6 @@ export default function GamePage() {
         handlePowerUpSettings,
         handleStartGame
     } = useGameLogic();
-
-    console.log("username: ", username)
 
     return (
         <div >
