@@ -18,6 +18,10 @@ export function useGameLogic() {
 
     }
 
+    const handleTogglePowerUps = () => {
+
+    }
+
     const handleStartGame = () => {
 
     }
@@ -34,6 +38,7 @@ export function useGameLogic() {
         handleCopyLink,
         handleStartPoint,
         handleEndPoint,
+        handleTogglePowerUps,
         handleStartGame,
         handleChangePage,
         handleSurrender,

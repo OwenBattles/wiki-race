@@ -20,7 +20,10 @@ export default function GamePage() {
         <div >
             <h1>{roomCode}</h1>
             { gameState == "LOBBY" && 
-                <LobbyView />
+                <LobbyView 
+                    isHost={isHost}
+                    players={players}
+                />
             }
 
             { gameState == "PLAYING" &&

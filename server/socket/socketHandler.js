@@ -45,7 +45,17 @@ module.exports = (io) => {
       
       // Join & Setup Host
       socket.join(roomCode);
-      rooms[roomCode].push({ id: socket.id, username, isHost: true });
+      const player = { 
+        id: socket.id, 
+        username: username, 
+        isHost: true, 
+        isPlaying: false, 
+        path: [], 
+        wins: 0, 
+        powerUps: {}, 
+        currentPageTitle: "" 
+      };
+      rooms[roomCode].push(player);
       
       console.log(`User ${username} created room: ${roomCode}`);
       
@@ -96,7 +106,8 @@ module.exports = (io) => {
           username: username, 
           isHost: false, 
           isPlaying: false, 
-          path: [], wins: 0, 
+          path: [], 
+          wins: 0, 
           powerUps: {}, 
           currentPageTitle: "" 
         };
@@ -105,7 +116,7 @@ module.exports = (io) => {
 
         room.push(player);
         
-        io.to(roomCode).emit('update_player_list', player);
+        io.to(roomCode).emit('update_player_list', room);
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");
