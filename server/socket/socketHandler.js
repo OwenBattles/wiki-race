@@ -80,7 +80,7 @@ module.exports = (io) => {
          return; 
       }
 
-      if (username.length < 4) {
+      if (username.length < 1) {
          socket.emit('username_check_result', { found: true, message: "Username is too short" });
          return; 
       }
@@ -134,23 +134,23 @@ module.exports = (io) => {
     })
 
     // START GAME
-    socket.on('start_game', async ({ roomCode, startPage, endPage }) => {
+    socket.on('start_game', async ({ roomCode, startPage, targetPage }) => {
       const room = rooms[roomCode];
       if (!room) return;
 
-      console.log(`Starting game in ${roomCode}: ${startPage} -> ${endPage}`);
+      console.log(`Starting game in ${roomCode}: ${startPage} -> ${targetPage}`);
 
       try {
           // CORRECT: Use the helper that returns a string
           const startHtml = await fetchWikiHtml(startPage);
 
-          room.targetPage = endPage;
+          room.targetPage = targetPage;
           room.startPage = startPage;
           room.gameState = "RACING";
 
           io.to(roomCode).emit('game_started', {
               startPage,
-              endPage,
+              targetPage,
               initialHtml: startHtml // Send the raw HTML string
           });
 
