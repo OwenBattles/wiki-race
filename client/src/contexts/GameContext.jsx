@@ -6,7 +6,8 @@ export const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
     const [username, setUsername] = useState("");
-    const [roomCode, setRoomCode] = useState(null);
+    const [roomCode, setRoomCode] = useState("");
+    const [validRoomCode, setValidRoomCode] = useState(false)
     const [isHost, setIsHost] = useState(false);
     const [players, setPlayers] = useState([]);
     
@@ -24,20 +25,28 @@ export const GameProvider = ({ children }) => {
             setRoomCode(code);
         });
 
+        socket.on('found_room', (found) => {
+            console.log("we even got here")
+            if (found) setValidRoomCode(true);
+            if (!found) setValidRoomCode(false);
+        })
+
         socket.on('update_player_list', (updatedPlayers) => {
             setPlayers(updatedPlayers);
-            
-            // Auto-detect if I am the host now (e.g., if previous host left)
-            const me = updatedPlayers.find(p => p.id === socket.id);
-            if (me) setIsHost(me.isHost);
         });
 
         socket.on('game_started', ({ startPage, endPage, initialHtml }) => {
             setGameData({ startPage, targetPage: endPage, initialHtml });
             setGameState("RACING");
         });
+
+        socket.on('error', (msg) => {
+            alert(msg);
+        })
         
         return () => {
+            socket.off('room_created');
+            socket.off('found_room');
             socket.off('update_player_list');
             socket.off('game_started');
             socket.off('join_success');
@@ -48,6 +57,7 @@ export const GameProvider = ({ children }) => {
         // State
         username, setUsername,
         roomCode, setRoomCode,
+        validRoomCode, setValidRoomCode,
         isHost, setIsHost,
         players, setPlayers,
         powerUpsAllowed, setPowerUpsAllowed,

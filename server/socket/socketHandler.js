@@ -1,4 +1,5 @@
 const { fetchWikiHtml } = require('../controllers/wikiController');
+const { use } = require('../routes/wikiRoutes');
 
 // Store room state in memory
 const rooms = {};
@@ -32,39 +33,40 @@ module.exports = (io) => {
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username }) => {
-      const lobbyCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
       
       // Safety check: rare collision
-      if (rooms[lobbyCode]) {
+      if (rooms[roomCode]) {
           socket.emit('error', 'Room generation failed, try again');
           return;
       }
 
-      rooms[lobbyCode] = [];
+      rooms[roomCode] = [];
       
       // Join & Setup Host
-      socket.join(lobbyCode);
-      rooms[lobbyCode].push({ id: socket.id, username, isHost: true });
+      socket.join(roomCode);
+      rooms[roomCode].push({ id: socket.id, username, isHost: true });
       
-      console.log(`User ${username} created room: ${lobbyCode}`);
+      console.log(`User ${username} created room: ${roomCode}`);
       
       // Send the new code back to the creator so they can share it
-      socket.emit('room_created', lobbyCode); 
-      io.to(lobbyCode).emit('update_player_list', rooms[lobbyCode]);
+      socket.emit('room_created', roomCode); 
+      io.to(roomCode).emit('update_player_list', rooms[roomCode]);
     });
 
     // CHECK IF LOBBY CODE IS VALID
-    socket.on('find_lobby', (lobbyCode) => {
+    socket.on('find_room', (lobbyCode) => {
       if (rooms[lobbyCode]) {
-        socket.emit('lobby_check_result', { found: true, message: "Lobby found" });
+        socket.emit('found_room', true);
       } else {
-        socket.emit('lobby_check_result', { found: false, message: "Lobby not found" });
+        socket.emit('found_room', false);
       }
     });
 
+    // NOT BEING USED FOR NOW
     // CHECK IF USERNAME IS UNIQUE
-    socket.on('check_username', (lobbyCode, username) => {
-      if (!rooms[lobbyCode]) {
+    socket.on('check_username', (roomCode, username) => {
+      if (!rooms[roomCode]) {
          return; 
       }
 
@@ -73,7 +75,7 @@ module.exports = (io) => {
          return; 
       }
 
-      const isTaken = rooms[lobbyCode].some(player => player.username === username);
+      const isTaken = rooms[roomCode].some(player => player.username === username);
 
       if (isTaken) {
         socket.emit('username_check_result', { found: true, message: "Username already taken" });
@@ -82,39 +84,51 @@ module.exports = (io) => {
       }
     });
 
-    // GET PLAYERS IN A LOBBY
-    socket.on('request_player_list', (lobbyCode) => {
-      const room = rooms[lobbyCode];
-      if (room) {
-          // Send the list ONLY to the person who asked
-          socket.emit('update_player_list', room);
-      }
-  });
-
     // JOIN LOBBY
-    socket.on('join_lobby', ({ lobbyCode, username }) => {
-      console.log("Attempting join:", lobbyCode);
-      console.log("Current active rooms:", Object.keys(rooms));
-      const room = rooms[lobbyCode];
+    socket.on('join_room', ({ roomCode, username }) => {
+      console.log("made it to backend")
+      const room = rooms[roomCode];
       
       if (room) {
-        socket.join(lobbyCode);
-        room.push({ id: socket.id, username, isHost: false });
+        socket.join(roomCode);
+        const player = { 
+          id: socket.id, 
+          username: username, 
+          isHost: false, 
+          isPlaying: false, 
+          path: [], wins: 0, 
+          powerUps: {}, 
+          currentPageTitle: "" 
+        };
+
+        console.log(`${username} join room ${roomCode}`);
+
+        room.push(player);
         
-        socket.emit('join_success', lobbyCode);
-        io.to(lobbyCode).emit('update_player_list', room);
+        io.to(roomCode).emit('update_player_list', player);
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");
       } 
     });
 
+    // GET PLAYERS IN A LOBBY
+    socket.on('request_player_list', (roomCode) => {
+      const room = rooms[roomCode];
+      if (room) {
+          // Send the list ONLY to the person who asked
+          socket.emit('update_player_list', room);
+      }
+  });
+
+    
+
     // START GAME
-    socket.on('start_game', async ({ lobbyCode, startPage, endPage }) => {
-      const room = rooms[lobbyCode];
+    socket.on('start_game', async ({ roomCode, startPage, endPage }) => {
+      const room = rooms[roomCode];
       if (!room) return;
 
-      console.log(`Starting game in ${lobbyCode}: ${startPage} -> ${endPage}`);
+      console.log(`Starting game in ${roomCode}: ${startPage} -> ${endPage}`);
 
       try {
           // CORRECT: Use the helper that returns a string
@@ -124,7 +138,7 @@ module.exports = (io) => {
           room.startPage = startPage;
           room.gameState = "RACING";
 
-          io.to(lobbyCode).emit('game_started', {
+          io.to(roomCode).emit('game_started', {
               startPage,
               endPage,
               initialHtml: startHtml // Send the raw HTML string
@@ -137,29 +151,29 @@ module.exports = (io) => {
     });
 
     // HANDLE GAME WIN
-    socket.on('game_won', (lobbyCode) => {
-      const room = rooms[lobbyCode];
+    socket.on('game_won', (roomCode) => {
+      const room = rooms[roomCode];
       if (room) {
           const index = room.findIndex(p => p.id === socket.id);
           const player = room[index].username;
           console.log(`${player} has won the game`)
           if (index !== -1) {
               room.splice(index, 1);
-              io.to(lobbyCode).emit('game_over', { player });
+              io.to(roomCode).emit('game_over', { player });
           }
       }
     })
 
     // HANDLE RETURN TO LOBBY
-    socket.on('navigate_to_lobby', (lobbyCode) => {
-      const room = rooms[lobbyCode];
+    socket.on('navigate_to_lobby', (roomCode) => {
+      const room = rooms[roomCode];
       if (!room) return;
     
       room.gameState = "LOBBY";
       room.startPage = "";
       room.targetPage = "";
     
-      io.to(lobbyCode).emit('return_to_lobby');
+      io.to(roomCode).emit('return_to_lobby');
     });
 
     // HANDLE LEAVE GAME
@@ -179,8 +193,8 @@ module.exports = (io) => {
     socket.on('disconnect', () => {
       console.log(`User Disconnected: ${socket.id}`);
 
-      for (const lobbyCode in rooms) {
-        const room = rooms[lobbyCode];
+      for (const roomCode in rooms) {
+        const room = rooms[roomCode];
         
         const playerIndex = room.findIndex(p => p.id === socket.id);
         
@@ -194,11 +208,11 @@ module.exports = (io) => {
           }
 
           if (room.length === 0) {
-              delete rooms[lobbyCode];
-              console.log(`Room ${lobbyCode} deleted (empty)`);
+              delete rooms[roomCode];
+              console.log(`Room ${roomCode} deleted (empty)`);
           } else {
-              io.to(lobbyCode).emit('update_player_list', room);
-              console.log(`${player.username} left room ${lobbyCode}`);
+              io.to(roomCode).emit('update_player_list', room);
+              console.log(`${player.username} left room ${roomCode}`);
           }
           
           break; 

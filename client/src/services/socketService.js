@@ -14,9 +14,13 @@ export const SocketService = {
         socket.emit('create_room', { username });
     },
 
+    findRoom: (roomCode) => {
+        socket.emit('find_room', roomCode);
+    },
+
     joinRoom: (roomCode, username) => {
         // Ensure uppercase to match server logic
-        socket.emit('join_lobby', { lobbyCode: roomCode.toUpperCase(), username });
+        socket.emit('join_room', { roomCode, username });
     },
 
     checkUsername: (roomCode, username) => {

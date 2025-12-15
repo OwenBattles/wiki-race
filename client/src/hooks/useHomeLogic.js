@@ -17,21 +17,20 @@ export function useHomeLogic() {
         setIsHost(true);
         
         SocketService.createRoom(username);
+        // add error handling first
+        navigate('/game');
     };
+
+    const handleFindRoom = (code) => {
+        SocketService.findRoom(code);
+    }
 
     const handleJoinRoom = (code, username) => {
         setUsername(username);
         setIsHost(false);
         SocketService.joinRoom(code, username);
+        navigate('/game');
     };
 
-    
-    useEffect(() => {
-        if (roomCode) {
-            console.log("Room confirmed. Navigating...");
-            navigate('/game'); 
-        }
-    }, [roomCode, navigate]);
-
-    return { handleCreateRoom, handleJoinRoom, error };
+    return { handleCreateRoom, handleFindRoom, handleJoinRoom, error };
 }

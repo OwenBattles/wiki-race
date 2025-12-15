@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
 import { GameContext } from '../contexts/GameContext';
 
 import { useHomeLogic } from '../hooks/useHomeLogic'; 
@@ -8,12 +8,32 @@ import { JoinLobby } from "../components/JoinLobby";
 import { CreateLobby } from "../components/CreateLobby"; 
 
 export default function HomePage() {
+    const [usernameInput, setUsernameInput] = useState("");
+
     const {
-        username, setUsername,
         roomCode, setRoomCode,
+        validRoomCode
     } = useContext(GameContext);
 
-    const { handleCreateRoom, handleJoinRoom, error } = useHomeLogic();
+    const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
+
+    console.log('valid: ', validRoomCode)
+
+    const handleJoin = () => {
+        if (!usernameInput) {
+            alert("Enter a Username");
+            return;
+        }
+        handleJoinRoom(roomCode, usernameInput);
+    }
+
+    const handleCreate = () => {
+        if (!usernameInput) {
+            alert("Enter a Username");
+            return;
+        }
+        handleCreateRoom(usernameInput);
+    }
 
     return (
         <div>
@@ -21,15 +41,17 @@ export default function HomePage() {
             
             {error && <p className="text-red-500">{error}</p>}
 
-            <UsernameInput value={username} onChange={setUsername} />
+            <UsernameInput value={usernameInput} onChange={setUsernameInput} />
             
             <JoinLobby 
                 lobbyCode={roomCode}
+                checkLobbyCode={handleFindRoom}
                 setLobbyCode={setRoomCode}
-                onJoin={(code) => handleJoinRoom(code, username)}
+                onJoin={handleJoin}
+                disabled={!validRoomCode}
             />
             
-            <CreateLobby onCreate={() => handleCreateRoom(username)}/>
+            <CreateLobby onCreate={handleCreate}/>
         </div> 
     );
 }
