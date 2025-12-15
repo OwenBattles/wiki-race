@@ -1,8 +1,10 @@
-import { useContext } from "react"
-import { GameContext } from "../contexts/GameContext"
+import { useContext } from "react";
+
+import { GameContext } from "../contexts/GameContext";
+import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { } = useContext(GameContext);
+    const { gameData, setGameData } = useContext(GameContext);
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     // will add this later most likely
@@ -11,11 +13,18 @@ export function useGameLogic() {
     }
 
     const handleStartPoint = (pageTitle) => {
-
+        console.log(`start ${pageTitle}`)
+        setGameData(prev => ({
+            ...prev,
+            startPage: pageTitle
+        }));
     }
 
     const handleEndPoint = (pageTitle) => {
-
+        setGameData(prev => ({
+            ...prev,
+            targetPage: pageTitle
+        }));
     }
 
     const handleTogglePowerUps = () => {

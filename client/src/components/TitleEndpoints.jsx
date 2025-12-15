@@ -1,8 +1,20 @@
-export function TitleEndpoints() {
+import { useState } from "react"
+
+import { WikiSearchInput } from "./WikiSearchInput";
+
+export function TitleEndpoints({ isHost, handleStartSelect, handleEndSelect }) {
     return (
         <div>
-            <input placeholder="Starting Point"></input>
-            <input placeholder="Ending Point"></input>
+            <WikiSearchInput
+                placeholder={"Starting Point"}
+                onSelect={handleStartSelect}
+                disabled={!isHost}
+            />
+            <WikiSearchInput 
+                placeholder={"Ending Point"}
+                onSelect={handleEndSelect}
+                disabled={!isHost}
+            />
         </div>   
     )
 }
