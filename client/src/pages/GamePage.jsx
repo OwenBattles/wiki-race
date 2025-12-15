@@ -9,6 +9,7 @@ import { GameOverView } from '../components/GameOverView';
 
 export default function GamePage() {
     const { 
+        username,
         roomCode,
         isHost,
         players, setPlayers,
@@ -20,8 +21,11 @@ export default function GamePage() {
     const {
         handleStartPoint,
         handleEndPoint,
+        handlePowerUpSettings,
+        handleStartGame
     } = useGameLogic();
 
+    console.log("username: ", username)
 
     return (
         <div >
@@ -33,6 +37,8 @@ export default function GamePage() {
                     handleStartSelect={handleStartPoint}
                     handleEndSelect={handleEndPoint}
                     gameData={gameData}
+                    powerUpsAllowed={powerUpsAllowed}
+                    onStart={handleStartGame}
                 />
             }
 

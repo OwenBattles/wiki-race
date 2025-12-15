@@ -123,16 +123,15 @@ module.exports = (io) => {
       } 
     });
 
-    // GET PLAYERS IN A LOBBY
-    socket.on('request_player_list', (roomCode) => {
-      const room = rooms[roomCode];
-      if (room) {
-          // Send the list ONLY to the person who asked
-          socket.emit('update_player_list', room);
-      }
-  });
+    // SET THE STARTING PAGE
+    socket.on('set_start_page', ({ roomCode, startPage }) => {
+      io.to(roomCode).emit('start_page', startPage);
+    })
 
-    
+    // SET THE TARGET PAGE
+    socket.on('set_target_page', ({ roomCode, targetPage }) => {
+      io.to(roomCode).emit('target_page', targetPage);
+    })
 
     // START GAME
     socket.on('start_game', async ({ roomCode, startPage, endPage }) => {
@@ -161,6 +160,19 @@ module.exports = (io) => {
       }
     });
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // GET PLAYERS IN A LOBBY
+    socket.on('request_player_list', (roomCode) => {
+      const room = rooms[roomCode];
+      if (room) {
+          // Send the list ONLY to the person who asked
+          socket.emit('update_player_list', room);
+      }
+  });
+
     // HANDLE GAME WIN
     socket.on('game_won', (roomCode) => {
       const room = rooms[roomCode];
@@ -188,17 +200,17 @@ module.exports = (io) => {
     });
 
     // HANDLE LEAVE GAME
-    socket.on('leave_game', (roomCode) => {
-      // Reuse your disconnect logic here, or just:
-      const room = rooms[roomCode];
-      if (room) {
-          const index = room.findIndex(p => p.id === socket.id);
-          if (index !== -1) {
-              room.splice(index, 1);
-              io.to(roomCode).emit('update_player_list', room);
-          }
-      }
-    });
+    // socket.on('leave_game', (roomCode) => {
+    //   // Reuse your disconnect logic here, or just:
+    //   const room = rooms[roomCode];
+    //   if (room) {
+    //       const index = room.findIndex(p => p.id === socket.id);
+    //       if (index !== -1) {
+    //           room.splice(index, 1);
+    //           io.to(roomCode).emit('update_player_list', room);
+    //       }
+    //   }
+    // });
 
     // HANDLE DISCONNECT 
     socket.on('disconnect', () => {
@@ -216,6 +228,7 @@ module.exports = (io) => {
           
           if (player.isHost && room.length > 0) {
               room[0].isHost = true; // Promote the next person
+              io.to(roomCode).emit('update_player_list', room);
           }
 
           if (room.length === 0) {

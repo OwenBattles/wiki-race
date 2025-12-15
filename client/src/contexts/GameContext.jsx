@@ -33,10 +33,28 @@ export const GameProvider = ({ children }) => {
 
         socket.on('update_player_list', (updatedPlayers) => {
             setPlayers(updatedPlayers);
+            const me = updatedPlayers.find(p => p.id === socket.id);
+            if (me) {
+                setIsHost(me.isHost);
+            }
         });
 
+        socket.on('start_page', (startPage) => {
+            setGameData(prev => ({
+                ...prev,
+                startPage: startPage
+            }));
+        })
+
+        socket.on('target_page', (targetPage) => {
+            setGameData(prev => ({
+                ...prev,
+                targetPage: targetPage
+            }));
+        })
+
         socket.on('game_started', ({ startPage, endPage, initialHtml }) => {
-            setGameData({ startPage, targetPage: endPage, initialHtml });
+            setGameData({ startPage, endPage, initialHtml });
             setGameState("RACING");
         });
 
@@ -48,6 +66,8 @@ export const GameProvider = ({ children }) => {
             socket.off('room_created');
             socket.off('found_room');
             socket.off('update_player_list');
+            socket.off('start_page');
+            socket.off('target_page')
             socket.off('game_started');
             socket.off('join_success');
         };

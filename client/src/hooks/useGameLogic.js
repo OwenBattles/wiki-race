@@ -1,10 +1,11 @@
 import { useContext } from "react";
 
 import { GameContext } from "../contexts/GameContext";
+import { SocketService } from "../services/socketService";
 import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { gameData, setGameData } = useContext(GameContext);
+    const { roomCode, setPowerUpsAllowed, gameData, setGameData } = useContext(GameContext);
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     // will add this later most likely
@@ -13,26 +14,23 @@ export function useGameLogic() {
     }
 
     const handleStartPoint = (pageTitle) => {
-        console.log(`start ${pageTitle}`)
-        setGameData(prev => ({
-            ...prev,
-            startPage: pageTitle
-        }));
+        SocketService.setStartPage(roomCode, pageTitle);
     }
 
     const handleEndPoint = (pageTitle) => {
-        setGameData(prev => ({
-            ...prev,
-            targetPage: pageTitle
-        }));
+        SocketService.setTargetPage(roomCode, pageTitle);
     }
 
-    const handleTogglePowerUps = () => {
-
+    const handlePowerUpSettings = () => {
+        setPowerUpsAllowed((prev) => !prev);
     }
 
     const handleStartGame = () => {
-
+        if (!(gameData.startPage && gameData.endPage)) {
+            alert("Enter a starting page and an ending page")
+            return;
+        }
+        SocketService.startGame(roomCode, gameData.startPage, gameData.targetPage);
     }
 
     const handleChangePage = () => {
@@ -47,7 +45,7 @@ export function useGameLogic() {
         handleCopyLink,
         handleStartPoint,
         handleEndPoint,
-        handleTogglePowerUps,
+        handlePowerUpSettings,
         handleStartGame,
         handleChangePage,
         handleSurrender,
