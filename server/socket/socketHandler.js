@@ -120,6 +120,7 @@ module.exports = (io) => {
         console.log(`${username} join room ${roomCode}`);
         
         io.to(roomCode).emit('update_player_list', room.players);
+        io.to(roomCode).emit('joined_room', room.startPage, room.targetPage, room.powerUpsEnabled);
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");

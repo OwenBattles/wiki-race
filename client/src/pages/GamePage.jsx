@@ -18,7 +18,7 @@ export default function GamePage() {
         gameSettings, setGameSettings,
         path, setPath,
         currentPageTitle, currentPageHtml,
-        htmlContent, currentTitle, fetchPage, isLoading
+        htmlContent, currentTitle, fetchPage, isLoading, winner
     } = useContext(GameContext);
 
     const {
@@ -53,7 +53,7 @@ export default function GamePage() {
             }
 
             { gameState == "FINISHED" && 
-                <GameOverView />
+                <GameOverView players={players} winner={winner} />
             }
         </div>
     );

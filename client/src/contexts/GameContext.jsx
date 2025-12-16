@@ -37,6 +37,12 @@ export const GameProvider = ({ children }) => {
             if (!found) setValidRoomCode(false);
         })
 
+        socket.on('joined_room', (startPage, targetPage, powerUpsEnabled) => {
+            console.log("joined_room", startPage, targetPage, powerUpsEnabled);
+            setGameSettings({ startPage, targetPage });
+            setPowerUpsAllowed(powerUpsEnabled);
+        })
+
         socket.on('username_check_result', ({ found, message }) => {
             if (!found) {
                 setValidUsername(true);
@@ -87,6 +93,7 @@ export const GameProvider = ({ children }) => {
         return () => {
             socket.off('room_created');
             socket.off('found_room');
+            socket.off('joined_room');
             socket.off('username_check_result');
             socket.off('update_player_list');
             socket.off('start_page');
@@ -110,7 +117,7 @@ export const GameProvider = ({ children }) => {
         path, setPath,
         currentPageTitle,
         currentPageHtml,
-        fetchPage, isLoading
+        fetchPage, isLoading, winner
     };
 
     return (
