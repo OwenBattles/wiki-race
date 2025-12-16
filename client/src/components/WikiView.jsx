@@ -13,7 +13,7 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
 
         const href = anchor.getAttribute('href');
         if (href.startsWith('/wiki/')) {
-            const title = decodeURIComponent(href.replace('/wiki/', ''));
+            const title = decodeURIComponent(href.replace('/wiki/', '')).trim().replace(/_/g, ' ').replace(/\s+/g, ' ');
             onNavigate(title);
         }
     };

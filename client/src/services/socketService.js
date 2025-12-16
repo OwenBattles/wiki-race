@@ -37,12 +37,10 @@ export const SocketService = {
 
     // --- GAME ACTIONS ---
     setStartPage: (roomCode, startPage) => {
-        console.log("setting start page");
         socket.emit('set_start_page', { roomCode, startPage });
     },
 
     setTargetPage: (roomCode, targetPage) => {
-        console.log("setting target page");
         socket.emit('set_target_page', { roomCode, targetPage });
     },
 

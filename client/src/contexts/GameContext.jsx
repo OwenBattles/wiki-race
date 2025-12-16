@@ -48,7 +48,6 @@ export const GameProvider = ({ children }) => {
         })
 
         socket.on('update_player_list', (updatedPlayers) => {
-            console.log("update_player_list", updatedPlayers);
             setPlayers(updatedPlayers);
             const me = updatedPlayers.find(p => p.id === socket.id);
             if (me) {
@@ -76,14 +75,9 @@ export const GameProvider = ({ children }) => {
             setGameState("PLAYING");
         });
 
-        socket.on('check_if_won', ({ pageTitle, player }) => {
-            console.log("check_if_won", pageTitle);
-            console.log("gameSettings.targetPage", gameSettings.targetPage);
-            console.log("pageTitle", pageTitle);
-            if (pageTitle === gameSettings.targetPage) {
-                setGameState("FINISHED");
-                setWinner(player);
-            }
+        socket.on('game_won', ({ player }) => {
+            setGameState("FINISHED");
+            setWinner(player);
         });
 
         socket.on('error', (msg) => {

@@ -29,9 +29,6 @@ export default function GamePage() {
         handleStartGame
     } = useGameLogic();
 
-    console.log("currentPageTitle", currentPageTitle);
-    console.log("currentPageHtml", currentPageHtml);
-
     return (
         <div >
             <h1>{roomCode}</h1>

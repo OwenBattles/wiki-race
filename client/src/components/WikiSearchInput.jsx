@@ -45,10 +45,12 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
 
     const handleSelect = (title) => {
         if (disabled) return;
-        isSelecting.current = true; // Set flag before updating query
+        title = title.trim().replace(/_/g, ' ').replace(/\s+/g, ' ');
+        isSelecting.current = true; 
         setQuery(title);
         setSuggestions([]);
         setIsOpen(false);
+        console.log("title", title);
         onSelect(title);
     };
 

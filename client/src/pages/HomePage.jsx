@@ -17,7 +17,7 @@ export default function HomePage() {
 
     const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
 
-    console.log('valid: ', validRoomCode)
+    // Should refactor these handlers to use the useHomeLogic hook
 
     const handleJoin = () => {
         if (!usernameInput) {
