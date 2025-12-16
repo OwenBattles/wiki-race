@@ -82,11 +82,12 @@ export const GameProvider = ({ children }) => {
         return () => {
             socket.off('room_created');
             socket.off('found_room');
+            socket.off('username_check_result');
             socket.off('update_player_list');
             socket.off('start_page');
             socket.off('target_page')
             socket.off('game_started');
-            socket.off('join_success');
+            socket.off('error');
         };
     }, []);
 

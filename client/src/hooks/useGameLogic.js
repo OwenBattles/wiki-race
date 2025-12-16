@@ -6,7 +6,6 @@ import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
     const { roomCode, setPowerUpsAllowed, gameSettings } = useContext(GameContext);
-    const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     // will add this later most likely
     const handleCopyLink = () => {
