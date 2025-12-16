@@ -26,7 +26,6 @@ export function useGameLogic() {
     }
 
     const handleStartGame = () => {
-        console.log("in useGameLogic, ", gameData.startPage, "=>", gameData.targetPage)
         if (!(gameData.startPage && gameData.targetPage)) {
             alert("Enter a starting page and a target page")
             return;

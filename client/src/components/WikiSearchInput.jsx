@@ -30,6 +30,11 @@ export function WikiSearchInput({ placeholder, onSelect, disabled }) {
         return () => clearTimeout(delayDebounceFn);
     }, [query, disabled]);
 
+    const handleClick = () => {
+        setQuery("");
+        onSelect("");
+    };
+
     const handleSelect = (title) => {
         if (disabled) return;
 
@@ -47,6 +52,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled }) {
                 value={query}
                 disabled={disabled}
                 onChange={(e) => setQuery(e.target.value)}
+                onClick={handleClick}
                 className={`w-full p-3 border rounded shadow-sm focus:outline-none focus:ring-2
                     ${disabled
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"

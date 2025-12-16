@@ -16,6 +16,7 @@ export default function GamePage() {
         powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
         gameData, setGameData, 
+        htmlContent, currentTitle, fetchPage, isLoading
     } = useContext(GameContext);
 
     const {
@@ -41,7 +42,11 @@ export default function GamePage() {
             }
 
             { gameState == "PLAYING" &&
-                <WikiView />
+                <WikiView
+                    htmlContent={gameData.initialHtml}
+                    onNavigate={handleChangePage}
+                    isLoading={ isLoading }
+                />
             }
 
             { gameState == "FINISHED" && 

@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { socket } from '../services/socket';
+import { useWikiPage } from '../hooks/useWikiPage';
 import { useHomeLogic } from '../hooks/useHomeLogic';
 
 export const GameContext = createContext();
@@ -20,6 +21,8 @@ export const GameProvider = ({ children }) => {
         targetPage: "", 
         initialHtml: "" 
     });
+
+    const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     useEffect(() => {
         socket.on('room_created', (code) => {
@@ -92,7 +95,8 @@ export const GameProvider = ({ children }) => {
         players, setPlayers,
         powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
-        gameData, setGameData
+        gameData, setGameData,
+        htmlContent, currentTitle, fetchPage, isLoading
     };
 
     return (
