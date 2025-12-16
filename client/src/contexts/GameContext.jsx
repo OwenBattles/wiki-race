@@ -20,12 +20,12 @@ export const GameProvider = ({ children }) => {
         startPage: "", 
         targetPage: ""
     });
-    
-    const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     const [path, setPath] = useState([]);
     const currentPageTitle = path[path.length - 1]?.title || "";
     const currentPageHtml = path[path.length - 1]?.html || "";
+
+    const { fetchPage, isLoading } = useWikiPage({ setPath });
 
     useEffect(() => {
         socket.on('room_created', (code) => {
@@ -104,7 +104,7 @@ export const GameProvider = ({ children }) => {
         path, setPath,
         currentPageTitle,
         currentPageHtml,
-        htmlContent, currentTitle, fetchPage, isLoading
+        fetchPage, isLoading
     };
 
     return (

@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 
-export function useWikiPage() {
-    const [htmlContent, setHtmlContent] = useState("");
-    const [currentTitle, setCurrentTitle] = useState("");
+
+export function useWikiPage({ setPath }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -15,8 +14,7 @@ export function useWikiPage() {
             if (!res.ok) throw new Error("Failed to fetch page");
             
             const data = await res.json();
-            setHtmlContent(data.content);
-            setCurrentTitle(data.title);
+            setPath(prev => [...prev, { title: data.title, html: data.content }]);
         } catch (err) {
             console.error(err);
             setError(err.message);
@@ -25,5 +23,5 @@ export function useWikiPage() {
         }
     }, []);
 
-    return { htmlContent, currentTitle, fetchPage, isLoading, error };
+    return { fetchPage, isLoading, error };
 }
