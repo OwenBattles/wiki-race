@@ -5,7 +5,7 @@ import { SocketService } from "../services/socketService";
 import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { roomCode, setPowerUpsAllowed, gameSettings,  fetchPage, isLoading, error } = useContext(GameContext);
+    const { roomCode, setPowerUpsAllowed, gameSettings, currentPageTitle, fetchPage, isLoading, error } = useContext(GameContext);
 
 
     // will add this later most likely

@@ -20,7 +20,7 @@ export const GameProvider = ({ children }) => {
         startPage: "", 
         targetPage: ""
     });
-
+    const [winner, setWinner] = useState("");
     const [path, setPath] = useState([]);
     const currentPageTitle = path[path.length - 1]?.title || "";
     const currentPageHtml = path[path.length - 1]?.html || "";
@@ -76,6 +76,16 @@ export const GameProvider = ({ children }) => {
             setGameState("PLAYING");
         });
 
+        socket.on('check_if_won', ({ pageTitle, player }) => {
+            console.log("check_if_won", pageTitle);
+            console.log("gameSettings.targetPage", gameSettings.targetPage);
+            console.log("pageTitle", pageTitle);
+            if (pageTitle === gameSettings.targetPage) {
+                setGameState("FINISHED");
+                setWinner(player);
+            }
+        });
+
         socket.on('error', (msg) => {
             alert(msg);
         })
@@ -88,6 +98,7 @@ export const GameProvider = ({ children }) => {
             socket.off('start_page');
             socket.off('target_page')
             socket.off('game_started');
+            socket.off('check_if_won');
             socket.off('error');
         };
     }, []);

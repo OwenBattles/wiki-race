@@ -171,10 +171,12 @@ module.exports = (io) => {
 
       const player = room.players.find(p => p.id === socket.id);
       if (!player) return;
+
       player.currentPageTitle = pageTitle;
       player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
 
       io.to(roomCode).emit('update_player_list', room.players);
+      io.to(roomCode).emit('check_if_won', { pageTitle, player });
 
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });

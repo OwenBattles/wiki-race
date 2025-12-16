@@ -1,16 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
     const [query, setQuery] = useState(value || "");
     const [suggestions, setSuggestions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const isSelecting = useRef(false); // Track if we're selecting
 
     useEffect(() => {
         setQuery(value || "");
     }, [value]);
 
     useEffect(() => {
-        if (disabled) return; 
+        if (disabled || isSelecting.current) {
+            isSelecting.current = false; // Reset flag
+            return;
+        }
         
         const delayDebounceFn = setTimeout(async () => {
             if (query.length < 2) {
@@ -34,13 +38,14 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
     }, [query, disabled]);
 
     const handleClick = () => {
-        if (disabled) return; // Don't clear if disabled
+        if (disabled) return;
         setQuery("");
         onSelect("");
     };
 
     const handleSelect = (title) => {
         if (disabled) return;
+        isSelecting.current = true; // Set flag before updating query
         setQuery(title);
         setSuggestions([]);
         setIsOpen(false);

@@ -46,7 +46,7 @@ export const SocketService = {
         socket.emit('set_target_page', { roomCode, targetPage });
     },
 
-    startGame: (roomCode ) => {
+    startGame: (roomCode) => {
         socket.emit('start_game', { roomCode });
     },
 
