@@ -12,6 +12,7 @@ export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect,
                 isHost={isHost} 
                 handleStartSelect={handleStartSelect} 
                 handleEndSelect={handleEndSelect} 
+                gameData={gameData}
             />
             <ul>
                 {players.map((player, id) => (
