@@ -5,7 +5,7 @@ import { SocketService } from "../services/socketService";
 import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { roomCode, setPowerUpsAllowed, gameData } = useContext(GameContext);
+    const { roomCode, setPowerUpsAllowed, gameSettings } = useContext(GameContext);
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
 
     // will add this later most likely
@@ -26,15 +26,16 @@ export function useGameLogic() {
     }
 
     const handleStartGame = () => {
-        if (!(gameData.startPage && gameData.targetPage)) {
+        if (!(gameSettings.startPage && gameSettings.targetPage)) {
             alert("Enter a starting page and a target page")
             return;
         }
-        SocketService.startGame(roomCode, gameData.startPage, gameData.targetPage); // todo: add start page and target page to the backend
+        SocketService.startGame(roomCode, gameSettings.startPage, gameSettings.targetPage); // todo: add start page and target page to the backend
     }
 
-    const handleChangePage = () => {
-
+    const handleChangePage = (pageTitle, href) => {
+        console.log("handleChangePage", pageTitle, href);
+        SocketService.submitMove(roomCode, pageTitle, href);
     }
 
     const handleSurrender = () => {

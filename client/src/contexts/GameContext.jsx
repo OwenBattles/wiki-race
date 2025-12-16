@@ -16,13 +16,16 @@ export const GameProvider = ({ children }) => {
     // Game Flow State
     const [powerUpsAllowed, setPowerUpsAllowed] = useState(false);
     const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
-    const [gameData, setGameData] = useState({ 
+    const [gameSettings, setGameSettings] = useState({ 
         startPage: "", 
-        targetPage: "", 
-        initialHtml: "" 
+        targetPage: ""
     });
-
+    
     const { htmlContent, currentTitle, fetchPage, isLoading } = useWikiPage();
+
+    const [path, setPath] = useState([]);
+    const currentPageTitle = path[path.length - 1]?.title || "";
+    const currentPageHtml = path[path.length - 1]?.html || "";
 
     useEffect(() => {
         socket.on('room_created', (code) => {
@@ -53,22 +56,23 @@ export const GameProvider = ({ children }) => {
         });
 
         socket.on('start_page', (startPage) => {
-            setGameData(prev => ({
+            setGameSettings(prev => ({
                 ...prev,
                 startPage: startPage
             }));
         })
 
         socket.on('target_page', (targetPage) => {
-            setGameData(prev => ({
+            setGameSettings(prev => ({
                 ...prev,
                 targetPage: targetPage
             }));
         })
 
-        socket.on('game_started', ({ startPage, endPage, initialHtml }) => {
-            setGameData({ startPage, endPage, initialHtml });
-            setGameState("RACING");
+        socket.on('game_started', ({ startPage, targetPage, initialHtml }) => {
+            setGameSettings({ startPage, targetPage });
+            setPath([{ title: startPage, html: initialHtml }]);
+            setGameState("PLAYING");
         });
 
         socket.on('error', (msg) => {
@@ -95,7 +99,10 @@ export const GameProvider = ({ children }) => {
         players, setPlayers,
         powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
-        gameData, setGameData,
+        gameSettings, setGameSettings,
+        path, setPath,
+        currentPageTitle,
+        currentPageHtml,
         htmlContent, currentTitle, fetchPage, isLoading
     };
 

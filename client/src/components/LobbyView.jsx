@@ -1,9 +1,9 @@
 import { TitleEndpoints } from "./TitleEndpoints";
 import { PowerUpSettings } from "./PowerUpSettings";
 
-export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameData, powerUpsAllowed, onStart }) {
-    console.log(gameData.startPage, " => ", gameData.targetPage);
-    const canStartGame = gameData.startPage && gameData.targetPage;
+export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, powerUpsAllowed, onStart }) {
+    console.log(gameSettings.startPage, " => ", gameSettings.targetPage);
+    const canStartGame = gameSettings.startPage && gameSettings.targetPage;
     
     return (
         <div>
@@ -12,7 +12,7 @@ export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect,
                 isHost={isHost} 
                 handleStartSelect={handleStartSelect} 
                 handleEndSelect={handleEndSelect} 
-                gameData={gameData}
+                gameSettings={gameSettings}
             />
             <ul>
                 {players.map((player, id) => (

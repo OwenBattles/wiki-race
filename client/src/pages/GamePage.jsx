@@ -15,7 +15,9 @@ export default function GamePage() {
         players, setPlayers,
         powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
-        gameData, setGameData, 
+        gameSettings, setGameSettings,
+        path, setPath,
+        currentPageTitle, currentPageHtml,
         htmlContent, currentTitle, fetchPage, isLoading
     } = useContext(GameContext);
 
@@ -23,6 +25,7 @@ export default function GamePage() {
         handleStartPoint,
         handleEndPoint,
         handlePowerUpSettings,
+        handleChangePage,
         handleStartGame
     } = useGameLogic();
 
@@ -35,7 +38,7 @@ export default function GamePage() {
                     players={players}
                     handleStartSelect={handleStartPoint}
                     handleEndSelect={handleEndPoint}
-                    gameData={gameData}
+                    gameSettings={gameSettings}
                     powerUpsAllowed={powerUpsAllowed}
                     onStart={handleStartGame}
                 />
@@ -43,7 +46,7 @@ export default function GamePage() {
 
             { gameState == "PLAYING" &&
                 <WikiView
-                    htmlContent={gameData.initialHtml}
+                    htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}
                     isLoading={ isLoading }
                 />

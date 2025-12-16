@@ -141,7 +141,6 @@ module.exports = (io) => {
       console.log(`Starting game in ${roomCode}: ${startPage} -> ${targetPage}`);
 
       try {
-          // CORRECT: Use the helper that returns a string
           const startHtml = await fetchWikiHtml(startPage);
 
           room.targetPage = targetPage;
@@ -149,15 +148,32 @@ module.exports = (io) => {
           room.gameState = "RACING";
 
           io.to(roomCode).emit('game_started', {
-              startPage,
-              targetPage,
-              initialHtml: startHtml // Send the raw HTML string
+              gameSettings: {
+                startPage,
+                targetPage,
+              },
+              initialHtml: startHtml
           });
 
       } catch (error) {
           console.error("Start Game Error:", error);
           socket.emit('error', "Could not load the starting page.");
       }
+    });
+
+    // HANDLE PLAYER MOVED
+    socket.on('player_moved', async ({ roomCode, pageTitle }) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+
+      const player = room.find(p => p.id === socket.id);
+      if (!player) return;
+      player.currentPage = pageTitle;
+      player.path.push(pageTitle);
+
+      io.to(roomCode).emit('update_player_list', room);
+
+      console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
