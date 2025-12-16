@@ -6,6 +6,7 @@ import { useGameLogic } from '../hooks/useGameLogic';
 import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
+import { InGameHeader } from '../components/InGameHeader';
 
 export default function GamePage() {
     const { 
@@ -27,13 +28,29 @@ export default function GamePage() {
         handlePowerUpSettings,
         handleChangePage,
         handleStartGame,
-        handleReturnToLobby
+        handleReturnToLobby,
+        handleSurrender
     } = useGameLogic();
+
+    useEffect(() => {
+        const disableFind = (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+            e.preventDefault();
+          }
+        };
+      
+        window.addEventListener('keydown', disableFind);
+      
+        return () => {
+          window.removeEventListener('keydown', disableFind);
+        };
+      }, []);
 
     return (
         <div >
-            <h1>{roomCode}</h1>
             { gameState == "LOBBY" && 
+            <div>
+                <h1>{roomCode}</h1>
                 <LobbyView 
                     isHost={isHost}
                     players={players}
@@ -43,14 +60,18 @@ export default function GamePage() {
                     powerUpsAllowed={powerUpsAllowed}
                     onStart={handleStartGame}
                 />
+            </div>       
             }
-
+            
             { gameState == "PLAYING" &&
+            <div>
+                <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} />
                 <WikiView
                     htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}
                     isLoading={ isLoading }
                 />
+            </div>
             }
 
             { gameState == "FINISHED" && 

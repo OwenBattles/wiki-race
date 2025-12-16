@@ -152,10 +152,8 @@ module.exports = (io) => {
           room.gameState = "RACING";
 
           io.to(roomCode).emit('game_started', {
-              gameSettings: {
-                startPage: room.startPage,
-                targetPage: room.targetPage,
-              },
+              startPage: room.startPage,
+              targetPage: room.targetPage,
               initialHtml: startHtml
           });
 
@@ -177,6 +175,8 @@ module.exports = (io) => {
 
       player.currentPageTitle = pageTitle;
       player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
+
+      if (win) player.wins++;
 
       io.to(roomCode).emit('update_player_list', room.players);
       if (win) {

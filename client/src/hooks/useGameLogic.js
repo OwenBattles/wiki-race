@@ -39,7 +39,7 @@ export function useGameLogic() {
     }
 
     const handleSurrender = () => {
-
+        console.log("surrendering");
     }
 
     const handleReturnToLobby = () => {
