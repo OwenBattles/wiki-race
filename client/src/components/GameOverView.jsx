@@ -1,11 +1,12 @@
-export function GameOverView({ players, winner }) {
-
-    console.log("players", players);
+export function GameOverView({ players, winner, onReturnToLobby, isHost }) {
     return (
         <div>
             <h1>Game Over</h1>
-            <h2>Winner: {winner}</h2>
-            <button>Play Again</button>
+            {isHost ? (
+                <button onClick={onReturnToLobby}>Return to Lobby</button>
+            ) : (
+                <p>Waiting for Host...</p>
+            )}
         </div>   
     )
 }

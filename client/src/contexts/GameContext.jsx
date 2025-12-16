@@ -43,6 +43,11 @@ export const GameProvider = ({ children }) => {
             setPowerUpsAllowed(powerUpsEnabled);
         })
 
+        socket.on('return_to_lobby', () => {
+            setGameState("LOBBY");
+            setGameSettings({ startPage: "", targetPage: "" });
+        })
+
         socket.on('username_check_result', ({ found, message }) => {
             if (!found) {
                 setValidUsername(true);
@@ -94,6 +99,7 @@ export const GameProvider = ({ children }) => {
             socket.off('room_created');
             socket.off('found_room');
             socket.off('joined_room');
+            socket.off('return_to_lobby');
             socket.off('username_check_result');
             socket.off('update_player_list');
             socket.off('start_page');

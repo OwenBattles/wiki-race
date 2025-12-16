@@ -186,6 +186,34 @@ module.exports = (io) => {
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
 
+    // HANDLE RETURN TO LOBBY
+    socket.on('navigate_to_lobby', (roomCode) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+    
+      room.gameState = "LOBBY";
+      room.startPage = "";
+      room.targetPage = "";
+    
+      io.to(roomCode).emit('return_to_lobby');
+    });
+
+    // HANDLE SURRENDER: THIS IS NOT BEING USED FOR NOW
+    socket.on('surrender', (roomCode) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+
+      const player = room.players.find(p => p.id === socket.id);
+      if (!player) return;
+
+      player.isPlaying = false;
+      player.path = [];
+      player.currentPageTitle = "";
+
+      io.to(roomCode).emit('update_player_list', room.players);
+      // ill need to send only that player to the lobby or to the game over screen
+    });
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,32 +226,6 @@ module.exports = (io) => {
           socket.emit('update_player_list', room.players);
       }
   });
-
-    // HANDLE GAME WIN
-    socket.on('game_won', (roomCode) => {
-      const room = rooms[roomCode];
-      if (room) {
-          const index = room.players.findIndex(p => p.id === socket.id);
-          const player = room.players[index].username;
-          console.log(`${player} has won the game`)
-          if (index !== -1) {
-              room.players.splice(index, 1);
-              io.to(roomCode).emit('game_over', { player });
-          }
-      }
-    })
-
-    // HANDLE RETURN TO LOBBY
-    socket.on('navigate_to_lobby', (roomCode) => {
-      const room = rooms[roomCode];
-      if (!room) return;
-    
-      room.gameState = "LOBBY";
-      room.startPage = "";
-      room.targetPage = "";
-    
-      io.to(roomCode).emit('return_to_lobby');
-    });
 
     // HANDLE LEAVE GAME
     // socket.on('leave_game', (roomCode) => {

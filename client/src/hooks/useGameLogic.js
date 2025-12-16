@@ -42,6 +42,10 @@ export function useGameLogic() {
 
     }
 
+    const handleReturnToLobby = () => {
+        SocketService.returnToLobby(roomCode);
+    }
+
     return { 
         handleCopyLink,
         handleStartPoint,
@@ -50,5 +54,6 @@ export function useGameLogic() {
         handleStartGame,
         handleChangePage,
         handleSurrender,
+        handleReturnToLobby,
     }
 }

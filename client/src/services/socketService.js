@@ -53,6 +53,10 @@ export const SocketService = {
         socket.emit('player_moved', { roomCode, pageTitle: newPageTitle });
     },
 
+    returnToLobby: (roomCode) => {
+        socket.emit('navigate_to_lobby', roomCode);
+    },
+
     // Used to sync the player list manually if needed
     requestPlayerList: (roomCode) => {
         socket.emit('request_player_list', roomCode);

@@ -26,7 +26,8 @@ export default function GamePage() {
         handleEndPoint,
         handlePowerUpSettings,
         handleChangePage,
-        handleStartGame
+        handleStartGame,
+        handleReturnToLobby
     } = useGameLogic();
 
     return (
@@ -53,7 +54,7 @@ export default function GamePage() {
             }
 
             { gameState == "FINISHED" && 
-                <GameOverView players={players} winner={winner} />
+                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost}/>
             }
         </div>
     );
