@@ -48,6 +48,7 @@ export const GameProvider = ({ children }) => {
         })
 
         socket.on('update_player_list', (updatedPlayers) => {
+            console.log("update_player_list", updatedPlayers);
             setPlayers(updatedPlayers);
             const me = updatedPlayers.find(p => p.id === socket.id);
             if (me) {

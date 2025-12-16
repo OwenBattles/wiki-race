@@ -41,11 +41,17 @@ module.exports = (io) => {
           return;
       }
 
-      rooms[roomCode] = [];
+      rooms[roomCode] = {
+        players: [],
+        gameState: "LOBBY",
+        startPage: "",
+        targetPage: "",
+        powerUpsEnabled: false,
+      };
       
       // Join & Setup Host
       socket.join(roomCode);
-      const player = { 
+      rooms[roomCode].players.push({ 
         id: socket.id, 
         username: username, 
         isHost: true, 
@@ -54,14 +60,13 @@ module.exports = (io) => {
         wins: 0, 
         powerUps: {}, 
         currentPageTitle: "" 
-      };
-      rooms[roomCode].push(player);
+      });
       
       console.log(`User ${username} created room: ${roomCode}`);
       
       // Send the new code back to the creator so they can share it
       socket.emit('room_created', roomCode); 
-      io.to(roomCode).emit('update_player_list', rooms[roomCode]);
+      io.to(roomCode).emit('update_player_list', rooms[roomCode].players);
     });
 
     // CHECK IF LOBBY CODE IS VALID
@@ -85,7 +90,7 @@ module.exports = (io) => {
          return; 
       }
 
-      const isTaken = rooms[roomCode].some(player => player.username === username);
+      const isTaken = rooms[roomCode].players.some(player => player.username === username);
 
       if (isTaken) {
         socket.emit('username_check_result', { found: true, message: "Username already taken" });
@@ -101,7 +106,7 @@ module.exports = (io) => {
       
       if (room) {
         socket.join(roomCode);
-        const player = { 
+        rooms[roomCode].players.push({ 
           id: socket.id, 
           username: username, 
           isHost: false, 
@@ -110,13 +115,11 @@ module.exports = (io) => {
           wins: 0, 
           powerUps: {}, 
           currentPageTitle: "" 
-        };
+        });
 
         console.log(`${username} join room ${roomCode}`);
-
-        room.push(player);
         
-        io.to(roomCode).emit('update_player_list', room);
+        io.to(roomCode).emit('update_player_list', room.players);
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");
@@ -125,32 +128,32 @@ module.exports = (io) => {
 
     // SET THE STARTING PAGE
     socket.on('set_start_page', ({ roomCode, startPage }) => {
+      rooms[roomCode].startPage = startPage;
       io.to(roomCode).emit('start_page', startPage);
     })
 
     // SET THE TARGET PAGE
     socket.on('set_target_page', ({ roomCode, targetPage }) => {
+      rooms[roomCode].targetPage = targetPage;
       io.to(roomCode).emit('target_page', targetPage);
     })
 
     // START GAME
-    socket.on('start_game', async ({ roomCode, startPage, targetPage }) => {
+    socket.on('start_game', async ({ roomCode }) => {
       const room = rooms[roomCode];
-      if (!room) return;
-
-      console.log(`Starting game in ${roomCode}: ${startPage} -> ${targetPage}`);
+      console.log("room", room.startPage, room.targetPage);
+      if (!room || !room.startPage || !room.targetPage) return;
 
       try {
-          const startHtml = await fetchWikiHtml(startPage);
+          console.log("fetching start page", room.startPage);
+          const startHtml = await fetchWikiHtml(room.startPage);
 
-          room.targetPage = targetPage;
-          room.startPage = startPage;
           room.gameState = "RACING";
 
           io.to(roomCode).emit('game_started', {
               gameSettings: {
-                startPage,
-                targetPage,
+                startPage: room.startPage,
+                targetPage: room.targetPage,
               },
               initialHtml: startHtml
           });
@@ -166,12 +169,12 @@ module.exports = (io) => {
       const room = rooms[roomCode];
       if (!room) return;
 
-      const player = room.find(p => p.id === socket.id);
+      const player = room.players.find(p => p.id === socket.id);
       if (!player) return;
-      player.currentPage = pageTitle;
-      player.path.push(pageTitle);
+      player.currentPageTitle = pageTitle;
+      player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
 
-      io.to(roomCode).emit('update_player_list', room);
+      io.to(roomCode).emit('update_player_list', room.players);
 
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
@@ -185,7 +188,7 @@ module.exports = (io) => {
       const room = rooms[roomCode];
       if (room) {
           // Send the list ONLY to the person who asked
-          socket.emit('update_player_list', room);
+          socket.emit('update_player_list', room.players);
       }
   });
 
@@ -193,11 +196,11 @@ module.exports = (io) => {
     socket.on('game_won', (roomCode) => {
       const room = rooms[roomCode];
       if (room) {
-          const index = room.findIndex(p => p.id === socket.id);
-          const player = room[index].username;
+          const index = room.players.findIndex(p => p.id === socket.id);
+          const player = room.players[index].username;
           console.log(`${player} has won the game`)
           if (index !== -1) {
-              room.splice(index, 1);
+              room.players.splice(index, 1);
               io.to(roomCode).emit('game_over', { player });
           }
       }
@@ -220,7 +223,7 @@ module.exports = (io) => {
     //   // Reuse your disconnect logic here, or just:
     //   const room = rooms[roomCode];
     //   if (room) {
-    //       const index = room.findIndex(p => p.id === socket.id);
+    //       const index = room.players.findIndex(p => p.id === socket.id);
     //       if (index !== -1) {
     //           room.splice(index, 1);
     //           io.to(roomCode).emit('update_player_list', room);
@@ -235,23 +238,23 @@ module.exports = (io) => {
       for (const roomCode in rooms) {
         const room = rooms[roomCode];
         
-        const playerIndex = room.findIndex(p => p.id === socket.id);
+        const playerIndex = room.players.findIndex(p => p.id === socket.id);
         
         if (playerIndex !== -1) {
-          const player = room[playerIndex];
+          const player = room.players[playerIndex];
           
-          room.splice(playerIndex, 1);
+          room.players.splice(playerIndex, 1);
           
-          if (player.isHost && room.length > 0) {
-              room[0].isHost = true; // Promote the next person
-              io.to(roomCode).emit('update_player_list', room);
+          if (player.isHost && room.players.length > 0) {
+              room.players[0].isHost = true; // Promote the next person
+              io.to(roomCode).emit('update_player_list', room.players);
           }
 
-          if (room.length === 0) {
+          if (room.players.length === 0) {
               delete rooms[roomCode];
               console.log(`Room ${roomCode} deleted (empty)`);
           } else {
-              io.to(roomCode).emit('update_player_list', room);
+              io.to(roomCode).emit('update_player_list', room.players);
               console.log(`${player.username} left room ${roomCode}`);
           }
           

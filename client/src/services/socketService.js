@@ -46,8 +46,8 @@ export const SocketService = {
         socket.emit('set_target_page', { roomCode, targetPage });
     },
 
-    startGame: (roomCode, startPage, targetPage ) => {
-        socket.emit('start_game', { roomCode, startPage, targetPage });
+    startGame: (roomCode ) => {
+        socket.emit('start_game', { roomCode });
     },
 
     // Used when a player clicks a link in the WikiView
