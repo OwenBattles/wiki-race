@@ -14,6 +14,8 @@ export const GameProvider = ({ children }) => {
     const [players, setPlayers] = useState([]);
     
     // Game Flow State
+    const [startTime, setStartTime] = useState(null);
+    const [elapsedTime, setElapsedTime] = useState(0);
     const [powerUpsAllowed, setPowerUpsAllowed] = useState(false);
     const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
     const [gameSettings, setGameSettings] = useState({ 
@@ -81,6 +83,7 @@ export const GameProvider = ({ children }) => {
         })
 
         socket.on('game_started', ({ startPage, targetPage, initialHtml }) => {
+            setStartTime(Date.now());
             setGameSettings({ startPage, targetPage });
             setPath([{ title: startPage, html: initialHtml }]);
             setGameState("PLAYING");
@@ -110,6 +113,17 @@ export const GameProvider = ({ children }) => {
         };
     }, []);
 
+
+    useEffect(() => {
+        if (!startTime || gameState !== "PLAYING") return;
+        
+        const interval = setInterval(() => {
+            setElapsedTime(Date.now() - startTime);
+        }, 10);
+        
+        return () => clearInterval(interval);
+    }, [startTime, gameState]);
+
     const value = {
         // State
         username, setUsername,
@@ -123,7 +137,9 @@ export const GameProvider = ({ children }) => {
         path, setPath,
         currentPageTitle,
         currentPageHtml,
-        fetchPage, isLoading, winner
+        fetchPage, isLoading, winner,
+        startTime, setStartTime,
+        elapsedTime, setElapsedTime,
     };
 
     return (

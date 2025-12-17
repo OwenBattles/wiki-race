@@ -19,7 +19,9 @@ export default function GamePage() {
         gameSettings, setGameSettings,
         path, setPath,
         currentPageTitle, currentPageHtml,
-        htmlContent, currentTitle, fetchPage, isLoading, winner
+        htmlContent, currentTitle, fetchPage, isLoading, winner,
+        startTime, setStartTime,
+        elapsedTime, setElapsedTime,
     } = useContext(GameContext);
 
     const {
@@ -65,7 +67,7 @@ export default function GamePage() {
             
             { gameState == "PLAYING" &&
             <div>
-                <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} />
+                <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} elapsedTime={elapsedTime} />
                 <WikiView
                     htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}
