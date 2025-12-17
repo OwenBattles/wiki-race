@@ -1,27 +1,18 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GameProvider } from './contexts/GameContext'; // Change this!
+import { GameProvider } from './contexts/GameContext'; 
+import { NavigationBlocker } from './components/NavigationBlocker';
+import { RefreshRedirect } from './components/RefreshRedirect';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
 
 function App() {
-  useEffect(() => {
-    const disableNavigation = (e) => {
-      window.history.pushState(null, '', window.location.href);
-    };
-  
-    window.history.pushState(null, '', window.location.href);
-    
-    window.addEventListener('popstate', disableNavigation);
-  
-    return () => {
-      window.removeEventListener('popstate', disableNavigation);
-    };
-  }, []);
   
   return (
     <GameProvider> 
       <BrowserRouter>
+        <NavigationBlocker />
+        <RefreshRedirect />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/game" element={<GamePage />} />
