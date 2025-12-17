@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GameProvider } from './contexts/GameContext'; 
+import { NavigationBlocker } from './components/NavigationBlocker';
+import { RefreshRedirect } from './components/RefreshRedirect';
 import { NavigationBlocker } from './components/NavigationBlocker'
 import { RefreshRedirect } from './components/RefreshRedirect'
 import { GameProvider } from './contexts/GameContext'; 
