@@ -78,7 +78,7 @@ export default function GamePage() {
             }
 
             { gameState == "FINISHED" && 
-                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} elapsedTime={totalTime} />
+                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} totalTime={totalTime} />
             }
         </div>
     );

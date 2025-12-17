@@ -158,6 +158,10 @@ module.exports = (io) => {
               initialHtml: startHtml
           });
 
+          for (const player of room.players) {
+            player.path = [{ title: room.startPage }];
+          }
+
       } catch (error) {
           console.error("Start Game Error:", error);
           socket.emit('error', "Could not load the starting page.");
@@ -175,7 +179,7 @@ module.exports = (io) => {
       const win = pageTitle === room.targetPage;
       
       player.currentPageTitle = pageTitle;
-      player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
+      player.path.push({ title: pageTitle });
       
       if (win) {
           player.wins++;
