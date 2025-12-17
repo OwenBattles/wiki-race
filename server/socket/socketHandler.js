@@ -179,7 +179,7 @@ module.exports = (io) => {
       const win = pageTitle === room.targetPage;
       
       player.currentPageTitle = pageTitle;
-      player.path.push({ title: pageTitle });
+      player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
       
       if (win) {
           player.wins++;

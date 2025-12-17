@@ -34,6 +34,7 @@ export function useGameLogic() {
     }
 
     const handleChangePage = (pageTitle) => {
+        console.log("changing page to", pageTitle);
         fetchPage(pageTitle);
         SocketService.submitMove(roomCode, pageTitle, elapsedTime);
     }

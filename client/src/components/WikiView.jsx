@@ -6,6 +6,7 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
     const containerRef = useRef(null);
 
     const handleClick = (e) => {
+        console.log("handleClick");
         const anchor = e.target.closest('a');
         if (!anchor || !anchor.getAttribute('href')) return;
 
