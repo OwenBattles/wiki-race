@@ -49,8 +49,8 @@ export const SocketService = {
     },
 
     // Used when a player clicks a link in the WikiView
-    submitMove: (roomCode, newPageTitle) => {
-        socket.emit('player_moved', { roomCode, pageTitle: newPageTitle });
+    submitMove: (roomCode, newPageTitle, elapsedTime) => {
+        socket.emit('player_moved', { roomCode, pageTitle: newPageTitle, elapsedTime });
     },
 
     returnToLobby: (roomCode) => {

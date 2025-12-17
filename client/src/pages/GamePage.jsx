@@ -22,6 +22,7 @@ export default function GamePage() {
         htmlContent, currentTitle, fetchPage, isLoading, winner,
         startTime, setStartTime,
         elapsedTime, setElapsedTime,
+        totalTime, setTotalTime,
     } = useContext(GameContext);
 
     const {
@@ -77,7 +78,7 @@ export default function GamePage() {
             }
 
             { gameState == "FINISHED" && 
-                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost}/>
+                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} elapsedTime={totalTime} />
             }
         </div>
     );

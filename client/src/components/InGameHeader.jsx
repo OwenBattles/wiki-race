@@ -1,5 +1,5 @@
 export function InGameHeader( { targetPage, onSurrender, elapsedTime } ) {
-    const formatTime = (ms) => {
+    const formatTime = (ms) => {    
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;

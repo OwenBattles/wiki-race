@@ -46,6 +46,7 @@ module.exports = (io) => {
         gameState: "LOBBY",
         startPage: "",
         targetPage: "",
+        totalTime: 0,
         powerUpsEnabled: false,
       };
       
@@ -164,25 +165,31 @@ module.exports = (io) => {
     });
 
     // HANDLE PLAYER MOVED
-    socket.on('player_moved', async ({ roomCode, pageTitle }) => {
+    socket.on('player_moved', async ({ roomCode, pageTitle, elapsedTime }) => {
       const room = rooms[roomCode];
       if (!room) return;
-
+      
       const player = room.players.find(p => p.id === socket.id);
       if (!player) return;
-
+      
       const win = pageTitle === room.targetPage;
-
+      
       player.currentPageTitle = pageTitle;
       player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
-
-      if (win) player.wins++;
-
-      io.to(roomCode).emit('update_player_list', room.players);
+      
       if (win) {
-        io.to(roomCode).emit('game_won', { player });
-      } 
-
+          player.wins++;
+          room.totalTime = elapsedTime;
+          
+          // Broadcast to everyone
+          io.to(roomCode).emit('game_won', { 
+              player: player, 
+              totalTime: room.totalTime 
+          });
+      }
+      
+      io.to(roomCode).emit('update_player_list', room.players);
+      
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
 
@@ -194,6 +201,7 @@ module.exports = (io) => {
       room.gameState = "LOBBY";
       room.startPage = "";
       room.targetPage = "";
+      room.totalTime = 0;
     
       io.to(roomCode).emit('return_to_lobby');
     });

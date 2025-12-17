@@ -16,6 +16,7 @@ export const GameProvider = ({ children }) => {
     // Game Flow State
     const [startTime, setStartTime] = useState(null);
     const [elapsedTime, setElapsedTime] = useState(0);
+    const [totalTime, setTotalTime] = useState(0);
     const [powerUpsAllowed, setPowerUpsAllowed] = useState(false);
     const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
     const [gameSettings, setGameSettings] = useState({ 
@@ -89,9 +90,10 @@ export const GameProvider = ({ children }) => {
             setGameState("PLAYING");
         });
 
-        socket.on('game_won', ({ player }) => {
-            setGameState("FINISHED");
+        socket.on('game_won', ({ player, totalTime }) => {
             setWinner(player);
+            setTotalTime(totalTime);
+            setGameState("FINISHED");
         });
 
         socket.on('error', (msg) => {
@@ -140,6 +142,7 @@ export const GameProvider = ({ children }) => {
         fetchPage, isLoading, winner,
         startTime, setStartTime,
         elapsedTime, setElapsedTime,
+        totalTime, setTotalTime,
     };
 
     return (
