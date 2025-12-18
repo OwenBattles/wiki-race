@@ -9,7 +9,7 @@ const rooms = {};
 //   startPage: "", 
 //   targetPage: "",
 //   totalTime: 0,
-//   powerUpsEnabled: bool, // default false
+//   powerUps: {}, // default { swap: 0, scramble: 0, freeze: 0 }
 // }
 
 // player: { 
@@ -48,7 +48,11 @@ module.exports = (io) => {
         startPage: "",
         targetPage: "",
         totalTime: 0,
-        powerUpsEnabled: false,
+        powerUps: {
+          swap: 0,
+          scramble: 0,
+          freeze: 0
+        },
       };
       
       // Join & Setup Host
@@ -103,6 +107,7 @@ module.exports = (io) => {
   
       if (room) {
         socket.join(roomCode);
+
         rooms[roomCode].players.push({ 
           id: socket.id, 
           username: username, 
@@ -121,7 +126,7 @@ module.exports = (io) => {
         console.log(`${username} join room ${roomCode}`);
         
         io.to(roomCode).emit('update_player_list', room.players);
-        io.to(roomCode).emit('joined_room', room.startPage, room.targetPage, room.powerUpsEnabled);
+        io.to(roomCode).emit('joined_room', room.startPage, room.targetPage, room.powerUps);
         
       } else {
         socket.emit('error', "Cannot join lobby: Room not found");
@@ -197,13 +202,8 @@ module.exports = (io) => {
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
 
-    socket.on('set_power_ups_allowed', ({ roomCode, powerUpsAllowed }) => {
-      rooms[roomCode].powerUpsEnabled = powerUpsAllowed;
-      io.to(roomCode).emit('power_ups_allowed', powerUpsAllowed);
-    })
-
     socket.on('set_power_up', ({ roomCode, powerUpType, value }) => {
-      rooms[roomCode].players.find(p => p.id === socket.id).powerUps[powerUpType] = value;
+      rooms[roomCode].powerUps[powerUpType] = value;
       io.to(roomCode).emit('power_up_changed', { powerUpType, value });
     })
 

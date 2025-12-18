@@ -1,13 +1,13 @@
 import { TitleEndpoints } from "./TitleEndpoints";
 import { PowerUpSettings } from "./PowerUpSettings";
 
-export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, powerUpsAllowed, onStart, handlePowerUpSettings, handlePowerUpChange, powerUps }) {
+export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpSettings, handlePowerUpChange, powerUps }) {
     const canStartGame = gameSettings.startPage && gameSettings.targetPage;
 
 
     return (
         <div>
-            <PowerUpSettings isHost={isHost} powerUpsAllowed={powerUpsAllowed} powerUps={powerUps} onPowerUpChange={handlePowerUpChange}/>
+            <PowerUpSettings isHost={isHost} powerUps={powerUps} onPowerUpChange={handlePowerUpChange}/>
             <TitleEndpoints 
                 isHost={isHost} 
                 handleStartSelect={handleStartSelect} 

@@ -16,7 +16,6 @@ export const GameProvider = ({ children }) => {
     // Game Flow State
     const [startTime, setStartTime] = useState(null);
     const [totalTime, setTotalTime] = useState(0);
-    const [powerUpsAllowed, setPowerUpsAllowed] = useState(false);
     const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
     const [gameSettings, setGameSettings] = useState({ 
         startPage: "", 
@@ -40,10 +39,10 @@ export const GameProvider = ({ children }) => {
             if (!found) setValidRoomCode(false);
         })
 
-        socket.on('joined_room', (startPage, targetPage, powerUpsEnabled) => {
-            console.log("joined_room", startPage, targetPage, powerUpsEnabled);
+        socket.on('joined_room', (startPage, targetPage, powerUps) => {
+            console.log("joined_room", startPage, targetPage);
             setGameSettings({ startPage, targetPage });
-            setPowerUpsAllowed(powerUpsEnabled);
+            setPowerUps(powerUps);
         })
 
         socket.on('return_to_lobby', () => {
@@ -81,11 +80,6 @@ export const GameProvider = ({ children }) => {
                 ...prev,
                 targetPage: targetPage
             }));
-        })
-
-        socket.on('power_ups_allowed', (powerUpsAllowed) => {
-            console.log("power ups allowed", powerUpsAllowed);
-            setPowerUpsAllowed(powerUpsAllowed);
         })
 
         socket.on('power_up_changed', ({ powerUpType, value }) => {
@@ -139,7 +133,6 @@ export const GameProvider = ({ children }) => {
         validRoomCode, setValidRoomCode,
         isHost, setIsHost,
         players, setPlayers,
-        powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
         gameSettings, setGameSettings,
         path, setPath,

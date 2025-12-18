@@ -7,6 +7,7 @@ import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
+import { InGameSidebar } from '../components/InGameSidebar';
 
 export default function GamePage() {
     const { 
@@ -14,7 +15,6 @@ export default function GamePage() {
         roomCode,
         isHost,
         players, setPlayers,
-        powerUpsAllowed, setPowerUpsAllowed,
         gameState, setGameState,
         gameSettings, setGameSettings,
         path, setPath,
@@ -61,7 +61,6 @@ export default function GamePage() {
                     handleStartSelect={handleStartPoint}
                     handleEndSelect={handleEndPoint}
                     gameSettings={gameSettings}
-                    powerUpsAllowed={powerUpsAllowed}
                     onStart={handleStartGame}
                     handlePowerUpSettings={handlePowerUpSettings}
                     handlePowerUpChange={handlePowerUpChange}   
@@ -73,6 +72,7 @@ export default function GamePage() {
             { gameState == "PLAYING" &&
             <div>
                 <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} />
+                <InGameSidebar username={username} players={players} powerUps={powerUps} />
                 <WikiView
                     htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}
