@@ -151,6 +151,10 @@ module.exports = (io) => {
       console.log("room", room.startPage, room.targetPage);
       if (!room || !room.startPage || !room.targetPage) return;
 
+      for (const player of room.players) {
+        player.powerUps = room.powerUps;
+      }
+
       try {
           console.log("fetching start page", room.startPage);
           const startHtml = await fetchWikiHtml(room.startPage);
@@ -205,6 +209,15 @@ module.exports = (io) => {
     socket.on('set_power_up', ({ roomCode, powerUpType, value }) => {
       rooms[roomCode].powerUps[powerUpType] = value;
       io.to(roomCode).emit('power_up_changed', { powerUpType, value });
+    })
+
+    socket.on('use_power_up', ({ roomCode, powerUpType }) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+      const player = room.players.find(p => p.id === socket.id);
+      if (!player) return;
+      player.powerUps[powerUpType]--;
+      io.to(roomCode).emit('power_up_used', { powerUpType });
     })
 
     // HANDLE RETURN TO LOBBY

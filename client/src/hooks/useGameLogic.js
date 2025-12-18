@@ -29,6 +29,10 @@ export function useGameLogic() {
         SocketService.setPowerUp(roomCode, powerUpType, value);
     }
 
+    const handleUsePowerUp = (powerUpType) => {
+        SocketService.usePowerUp(roomCode, powerUpType);
+    }
+
     const handleStartGame = () => {
         if (!(gameSettings.startPage && gameSettings.targetPage)) {
             alert("Enter a starting page and a target page")
@@ -61,5 +65,6 @@ export function useGameLogic() {
         handleSurrender,
         handleReturnToLobby,
         handlePowerUpChange,
+        handleUsePowerUp,
     }
 }

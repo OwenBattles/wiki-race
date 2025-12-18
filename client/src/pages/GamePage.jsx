@@ -33,6 +33,7 @@ export default function GamePage() {
         handleReturnToLobby,
         handleSurrender,
         handlePowerUpChange,
+        handleUsePowerUp,
     } = useGameLogic();
 
 
@@ -72,7 +73,7 @@ export default function GamePage() {
             { gameState == "PLAYING" &&
             <div>
                 <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} />
-                <InGameSidebar username={username} players={players} powerUps={powerUps} />
+                <InGameSidebar username={username} players={players} powerUps={powerUps} handleUsePowerUp={handleUsePowerUp} />
                 <WikiView
                     htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}
