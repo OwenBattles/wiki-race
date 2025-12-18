@@ -5,7 +5,7 @@ import { SocketService } from "../services/socketService";
 import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { roomCode, setPowerUpsAllowed, gameSettings, currentPageTitle, fetchPage, isLoading, error, startTime } = useContext(GameContext);
+    const { roomCode, powerUpsAllowed, gameSettings, currentPageTitle, fetchPage, isLoading, error, startTime } = useContext(GameContext);
 
 
     // will add this later most likely
@@ -22,7 +22,11 @@ export function useGameLogic() {
     }
 
     const handlePowerUpSettings = () => {
-        setPowerUpsAllowed((prev) => !prev);
+        SocketService.setPowerUpsAllowed(roomCode, !powerUpsAllowed)
+    }
+
+    const handlePowerUpChange = (powerUpType, value) => {
+        SocketService.setPowerUp(roomCode, powerUpType, value);
     }
 
     const handleStartGame = () => {
@@ -56,5 +60,6 @@ export function useGameLogic() {
         handleChangePage,
         handleSurrender,
         handleReturnToLobby,
+        handlePowerUpChange,
     }
 }

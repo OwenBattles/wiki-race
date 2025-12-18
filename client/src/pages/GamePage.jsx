@@ -21,6 +21,7 @@ export default function GamePage() {
         currentPageTitle, currentPageHtml,
         htmlContent, currentTitle, fetchPage, isLoading, winner,
         totalTime, setTotalTime,
+        powerUps, setPowerUps,
     } = useContext(GameContext);
 
     const {
@@ -30,8 +31,10 @@ export default function GamePage() {
         handleChangePage,
         handleStartGame,
         handleReturnToLobby,
-        handleSurrender
+        handleSurrender,
+        handlePowerUpChange,
     } = useGameLogic();
+
 
     useEffect(() => {
         const disableFind = (e) => {
@@ -60,6 +63,9 @@ export default function GamePage() {
                     gameSettings={gameSettings}
                     powerUpsAllowed={powerUpsAllowed}
                     onStart={handleStartGame}
+                    handlePowerUpSettings={handlePowerUpSettings}
+                    handlePowerUpChange={handlePowerUpChange}   
+                    powerUps={powerUps}
                 />
             </div>       
             }

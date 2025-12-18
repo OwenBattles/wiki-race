@@ -26,6 +26,7 @@ export const GameProvider = ({ children }) => {
     const [path, setPath] = useState([]);
     const currentPageTitle = path[path.length - 1]?.title || "";
     const currentPageHtml = path[path.length - 1]?.html || "";
+    const [powerUps, setPowerUps] = useState({ swap: 0, scramble: 0, freeze: 0 });
 
     const { fetchPage, isLoading } = useWikiPage({ setPath });
 
@@ -58,7 +59,6 @@ export const GameProvider = ({ children }) => {
                 setValidUsername(true);
                 return;
             }
-            alert(message);
         })
 
         socket.on('update_player_list', (updatedPlayers) => {
@@ -83,6 +83,19 @@ export const GameProvider = ({ children }) => {
             }));
         })
 
+        socket.on('power_ups_allowed', (powerUpsAllowed) => {
+            console.log("power ups allowed", powerUpsAllowed);
+            setPowerUpsAllowed(powerUpsAllowed);
+        })
+
+        socket.on('power_up_changed', ({ powerUpType, value }) => {
+            console.log("power up changed", powerUpType, value);
+            setPowerUps(prev => ({
+                ...prev,
+                [powerUpType]: value
+            }));
+        })
+
         socket.on('game_started', ({ startPage, targetPage, initialHtml }) => {
             setStartTime(Date.now());
             setGameSettings({ startPage, targetPage });
@@ -104,6 +117,8 @@ export const GameProvider = ({ children }) => {
             socket.off('room_created');
             socket.off('found_room');
             socket.off('joined_room');
+            socket.off('power_ups_allowed');
+            socket.off('power_up_changed');
             socket.off('return_to_lobby');
             socket.off('username_check_result');
             socket.off('update_player_list');
@@ -133,6 +148,7 @@ export const GameProvider = ({ children }) => {
         fetchPage, isLoading, winner,
         startTime, setStartTime,
         totalTime, setTotalTime,
+        powerUps, setPowerUps,
     };
 
     return (

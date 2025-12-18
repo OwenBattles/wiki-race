@@ -54,6 +54,14 @@ export const SocketService = {
         socket.emit('player_moved', { roomCode, pageTitle: newPageTitle, elapsedTime });
     },
 
+    setPowerUpsAllowed: (roomCode, powerUpsAllowed) => {
+        socket.emit('set_power_ups_allowed', { roomCode, powerUpsAllowed });
+    },
+
+    setPowerUp: (roomCode, powerUpType, value) => {
+        socket.emit('set_power_up', { roomCode, powerUpType, value });
+    },
+
     returnToLobby: (roomCode) => {
         socket.emit('navigate_to_lobby', roomCode);
     },

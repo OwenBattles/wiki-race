@@ -60,7 +60,11 @@ module.exports = (io) => {
         isPlaying: false, 
         path: [], 
         wins: 0, 
-        powerUps: {}, 
+        powerUps: {
+          swap: 0,
+          scramble: 0,
+          freeze: 0
+        }, 
         currentPageTitle: "" 
       });
       
@@ -106,7 +110,11 @@ module.exports = (io) => {
           isPlaying: false, 
           path: [], 
           wins: 0, 
-          powerUps: {}, 
+          powerUps: {
+            swap: 0,
+            scramble: 0,
+            freeze: 0
+          }, 
           currentPageTitle: "" 
         });
 
@@ -188,6 +196,16 @@ module.exports = (io) => {
       
       console.log(`Player moved to ${pageTitle} in ${roomCode}`);
     });
+
+    socket.on('set_power_ups_allowed', ({ roomCode, powerUpsAllowed }) => {
+      rooms[roomCode].powerUpsEnabled = powerUpsAllowed;
+      io.to(roomCode).emit('power_ups_allowed', powerUpsAllowed);
+    })
+
+    socket.on('set_power_up', ({ roomCode, powerUpType, value }) => {
+      rooms[roomCode].players.find(p => p.id === socket.id).powerUps[powerUpType] = value;
+      io.to(roomCode).emit('power_up_changed', { powerUpType, value });
+    })
 
     // HANDLE RETURN TO LOBBY
     socket.on('navigate_to_lobby', (roomCode) => {
