@@ -19,7 +19,8 @@ export const SocketService = {
     },
 
     validateUsername: (roomCode, username) => {
-        socket.emit('check_username', { roomCode, username })
+        const response = socket.emit('check_username', { roomCode, username });
+        return response;
     },
 
     joinRoom: (roomCode, username) => {

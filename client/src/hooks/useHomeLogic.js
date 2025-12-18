@@ -25,7 +25,7 @@ export function useHomeLogic() {
         SocketService.findRoom(code);
     }
 
-    const handleJoinRoom = (code, username) => {
+    const handleJoinRoom =  (code, username) => {
         setUsername(username);
         setIsHost(false);
         SocketService.joinRoom(code, username);

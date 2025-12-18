@@ -8,14 +8,13 @@ export const GameContext = createContext();
 export const GameProvider = ({ children }) => {
     const [username, setUsername] = useState("");
     const [roomCode, setRoomCode] = useState("");
-    const [validRoomCode, setValidRoomCode] = useState(false);
     const [validUsername, setValidUsername] = useState(false);
+    const [validRoomCode, setValidRoomCode] = useState(false);
     const [isHost, setIsHost] = useState(false);
     const [players, setPlayers] = useState([]);
     
     // Game Flow State
     const [startTime, setStartTime] = useState(null);
-    const [elapsedTime, setElapsedTime] = useState(0);
     const [totalTime, setTotalTime] = useState(0);
     const [powerUpsAllowed, setPowerUpsAllowed] = useState(false);
     const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
@@ -51,14 +50,15 @@ export const GameProvider = ({ children }) => {
             setGameSettings({ startPage: "", targetPage: "" });
         })
 
-        socket.on('username_check_result', ({ found, message }) => {
-            if (!found) {
-                setValidUsername(true);
+        socket.on('username_taken', ({ found, message }) => {
+            if (found) {
+                setValidUsername(false);
                 return;
             } else {
-                setValidUsername(false);
-                alert(message);
+                setValidUsername(true);
+                return;
             }
+            alert(message);
         })
 
         socket.on('update_player_list', (updatedPlayers) => {
@@ -116,20 +116,11 @@ export const GameProvider = ({ children }) => {
     }, []);
 
 
-    useEffect(() => {
-        if (!startTime || gameState !== "PLAYING") return;
-        
-        const interval = setInterval(() => {
-            setElapsedTime(Date.now() - startTime);
-        }, 10);
-        
-        return () => clearInterval(interval);
-    }, [startTime, gameState]);
-
     const value = {
         // State
         username, setUsername,
         roomCode, setRoomCode,
+        validUsername, setValidUsername,
         validRoomCode, setValidRoomCode,
         isHost, setIsHost,
         players, setPlayers,
@@ -141,7 +132,6 @@ export const GameProvider = ({ children }) => {
         currentPageHtml,
         fetchPage, isLoading, winner,
         startTime, setStartTime,
-        elapsedTime, setElapsedTime,
         totalTime, setTotalTime,
     };
 

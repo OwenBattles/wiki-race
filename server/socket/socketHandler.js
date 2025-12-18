@@ -8,6 +8,7 @@ const rooms = {};
 //   gameState: "", // LOBBY, PLAYING, FINISHED
 //   startPage: "", 
 //   targetPage: "",
+//   totalTime: 0,
 //   powerUpsEnabled: bool, // default false
 // }
 
@@ -19,7 +20,7 @@ const rooms = {};
 //   path : [], 
 //   wins: int, 
 //   powerUps: {}
-//   currentPage: ""
+//   currentPageTitle : ""
 // }
 
 // powerUps : {
@@ -35,7 +36,7 @@ module.exports = (io) => {
     socket.on('create_room', ({ username }) => {
       const roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
       
-      // Safety check: rare collision
+      // check for room code collision
       if (rooms[roomCode]) {
           socket.emit('error', 'Room generation failed, try again');
           return;
@@ -79,24 +80,15 @@ module.exports = (io) => {
       }
     });
 
-    // NOT BEING USED FOR NOW
-    // CHECK IF USERNAME IS UNIQUE
-    socket.on('check_username', (roomCode, username) => {
-      if (!rooms[roomCode]) {
-         return; 
-      }
+    socket.on('check_username', ({ roomCode, username }) => {
+      const room = rooms[roomCode];
+      if (!room) return;
 
-      if (username.length < 1) {
-         socket.emit('username_check_result', { found: true, message: "Username is too short" });
-         return; 
-      }
-
-      const isTaken = rooms[roomCode].players.some(player => player.username === username);
-
+      const isTaken = room.players.some(player => player.username === username);
       if (isTaken) {
-        socket.emit('username_check_result', { found: true, message: "Username already taken" });
+        socket.emit('username_taken', { found: true, message: "Username already taken" });
       } else {
-        socket.emit('username_check_result', { found: false, message: "Username available" });
+        socket.emit('username_taken', { found: false, message: "Username available" });
       }
     });
 
@@ -104,7 +96,7 @@ module.exports = (io) => {
     socket.on('join_room', ({ roomCode, username }) => {
       console.log("made it to backend")
       const room = rooms[roomCode];
-      
+  
       if (room) {
         socket.join(roomCode);
         rooms[roomCode].players.push({ 

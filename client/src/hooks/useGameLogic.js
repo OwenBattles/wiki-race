@@ -5,7 +5,7 @@ import { SocketService } from "../services/socketService";
 import { useWikiPage } from "./useWikiPage";
 
 export function useGameLogic() {
-    const { roomCode, setPowerUpsAllowed, gameSettings, currentPageTitle, fetchPage, isLoading, error, elapsedTime } = useContext(GameContext);
+    const { roomCode, setPowerUpsAllowed, gameSettings, currentPageTitle, fetchPage, isLoading, error, startTime } = useContext(GameContext);
 
 
     // will add this later most likely
@@ -36,7 +36,7 @@ export function useGameLogic() {
     const handleChangePage = (pageTitle) => {
         console.log("changing page to", pageTitle);
         fetchPage(pageTitle);
-        SocketService.submitMove(roomCode, pageTitle, elapsedTime);
+        SocketService.submitMove(roomCode, pageTitle, Date.now() - startTime);
     }
 
     const handleSurrender = () => {
