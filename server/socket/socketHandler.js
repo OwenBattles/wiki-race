@@ -217,6 +217,7 @@ module.exports = (io) => {
       const player = room.players.find(p => p.id === socket.id);
       if (!player) return;
       player.powerUps[powerUpType]--;
+      socket.emit('power_up_changed', { powerUpType, value: player.powerUps[powerUpType] });
 
       // handle backend logic for the power up
       if (powerUpType === "swap") {
