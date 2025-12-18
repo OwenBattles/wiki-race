@@ -168,7 +168,7 @@ module.exports = (io) => {
           });
 
           for (const player of room.players) {
-            player.path = [{ title: room.startPage }];
+            player.path = [{ title: room.startPage, html: startHtml }];
           }
 
       } catch (error) {
@@ -211,13 +211,43 @@ module.exports = (io) => {
       io.to(roomCode).emit('power_up_changed', { powerUpType, value });
     })
 
-    socket.on('use_power_up', ({ roomCode, powerUpType }) => {
+    socket.on('use_power_up', async ({ roomCode, powerUpType, victimId }) => {
       const room = rooms[roomCode];
       if (!room) return;
       const player = room.players.find(p => p.id === socket.id);
       if (!player) return;
       player.powerUps[powerUpType]--;
-      io.to(roomCode).emit('power_up_used', { powerUpType });
+
+      // handle backend logic for the power up
+      if (powerUpType === "swap") {
+        const victimPlayer = room.players.find(p => p.id === victimId);
+        if (!victimPlayer) return;
+        console.log("swapping", player.currentPageTitle, victimPlayer.currentPageTitle);
+        [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
+        try {
+          const playerHtml = await fetchWikiHtml(player.currentPageTitle);
+          const victimHtml = await fetchWikiHtml(victimPlayer.currentPageTitle);
+          player.path.push({ title: player.currentPageTitle, html: playerHtml });
+          victimPlayer.path.push({ title: victimPlayer.currentPageTitle, html: victimHtml });
+          
+          // Emit dedicated swap event to affected players with their new page data
+          io.to(player.id).emit('pages_swapped', { 
+            newPageTitle: player.currentPageTitle, 
+            newPageHtml: playerHtml 
+          });
+          io.to(victimPlayer.id).emit('pages_swapped', { 
+            newPageTitle: victimPlayer.currentPageTitle, 
+            newPageHtml: victimHtml 
+          });
+          
+        } catch (error) {
+          console.error("Swap power-up error:", error);
+          socket.emit('error', "Could not load swapped pages.");
+          // Revert the swap on error
+          [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
+          player.powerUps[powerUpType]++; // Refund the power-up
+        }
+      }
     })
 
     // HANDLE RETURN TO LOBBY

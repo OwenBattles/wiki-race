@@ -58,8 +58,8 @@ export const SocketService = {
         socket.emit('set_power_up', { roomCode, powerUpType, value });
     },
 
-    usePowerUp: (roomCode, powerUpType) => {
-        socket.emit('use_power_up', { roomCode, powerUpType });
+    usePowerUp: (roomCode, powerUpType, victimId) => {
+        socket.emit('use_power_up', { roomCode, powerUpType, victimId });
     },
 
     returnToLobby: (roomCode) => {

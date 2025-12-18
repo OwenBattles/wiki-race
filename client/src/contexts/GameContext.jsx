@@ -68,6 +68,10 @@ export const GameProvider = ({ children }) => {
             }
         });
 
+        socket.on('pages_swapped', ({ newPageTitle, newPageHtml }) => {
+            setPath(prev => [...prev, { title: newPageTitle, html: newPageHtml }]);
+        });
+
         socket.on('start_page', (startPage) => {
             setGameSettings(prev => ({
                 ...prev,
@@ -111,11 +115,11 @@ export const GameProvider = ({ children }) => {
             socket.off('room_created');
             socket.off('found_room');
             socket.off('joined_room');
-            socket.off('power_ups_allowed');
             socket.off('power_up_changed');
             socket.off('return_to_lobby');
             socket.off('username_check_result');
             socket.off('update_player_list');
+            socket.off('pages_swapped');
             socket.off('start_page');
             socket.off('target_page')
             socket.off('game_started');

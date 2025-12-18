@@ -29,8 +29,9 @@ export function useGameLogic() {
         SocketService.setPowerUp(roomCode, powerUpType, value);
     }
 
-    const handleUsePowerUp = (powerUpType) => {
-        SocketService.usePowerUp(roomCode, powerUpType);
+    const handleUsePowerUp = (powerUpType, victimId) => {
+        console.log("using power up", powerUpType, victimId);
+        SocketService.usePowerUp(roomCode, powerUpType, victimId);
     }
 
     const handleStartGame = () => {
