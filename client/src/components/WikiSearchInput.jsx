@@ -4,7 +4,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
     const [query, setQuery] = useState(value || "");
     const [suggestions, setSuggestions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-    const isSelecting = useRef(false); // Track if we're selecting
+    const isSelecting = useRef(false);
 
     useEffect(() => {
         setQuery(value || "");
@@ -12,28 +12,30 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
 
     useEffect(() => {
         if (disabled || isSelecting.current) {
-            isSelecting.current = false; // Reset flag
+            isSelecting.current = false;
             return;
         }
-        
+
         const delayDebounceFn = setTimeout(async () => {
             if (query.length < 2) {
                 setSuggestions([]);
                 setIsOpen(false);
                 return;
             }
-            
+
             try {
-                const url = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${query}&limit=5&namespace=0&format=json&origin=*`;
+                const url = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&namespace=0&format=json&origin=*&redirects=resolve`;
                 const response = await fetch(url);
                 const data = await response.json();
+                
+                // data[1] contains the final titles (after redirects)
                 setSuggestions(data[1] || []);
                 setIsOpen(true);
             } catch (error) {
                 console.error("Wiki search failed:", error);
             }
         }, 500);
-        
+
         return () => clearTimeout(delayDebounceFn);
     }, [query, disabled]);
 
@@ -45,13 +47,18 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
 
     const handleSelect = (title) => {
         if (disabled) return;
-        title = title.trim().replace(/_/g, ' ').replace(/\s+/g, ' ');
-        isSelecting.current = true; 
-        setQuery(title);
+        
+        const normalizedTitle = title
+            .trim()
+            .replace(/_/g, ' ')
+            .replace(/\s+/g, ' ');
+        
+        isSelecting.current = true;
+        setQuery(normalizedTitle);
         setSuggestions([]);
         setIsOpen(false);
-        console.log("title", title);
-        onSelect(title);
+        
+        onSelect(normalizedTitle);
     };
 
     return (
@@ -59,7 +66,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
             <input
                 type="text"
                 placeholder={placeholder}
-                value={query}  
+                value={query}
                 disabled={disabled}
                 onChange={(e) => setQuery(e.target.value)}
                 onClick={handleClick}
