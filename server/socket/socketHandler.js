@@ -260,6 +260,11 @@ module.exports = (io) => {
       room.startPage = "";
       room.targetPage = "";
       room.totalTime = 0;
+      room.powerUps = {
+        swap: 0,
+        scramble: 0,
+        freeze: 0
+      };
     
       io.to(roomCode).emit('return_to_lobby');
     });
