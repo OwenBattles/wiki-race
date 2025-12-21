@@ -27,8 +27,8 @@ export function Timer() {
     const timeToShow = gameState === "FINISHED" ? finalTime : displayTime;
 
     return (
-        <div className="text-2xl font-mono font-bold">
+        <span>
             {formatTime(timeToShow)}
-        </div>
+        </span>
     );
 }

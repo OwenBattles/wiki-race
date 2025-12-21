@@ -1,0 +1,60 @@
+/* In-Game Header */
+.ingame-header {
+    background: #ffffff;
+    border-bottom: 1px solid #d4d4d4;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.ingame-header-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.ingame-header-destination {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: 0.01em;
+}
+
+.ingame-header-destination-label {
+    color: #6b6b6b;
+    font-style: italic;
+    margin-right: 0.5rem;
+}
+
+.ingame-header-timer {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: 0.05em;
+}
+
+.ingame-header-surrender {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border-radius: 0.375rem;
+    border: 1.5px solid #d4d4d4;
+    background: #ffffff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+}
+
+.ingame-header-surrender:hover {
+    background: #F9F7F2;
+    border-color: #B22222;
+    color: #B22222;
+}
+
