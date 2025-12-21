@@ -1,10 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { GameContext } from '../contexts/GameContext';
 import { useHomeLogic } from '../hooks/useHomeLogic'; 
 
 import { UsernameInput } from "../components/UsernameInput";
 import { JoinLobby } from "../components/JoinLobby";
-import { CreateLobby } from "../components/CreateLobby"; 
+import { CreateLobby } from "../components/CreateLobby";
+import { Typewriter } from "../components/Typewriter";
 import '../styles/HomePage.css';
 
 export default function HomePage() {
@@ -16,6 +17,14 @@ export default function HomePage() {
     } = useContext(GameContext);
 
     const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
+
+    // Lock page scrolling
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
 
     const handleJoin = () => {
         if (!usernameInput) {
@@ -38,7 +47,9 @@ export default function HomePage() {
             <div className="home-container">
                 {/* Header */}
                 <div className="home-header">
-                    <h1 className="home-title">Wiki Race</h1>
+                    <h1 className="home-title">
+                        <Typewriter text="Wiki Race" speed={120} />
+                    </h1>
                     <p className="home-subtitle">Navigate from one Wikipedia page to another</p>
                 </div>
 

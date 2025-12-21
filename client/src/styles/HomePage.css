@@ -1,12 +1,18 @@
 /* Home Page Layout */
 .home-page {
-    min-height: 100vh;
+    height: 100vh;
     background: #F9F7F2;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 4rem 2rem;
     font-family: Georgia, "Times New Roman", "Baskerville", "Caslon", serif;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .home-container {

@@ -1,0 +1,14 @@
+.typewriter-cursor {
+    animation: blink 1s infinite;
+    color: #1a1a1a;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
