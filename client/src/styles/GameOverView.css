@@ -1,0 +1,169 @@
+/* Game Over View */
+.game-over-container {
+    min-height: 100vh;
+    background: #F9F7F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.game-over-content {
+    width: 100%;
+    max-width: 50em;
+}
+
+.game-over-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.game-over-title {
+    font-size: 3rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0 0 2rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.game-over-winner {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+}
+
+.game-over-winner-label {
+    color: #6b6b6b;
+    font-style: italic;
+    margin-right: 0.5rem;
+}
+
+.game-over-winner-name {
+    color: #B22222;
+    font-weight: 400;
+}
+
+.game-over-time {
+    font-size: 1.25rem;
+    color: #1a1a1a;
+}
+
+.game-over-time-label {
+    color: #6b6b6b;
+    font-style: italic;
+    margin-right: 0.5rem;
+}
+
+.game-over-time-value {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+}
+
+.game-over-players {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.game-over-player-card {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.game-over-player-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.game-over-player-name {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: 0.01em;
+}
+
+.game-over-player-host {
+    font-size: 0.875rem;
+    color: #6b6b6b;
+    font-style: italic;
+}
+
+.game-over-player-path {
+    padding-left: 0.5rem;
+}
+
+.game-over-path-label {
+    font-size: 0.875rem;
+    color: #6b6b6b;
+    margin-bottom: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.game-over-path-list {
+    list-style: decimal;
+    margin: 0.5rem 0 0 1.5rem;
+    padding: 0;
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    color: #1a1a1a;
+}
+
+.game-over-path-item {
+    margin: 0.25rem 0;
+    padding-left: 0.5rem;
+}
+
+.game-over-path-empty {
+    font-size: 0.875rem;
+    color: #9b9b9b;
+    font-style: italic;
+    padding-left: 0.5rem;
+}
+
+.game-over-actions {
+    text-align: center;
+}
+
+.game-over-return-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border-radius: 0.375rem;
+    border: 1.5px solid #d4d4d4;
+    background: #ffffff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+}
+
+.game-over-return-button:hover {
+    background: #F9F7F2;
+    border-color: #B22222;
+    color: #B22222;
+}
+
+.game-over-waiting {
+    color: #6b6b6b;
+    font-size: 1rem;
+    font-style: italic;
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+}
+

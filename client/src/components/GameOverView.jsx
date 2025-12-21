@@ -1,5 +1,6 @@
+import '../styles/GameOverView.css';
+
 export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTime }) {
-    // refactor this eventually
     const formatTime = (ms) => {    
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
@@ -8,37 +9,60 @@ export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTi
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    console.log("players", players);
-
     return (
-        <div>
-            <h1>Game Over</h1>
-            <h2>Winner: {winner.username}</h2>
-            <h2>Time Elapsed: {formatTime(totalTime)}</h2>
-            {players.map((player) => (
-            <div key={player.id} className="mb-4 p-4 border rounded">
-                <div className="font-bold">
-                {player.username} {player.isHost && "(Host)"}
+        <div className="game-over-container">
+            <div className="game-over-content">
+                <div className="game-over-header">
+                    <h1 className="game-over-title">Game Over</h1>
+                    <div className="game-over-winner">
+                        <span className="game-over-winner-label">Winner:</span>
+                        <span className="game-over-winner-name">{winner.username}</span>
+                    </div>
+                    <div className="game-over-time">
+                        <span className="game-over-time-label">Time Elapsed:</span>
+                        <span className="game-over-time-value">{formatTime(totalTime)}</span>
+                    </div>
                 </div>
-                <div className="ml-4 mt-2">
-                <div className="text-sm text-gray-600">Path:</div>
-                {player.path && player.path.length > 0 ? (
-                    <ol className="list-decimal ml-6">
-                    {player.path.map((page, index) => (
-                        <li key={index}>{page.title}</li>
+
+                <div className="game-over-players">
+                    {players.map((player) => (
+                        <div key={player.id} className="game-over-player-card">
+                            <div className="game-over-player-header">
+                                <span className="game-over-player-name">
+                                    {player.username}
+                                </span>
+                                {player.isHost && (
+                                    <span className="game-over-player-host">(Host)</span>
+                                )}
+                            </div>
+                            <div className="game-over-player-path">
+                                <div className="game-over-path-label">Path:</div>
+                                {player.path && player.path.length > 0 ? (
+                                    <ol className="game-over-path-list">
+                                        {player.path.map((page, index) => (
+                                            <li key={index} className="game-over-path-item">
+                                                {page.title}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                ) : (
+                                    <div className="game-over-path-empty">No pages visited yet</div>
+                                )}
+                            </div>
+                        </div>
                     ))}
-                    </ol>
-                ) : (
-                    <div className="text-sm text-gray-400 ml-2">No pages visited yet</div>
-                )}
+                </div>
+
+                <div className="game-over-actions">
+                    {isHost ? (
+                        <button className="game-over-return-button" onClick={onReturnToLobby}>
+                            Return to Lobby
+                        </button>
+                    ) : (
+                        <p className="game-over-waiting">Waiting for Host...</p>
+                    )}
                 </div>
             </div>
-            ))}
-            {isHost ? (
-                <button onClick={onReturnToLobby}>Return to Lobby</button>
-            ) : (
-                <p>Waiting for Host...</p>
-            )}
         </div>   
     )
 }
