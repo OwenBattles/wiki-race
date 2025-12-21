@@ -1,0 +1,71 @@
+/* Loading Animation - Literary Style */
+.loading-container {
+    min-height: 100vh;
+    background: #F9F7F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.wiki-loading-container {
+    width: 100%;
+    min-height: calc(100vh - 88px);
+    background: #F9F7F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.125rem;
+    color: #4a4a4a;
+    margin-bottom: 2rem;
+    letter-spacing: 0.02em;
+    font-style: italic;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: #B22222;
+    border-radius: 50%;
+    animation: loadingPulse 1.4s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.loading-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loadingPulse {
+    0%, 80%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+

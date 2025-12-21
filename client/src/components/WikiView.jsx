@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import "../styles/WikiView.css"
+import "../styles/LoadingAnimation.css"
 
 export function WikiView({ htmlContent, onNavigate, isLoading }) {
     const containerRef = useRef(null);
@@ -25,8 +26,15 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
 
     if (isLoading) {
         return (
-            <div>
-                Loading next article...
+            <div className="wiki-loading-container">
+                <div className="loading-content">
+                    <p className="loading-text">Loading next article...</p>
+                    <div className="loading-dots">
+                        <div className="loading-dot"></div>
+                        <div className="loading-dot"></div>
+                        <div className="loading-dot"></div>
+                    </div>
+                </div>
             </div>
         );
     }
