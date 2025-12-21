@@ -10,7 +10,8 @@ export function useWikiPage({ setPath }) {
         
         try {
             // Backend automatically handles redirects with redirects: 1
-            const res = await fetch(`http://localhost:3000/api/wiki/${encodeURIComponent(title)}`);
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const res = await fetch(`${apiUrl}/api/wiki/${encodeURIComponent(title)}`);
             
             if (!res.ok) {
                 if (res.status === 404) {

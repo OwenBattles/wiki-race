@@ -1,0 +1,35 @@
+services:
+  # Backend Service (Web Service)
+  - type: web
+    name: wiki-race-backend
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        fromService:
+          name: wiki-race-frontend
+          type: web
+          property: url
+
+  # Frontend Service (Web Service serving static build)
+  - type: web
+    name: wiki-race-frontend
+    runtime: node
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    startCommand: cd client && npx serve -s dist -l $PORT
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        fromService:
+          name: wiki-race-backend
+          type: web
+          property: url
+
