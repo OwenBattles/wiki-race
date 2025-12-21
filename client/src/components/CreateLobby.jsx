@@ -1,5 +1,12 @@
+import '../styles/CreateLobby.css';
+
 export function CreateLobby({ onCreate }) {
     return (
-        <button onClick={onCreate}>Create Lobby</button>
-    )
+        <button 
+            className="create-lobby-button"
+            onClick={onCreate}
+        >
+            Create New Room
+        </button>
+    );
 }

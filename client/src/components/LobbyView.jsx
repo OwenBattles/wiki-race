@@ -7,7 +7,7 @@ export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect,
 
     return (
         <div>
-            <PowerUpSettings isHost={isHost} powerUps={powerUps} onPowerUpChange={handlePowerUpChange}/>
+            {players.length > 1 && <PowerUpSettings isHost={isHost} powerUps={powerUps} onPowerUpChange={handlePowerUpChange}/>}
             <TitleEndpoints 
                 isHost={isHost} 
                 handleStartSelect={handleStartSelect} 

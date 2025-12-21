@@ -1,0 +1,27 @@
+.create-lobby-button {
+    width: 100%;
+    padding: 1.125rem 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    border-radius: 0.75rem;
+    border: 1.5px solid #e5e7eb;
+    background: #ffffff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+    transform: scale(1);
+    line-height: 1.5;
+}
+
+.create-lobby-button:hover {
+    background: #fafafa;
+    border-color: #d1d5db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.create-lobby-button:active {
+    transform: scale(0.98);
+}
+

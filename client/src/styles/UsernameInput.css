@@ -1,0 +1,36 @@
+.username-input-container {
+    width: 100%;
+}
+
+.username-input {
+    width: 100%;
+    padding: 1.125rem 1.5rem;
+    font-size: 1rem;
+    color: #1a1a1a;
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.25s ease;
+    font-family: inherit;
+    box-sizing: border-box;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+}
+
+.username-input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.username-input:hover {
+    background: #ffffff;
+    border-color: #d1d5db;
+}
+
+.username-input:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.03);
+}
+

@@ -1,27 +1,31 @@
+import '../styles/JoinLobby.css';
+
 export function JoinLobby({ lobbyCode, checkLobbyCode, setLobbyCode, onJoin, disabled}) {
     const handleChange = (e) => {
-        const value = e.target.value;
+        const value = e.target.value.toUpperCase();
         setLobbyCode(value);
-        checkLobbyCode(value);
+        if (value.length === 5) {
+            checkLobbyCode(value);
+        }
     }
 
     return (
-        <div>
+        <div className="join-lobby-container">
             <input 
-                className="border p-2 rounded"
-                placeholder="Room Code"
+                type="text"
+                className="join-lobby-input"
+                placeholder="Enter room code"
                 value={lobbyCode}
                 onChange={handleChange}
+                maxLength="5"
             />
             <button 
+                className="join-lobby-button"
                 onClick={onJoin}
-                disabled={disabled}
-                className={`p-2 rounded text-white ${
-                    disabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                disabled={disabled || !lobbyCode || lobbyCode.length !== 5}
             >
-            Join Lobby    
+                Join Room
             </button>
         </div>
-    )
+    );
 }
