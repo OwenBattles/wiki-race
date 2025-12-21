@@ -51,7 +51,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                 className="powerup-settings-toggle"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                Power-Ups ({totalPowerUps}) {isOpen ? '▲' : '▼'}
+                Power-Ups {isOpen ? '▲' : '▼'}
             </button>
 
             {isOpen && (
@@ -66,7 +66,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                                     onClick={() => handleDecrement('swap')}
                                     disabled={powerUps.swap === 0}
                                 >
-                                    −
+                                    -
                                 </button>
                                 <span className="powerup-settings-value">
                                     {powerUps.swap}
@@ -89,7 +89,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                                     onClick={() => handleDecrement('scramble')}
                                     disabled={powerUps.scramble === 0}
                                 >
-                                    −
+                                    -
                                 </button>
                                 <span className="powerup-settings-value">
                                     {powerUps.scramble}
@@ -112,7 +112,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                                     onClick={() => handleDecrement('freeze')}
                                     disabled={powerUps.freeze === 0}
                                 >
-                                    −
+                                    -
                                 </button>
                                 <span className="powerup-settings-value">
                                     {powerUps.freeze}
