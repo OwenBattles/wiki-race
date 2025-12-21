@@ -3,10 +3,15 @@
 /* 1. Base Layout */
 .wiki-view-wrapper {
   margin-top: 88px; /* Header height */
-  margin-left: 320px; /* Sidebar width (280px) + left spacing (2rem) + gap (2rem) */
-  padding: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
   min-height: calc(100vh - 88px);
   background: #F9F7F2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .wiki-view-frame {
@@ -16,7 +21,9 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 2rem;
   max-width: 1000px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .wiki-view-container {

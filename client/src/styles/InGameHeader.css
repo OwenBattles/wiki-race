@@ -43,6 +43,140 @@
     letter-spacing: 0.05em;
 }
 
+.ingame-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ingame-header-powerups-container {
+    position: relative;
+}
+
+.ingame-header-powerups-button {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border-radius: 0.375rem;
+    border: 1.5px solid #d4d4d4;
+    background: #ffffff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+}
+
+.ingame-header-powerups-button:hover {
+    background: #F9F7F2;
+    border-color: #B22222;
+    color: #B22222;
+}
+
+.ingame-header-powerups-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    min-width: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 1000;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.ingame-header-powerups-title {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0 0 1.25rem 0;
+    letter-spacing: 0.01em;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 0.75rem;
+}
+
+.ingame-header-powerups-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.ingame-header-powerups-player {
+    padding: 0.875rem 1rem;
+    background: #F9F7F2;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.375rem;
+}
+
+.ingame-header-powerups-player-name {
+    margin: 0 0 0.5rem 0;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+.ingame-header-powerups-toggle {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border-radius: 0.25rem;
+    border: 1px solid #d4d4d4;
+    background: #ffffff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    width: 100%;
+}
+
+.ingame-header-powerups-toggle:hover {
+    background: #F9F7F2;
+    border-color: #B22222;
+    color: #B22222;
+}
+
+.ingame-header-powerups-menu {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ingame-header-powerups-item {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border-radius: 0.25rem;
+    border: 1px solid #d4d4d4;
+    background: #F9F7F2;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    text-align: center;
+}
+
+.ingame-header-powerups-item:hover {
+    background: #ffffff;
+    border-color: #B22222;
+    color: #B22222;
+}
+
 .ingame-header-surrender {
     padding: 0.625rem 1.5rem;
     font-size: 0.875rem;
