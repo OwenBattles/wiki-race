@@ -1,16 +1,18 @@
 /* In-Game Sidebar */
 .ingame-sidebar {
     position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 260px;
+    left: 2rem;
+    top: 108px; /* Header height + extra gap */
+    width: 280px;
     background: #ffffff;
-    border-right: 1px solid #d4d4d4;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
-    overflow-y: auto;
     font-family: Georgia, "Times New Roman", serif;
-    z-index: 100;
+    z-index: 150;
+    max-height: calc(100vh - 132px); /* Account for header height + spacing */
+    overflow-y: auto;
 }
 
 .ingame-sidebar-title {

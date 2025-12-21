@@ -32,12 +32,16 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
     }
 
     return (
-        <div 
-            className="wiki-view-container p-6 bg-white overflow-y-auto" // Added the class here
-            ref={containerRef}
-            onClick={handleClick}
-        >
-             <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        <div className="wiki-view-wrapper">
+            <div className="wiki-view-frame">
+                <div 
+                    className="wiki-view-container"
+                    ref={containerRef}
+                    onClick={handleClick}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                </div>
+            </div>
         </div>
     );
 }

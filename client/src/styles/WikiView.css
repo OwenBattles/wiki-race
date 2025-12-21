@@ -1,14 +1,30 @@
 /* client/src/WikiView.css */
 
 /* 1. Base Layout */
+.wiki-view-wrapper {
+  margin-top: 88px; /* Header height */
+  margin-left: 320px; /* Sidebar width (280px) + left spacing (2rem) + gap (2rem) */
+  padding: 2rem;
+  min-height: calc(100vh - 88px);
+  background: #F9F7F2;
+}
+
+.wiki-view-frame {
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 .wiki-view-container {
   font-family: sans-serif;
   font-size: 16px; /* Wikipedia standard */
   line-height: 1.6;
   color: #202122;
   background-color: #ffffff;
-  padding-left: 20%;
-  padding-right: 20%;
 }
 
 /* 2. The "Infobox" (The table on the right in your screenshot) */

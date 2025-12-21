@@ -82,7 +82,7 @@ export default function GamePage() {
             { gameState == "PLAYING" &&
             <div>
                 <InGameHeader targetPage={gameSettings.targetPage} onSurrender={handleSurrender} />
-                <InGameSidebar username={username} players={players} powerUps={powerUps} handleUsePowerUp={handleUsePowerUp} />
+                {players.length > 1 && <InGameSidebar username={username} players={players} powerUps={powerUps} handleUsePowerUp={handleUsePowerUp} />}
                 <WikiView
                     htmlContent={currentPageHtml}
                     onNavigate={handleChangePage}

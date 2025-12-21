@@ -1,5 +1,9 @@
 /* In-Game Header */
 .ingame-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background: #ffffff;
     border-bottom: 1px solid #d4d4d4;
     padding: 1.5rem 2rem;
@@ -7,6 +11,8 @@
     align-items: center;
     justify-content: space-between;
     font-family: Georgia, "Times New Roman", serif;
+    z-index: 200;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .ingame-header-left {
