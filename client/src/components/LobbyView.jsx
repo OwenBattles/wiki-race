@@ -1,38 +1,41 @@
 import { TitleEndpoints } from "./TitleEndpoints";
 import { PowerUpSettings } from "./PowerUpSettings";
+import '../styles/LobbyView.css';
+import '../styles/StartGameButton.css';
 
 export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpSettings, handlePowerUpChange, powerUps }) {
     const canStartGame = gameSettings.startPage && gameSettings.targetPage;
 
-
     return (
-        <div>
-            {players.length > 1 && <PowerUpSettings isHost={isHost} powerUps={powerUps} onPowerUpChange={handlePowerUpChange}/>}
+        <div className="lobby-view-container">
+            {players.length > 1 && (
+                <PowerUpSettings 
+                    isHost={isHost} 
+                    powerUps={powerUps} 
+                    onPowerUpChange={handlePowerUpChange}
+                />
+            )}
             <TitleEndpoints 
                 isHost={isHost} 
                 handleStartSelect={handleStartSelect} 
                 handleEndSelect={handleEndSelect} 
                 gameSettings={gameSettings}
             />
-            <ul>
+            <ul className="game-player-list">
                 {players.map((player, id) => (
-                    <li key={id}>{player.username}</li>
+                    <li key={id} className="game-player-item">{player.username}</li>
                 ))}
             </ul>
             {isHost ? (
                 <button
+                    className="start-game-button"
                     onClick={onStart}
                     disabled={!canStartGame}
-                    className={`p-2 rounded text-white ${
-                        !canStartGame 
-                            ? "bg-gray-400 cursor-not-allowed" 
-                            : "bg-blue-600 hover:bg-blue-700"
-                    }`}
                 >
                     Start Game
                 </button>
             ) : (
-                "Waiting for Host..." 
+                <p className="game-waiting-message">Waiting for Host...</p>
             )}
         </div>
     )

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import '../styles/WikiSearchInput.css';
 
 export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
     const [query, setQuery] = useState(value || "");
@@ -62,7 +63,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
     };
 
     return (
-        <div className="relative w-full mb-4">
+        <div className="wiki-search-container">
             <input
                 type="text"
                 placeholder={placeholder}
@@ -70,20 +71,15 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
                 disabled={disabled}
                 onChange={(e) => setQuery(e.target.value)}
                 onClick={handleClick}
-                className={`w-full p-3 border rounded shadow-sm focus:outline-none focus:ring-2
-                    ${disabled
-                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                        : "bg-white focus:ring-blue-500"
-                    }
-                `}
+                className="wiki-search-input"
             />
             {!disabled && isOpen && suggestions.length > 0 && (
-                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b shadow-lg max-h-60 overflow-y-auto">
+                <ul className="wiki-search-suggestions">
                     {suggestions.map((title, index) => (
                         <li
                             key={index}
                             onClick={() => handleSelect(title)}
-                            className="p-3 hover:bg-blue-50 cursor-pointer transition-colors border-b last:border-b-0"
+                            className="wiki-search-suggestion-item"
                         >
                             {title}
                         </li>

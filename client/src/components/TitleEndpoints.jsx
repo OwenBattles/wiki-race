@@ -1,10 +1,11 @@
 import { useState } from "react"
 
 import { WikiSearchInput } from "./WikiSearchInput";
+import '../styles/TitleEndpoints.css';
 
 export function TitleEndpoints({ isHost, handleStartSelect, handleEndSelect, gameSettings }) {
     return (
-        <div>
+        <div className="title-endpoints-container">
             <WikiSearchInput
                 value={gameSettings.startPage}
                 placeholder={"Starting Point"}

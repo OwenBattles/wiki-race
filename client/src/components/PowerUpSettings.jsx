@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import '../styles/PowerUpSettings.css';
 
 export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,13 +21,24 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
 
     if (!isHost) {
         return (
-            <div>
-                <button onClick={() => setIsOpen(!isOpen)}>Show PowerUp settings</button>
+            <div className="powerup-settings-container">
+                <button 
+                    className="powerup-settings-view-toggle"
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    {isOpen ? 'Hide' : 'Show'} Power-Up Settings
+                </button>
                 {isOpen && (
-                    <div>
-                        <p>Swap: {powerUps.swap}</p>
-                        <p>Scramble: {powerUps.scramble}</p>
-                        <p>Freeze: {powerUps.freeze}</p>             
+                    <div className="powerup-settings-view-only">
+                        <div className="powerup-settings-view-only-item">
+                            Swap: {powerUps.swap}
+                        </div>
+                        <div className="powerup-settings-view-only-item">
+                            Scramble: {powerUps.scramble}
+                        </div>
+                        <div className="powerup-settings-view-only-item">
+                            Freeze: {powerUps.freeze}
+                        </div>             
                     </div>
                 )}
             </div>
@@ -34,34 +46,34 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
     }
 
     return (
-        <div className="relative">
+        <div className="powerup-settings-container">
             <button
+                className="powerup-settings-toggle"
                 onClick={() => setIsOpen(!isOpen)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
             >
-                PowerUps ({totalPowerUps}) {isOpen ? '▲' : '▼'}
+                Power-Ups ({totalPowerUps}) {isOpen ? '▲' : '▼'}
             </button>
 
             {isOpen && (
-                <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 min-w-[250px] z-10">
-                    <div className="space-y-3">
+                <div className="powerup-settings-panel">
+                    <div className="powerup-settings-list">
                         {/* Swap PowerUp */}
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-700">Swap</span>
-                            <div className="flex items-center gap-3">
+                        <div className="powerup-settings-item">
+                            <span className="powerup-settings-label">Swap</span>
+                            <div className="powerup-settings-controls">
                                 <button
+                                    className="powerup-settings-button"
                                     onClick={() => handleDecrement('swap')}
-                                    className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-lg font-bold transition-colors"
                                     disabled={powerUps.swap === 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-8 text-center font-semibold">
+                                <span className="powerup-settings-value">
                                     {powerUps.swap}
                                 </span>
                                 <button
+                                    className="powerup-settings-button increment"
                                     onClick={() => handleIncrement('swap')}
-                                    className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center justify-center text-lg font-bold transition-colors"
                                 >
                                     +
                                 </button>
@@ -69,22 +81,22 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                         </div>
 
                         {/* Scramble PowerUp */}
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-700">Scramble</span>
-                            <div className="flex items-center gap-3">
+                        <div className="powerup-settings-item">
+                            <span className="powerup-settings-label">Scramble</span>
+                            <div className="powerup-settings-controls">
                                 <button
+                                    className="powerup-settings-button"
                                     onClick={() => handleDecrement('scramble')}
-                                    className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-lg font-bold transition-colors"
                                     disabled={powerUps.scramble === 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-8 text-center font-semibold">
+                                <span className="powerup-settings-value">
                                     {powerUps.scramble}
                                 </span>
                                 <button
+                                    className="powerup-settings-button increment"
                                     onClick={() => handleIncrement('scramble')}
-                                    className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center justify-center text-lg font-bold transition-colors"
                                 >
                                     +
                                 </button>
@@ -92,22 +104,22 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                         </div>
 
                         {/* Freeze PowerUp */}
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-700">Freeze</span>
-                            <div className="flex items-center gap-3">
+                        <div className="powerup-settings-item">
+                            <span className="powerup-settings-label">Freeze</span>
+                            <div className="powerup-settings-controls">
                                 <button
+                                    className="powerup-settings-button"
                                     onClick={() => handleDecrement('freeze')}
-                                    className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-lg font-bold transition-colors"
                                     disabled={powerUps.freeze === 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-8 text-center font-semibold">
+                                <span className="powerup-settings-value">
                                     {powerUps.freeze}
                                 </span>
                                 <button
+                                    className="powerup-settings-button increment"
                                     onClick={() => handleIncrement('freeze')}
-                                    className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center justify-center text-lg font-bold transition-colors"
                                 >
                                     +
                                 </button>

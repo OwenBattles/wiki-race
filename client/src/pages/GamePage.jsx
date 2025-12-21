@@ -8,6 +8,7 @@ import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
 import { InGameSidebar } from '../components/InGameSidebar';
+import '../styles/GamePage.css';
 
 export default function GamePage() {
     const { 
@@ -52,21 +53,29 @@ export default function GamePage() {
       }, []);
 
     return (
-        <div >
+        <div className="game-page">
             { gameState == "LOBBY" && 
-            <div>
-                <h1>{roomCode}</h1>
-                <LobbyView 
-                    isHost={isHost}
-                    players={players}
-                    handleStartSelect={handleStartPoint}
-                    handleEndSelect={handleEndPoint}
-                    gameSettings={gameSettings}
-                    onStart={handleStartGame}
-                    handlePowerUpSettings={handlePowerUpSettings}
-                    handlePowerUpChange={handlePowerUpChange}   
-                    powerUps={powerUps}
-                />
+            <div className="game-lobby-container">
+                <div className="game-lobby-content">
+                    <div className="game-lobby-header">
+                        <h1 className="game-lobby-title">Room: {roomCode}</h1>
+                    </div>
+                    <div className="game-lobby-card">
+                        <div className="game-lobby-card-content">
+                            <LobbyView 
+                                isHost={isHost}
+                                players={players}
+                                handleStartSelect={handleStartPoint}
+                                handleEndSelect={handleEndPoint}
+                                gameSettings={gameSettings}
+                                onStart={handleStartGame}
+                                handlePowerUpSettings={handlePowerUpSettings}
+                                handlePowerUpChange={handlePowerUpChange}   
+                                powerUps={powerUps}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>       
             }
             
