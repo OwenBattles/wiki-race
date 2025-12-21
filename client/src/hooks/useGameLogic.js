@@ -42,10 +42,16 @@ export function useGameLogic() {
         SocketService.startGame(roomCode);
     }
 
-    const handleChangePage = (pageTitle) => {
+    const handleChangePage = async (pageTitle) => {
         console.log("changing page to", pageTitle);
-        fetchPage(pageTitle);
-        SocketService.submitMove(roomCode, pageTitle, Date.now() - startTime);
+        try {
+            await fetchPage(pageTitle);
+            SocketService.submitMove(roomCode, pageTitle, Date.now() - startTime);
+        } catch (err) {
+            console.error("Failed to fetch page:", err);
+            // Error is already logged and set in useWikiPage hook
+            // User will see loading state end, and error state is available if needed
+        }
     }
 
     const handleSurrender = () => {
