@@ -54,13 +54,19 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
             }
 
             try {
-                const url = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&namespace=0&format=json&origin=*&redirects=resolve`;
+                // prefixsearch only returns titles of real mainspace pages whose titles
+                // start with the query — never a bogus "partial word" that is not an article.
+                const url =
+                    'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
+                    '&list=prefixsearch&psnamespace=0' +
+                    `&pssearch=${encodeURIComponent(query)}&pslimit=10`;
                 const response = await fetch(url);
                 const data = await response.json();
-                
-                // data[1] contains the final titles (after redirects)
-                setSuggestions(data[1] || []);
-                setIsOpen(true);
+                const list = data.query?.prefixsearch ?? [];
+                const titles = list.map((p) => p.title);
+
+                setSuggestions(titles);
+                setIsOpen(titles.length > 0);
                 setSelectedIndex(-1);
             } catch (error) {
                 console.error("Wiki search failed:", error);
