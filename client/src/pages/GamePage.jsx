@@ -8,6 +8,7 @@ import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
 import { InGameSidebar } from '../components/InGameSidebar';
+import { PowerUpNotificationForVictim } from '../components/PowerUpNotificationForVictim';
 import '../styles/GamePage.css';
 
 export default function GamePage() {
@@ -23,6 +24,7 @@ export default function GamePage() {
         htmlContent, currentTitle, fetchPage, isLoading, winner,
         totalTime, setTotalTime,
         powerUps, setPowerUps,
+        victimPowerUpNotice,
     } = useContext(GameContext);
 
     const {
@@ -81,6 +83,12 @@ export default function GamePage() {
             
             { gameState == "PLAYING" &&
             <div>
+                {victimPowerUpNotice && (
+                    <PowerUpNotificationForVictim
+                        attackerUsername={victimPowerUpNotice.attackerUsername}
+                        powerUpType={victimPowerUpNotice.powerUpType}
+                    />
+                )}
                 <InGameHeader 
                     targetPage={gameSettings.targetPage} 
                     onSurrender={handleSurrender}

@@ -26,8 +26,15 @@ export const GameProvider = ({ children }) => {
     const currentPageTitle = path[path.length - 1]?.title || "";
     const currentPageHtml = path[path.length - 1]?.html || "";
     const [powerUps, setPowerUps] = useState({ swap: 0, scramble: 0, freeze: 0 });
+    const [victimPowerUpNotice, setVictimPowerUpNotice] = useState(null);
 
     const { fetchPage, isLoading } = useWikiPage({ setPath });
+
+    useEffect(() => {
+        if (!victimPowerUpNotice) return;
+        const id = window.setTimeout(() => setVictimPowerUpNotice(null), 4000);
+        return () => clearTimeout(id);
+    }, [victimPowerUpNotice]);
 
     useEffect(() => {
         socket.on('room_created', (code) => {
@@ -49,6 +56,7 @@ export const GameProvider = ({ children }) => {
             setGameState("LOBBY");
             setGameSettings({ startPage: "", targetPage: "" });
             setPowerUps({ swap: 0, scramble: 0, freeze: 0 });
+            setVictimPowerUpNotice(null);
         })
 
         socket.on('username_taken', ({ found, message }) => {
@@ -71,6 +79,10 @@ export const GameProvider = ({ children }) => {
 
         socket.on('pages_swapped', ({ newPageTitle, newPageHtml }) => {
             setPath(prev => [...prev, { title: newPageTitle, html: newPageHtml }]);
+        });
+
+        socket.on('power_up_used_on_you', ({ attackerUsername, powerUpType }) => {
+            setVictimPowerUpNotice({ attackerUsername, powerUpType });
         });
 
         socket.on('start_page', (startPage) => {
@@ -106,6 +118,7 @@ export const GameProvider = ({ children }) => {
             setWinner(player);
             setTotalTime(totalTime);
             setGameState("FINISHED");
+            setVictimPowerUpNotice(null);
         });
 
         socket.on('error', (msg) => {
@@ -121,6 +134,7 @@ export const GameProvider = ({ children }) => {
             socket.off('username_check_result');
             socket.off('update_player_list');
             socket.off('pages_swapped');
+            socket.off('power_up_used_on_you');
             socket.off('start_page');
             socket.off('target_page')
             socket.off('game_started');
@@ -147,6 +161,7 @@ export const GameProvider = ({ children }) => {
         startTime, setStartTime,
         totalTime, setTotalTime,
         powerUps, setPowerUps,
+        victimPowerUpNotice,
     };
 
     return (

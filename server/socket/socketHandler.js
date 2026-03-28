@@ -211,6 +211,7 @@ module.exports = (io) => {
       io.to(roomCode).emit('power_up_changed', { powerUpType, value });
     })
 
+    // HANDLE POWER UP USE
     socket.on('use_power_up', async ({ roomCode, powerUpType, victimId }) => {
       const room = rooms[roomCode];
       if (!room) return;
@@ -239,6 +240,10 @@ module.exports = (io) => {
           io.to(victimPlayer.id).emit('pages_swapped', { 
             newPageTitle: victimPlayer.currentPageTitle, 
             newPageHtml: victimHtml 
+          });
+          io.to(victimPlayer.id).emit('power_up_used_on_you', {
+            attackerUsername: player.username,
+            powerUpType,
           });
           
         } catch (error) {
