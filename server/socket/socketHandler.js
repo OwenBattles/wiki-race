@@ -169,6 +169,7 @@ module.exports = (io) => {
 
           for (const player of room.players) {
             player.path = [{ title: room.startPage, html: startHtml }];
+            player.currentPageTitle = room.startPage;
           }
 
       } catch (error) {
@@ -249,7 +250,6 @@ module.exports = (io) => {
         } catch (error) {
           console.error("Swap power-up error:", error);
           socket.emit('error', "Could not load swapped pages.");
-          // Revert the swap on error
           [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
           player.powerUps[powerUpType]++; // Refund the power-up
         }
