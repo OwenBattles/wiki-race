@@ -55,7 +55,7 @@ export const GameProvider = ({ children }) => {
         socket.on('return_to_lobby', () => {
             setGameState("LOBBY");
             setGameSettings({ startPage: "", targetPage: "" });
-            setPowerUps({ swap: 0, scramble: 0, freeze: 0 });
+            setPowerUps({ swap: room.powerUps.swap, scramble: room.powerUps.scramble, freeze: room.powerUps.freeze });
             setVictimPowerUpNotice(null);
         })
 

@@ -1,8 +1,20 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import '../styles/PowerUpSettings.css';
 
 export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
     const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const onPointerDown = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', onPointerDown);
+        return () => document.removeEventListener('mousedown', onPointerDown);
+    }, [isOpen]);
 
     console.log("power ups", powerUps);
 
@@ -21,7 +33,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
 
     if (!isHost) {
         return (
-            <div className="powerup-settings-container">
+            <div className="powerup-settings-container" ref={containerRef}>
                 <button 
                     className="powerup-settings-view-toggle"
                     onClick={() => setIsOpen(!isOpen)}
@@ -46,7 +58,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
     }
 
     return (
-        <div className="powerup-settings-container">
+        <div className="powerup-settings-container" ref={containerRef}>
             <button
                 className="powerup-settings-toggle"
                 onClick={() => setIsOpen(!isOpen)}

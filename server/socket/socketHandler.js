@@ -266,10 +266,14 @@ module.exports = (io) => {
       room.targetPage = "";
       room.totalTime = 0;
       room.powerUps = {
-        swap: 0,
-        scramble: 0,
-        freeze: 0
+        swap: room.powerUps.swap,
+        scramble: room.powerUps.scramble,
+        freeze: room.powerUps.freeze,
       };
+
+      // for (const player of room.players) {
+      //   player.powerUps = room.powerUps;
+      // }
     
       io.to(roomCode).emit('return_to_lobby');
     });

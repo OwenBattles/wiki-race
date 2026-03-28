@@ -1,5 +1,7 @@
 .powerup-settings-container {
     position: relative;
+    /* Above TitleEndpoints / WikiSearchInput suggestion lists (z-index: 10) */
+    z-index: 50;
 }
 
 .powerup-settings-toggle {
@@ -37,7 +39,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     min-width: 280px;
-    z-index: 10;
+    z-index: 1;
 }
 
 .powerup-settings-list {
