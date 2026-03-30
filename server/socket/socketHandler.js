@@ -324,12 +324,23 @@ module.exports = (io) => {
       player.path = [];
       player.currentPageTitle = "";
 
-      io.to(roomCode).emit('update_player_list', room.players);
-      socket.emit('surrendered_to_lobby', {
-        startPage: room.startPage,
-        targetPage: room.targetPage,
-        powerUps: room.powerUps,
-      });
+      totalPlayingPlayers = room.players.filter(p => p.isPlaying).length;
+      console.log("totalPlayingPlayers", totalPlayingPlayers);
+
+      if (totalPlayingPlayers == 1) {
+        remainingPlayer = room.players.find(p => p.isPlaying);
+        io.to(roomCode).emit('game_won', { 
+          player: remainingPlayer, 
+          totalTime: room.totalTime 
+        });
+      } else {
+        io.to(roomCode).emit('update_player_list', room.players);
+        socket.emit('surrendered_to_lobby', {
+          startPage: room.startPage,
+          targetPage: room.targetPage,
+          powerUps: room.powerUps,
+        });
+      }
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,19 +355,6 @@ module.exports = (io) => {
           socket.emit('update_player_list', room.players);
       }
   });
-
-    // HANDLE LEAVE GAME
-    // socket.on('leave_game', (roomCode) => {
-    //   // Reuse your disconnect logic here, or just:
-    //   const room = rooms[roomCode];
-    //   if (room) {
-    //       const index = room.players.findIndex(p => p.id === socket.id);
-    //       if (index !== -1) {
-    //           room.splice(index, 1);
-    //           io.to(roomCode).emit('update_player_list', room);
-    //       }
-    //   }
-    // });
 
     // HANDLE DISCONNECT 
     socket.on('disconnect', () => {
