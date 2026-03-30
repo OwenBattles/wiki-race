@@ -42,7 +42,7 @@ export function InGameSidebar({ username, players, powerUps, handleUsePowerUp}) 
                                             Scramble ({powerUps.scramble})
                                         </button>
                                     )}
-                                    {powerUps.freeze > 0 && (
+                                    {/* {powerUps.freeze > 0 && (
                                         <button 
                                             className="ingame-sidebar-powerup-item"
                                             onClick={() => {
@@ -52,7 +52,7 @@ export function InGameSidebar({ username, players, powerUps, handleUsePowerUp}) 
                                         >
                                             Freeze ({powerUps.freeze})
                                         </button>
-                                    )}
+                                    )} */}
                                 </div>
                             )}
                         </li>

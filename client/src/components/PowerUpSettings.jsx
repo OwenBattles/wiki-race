@@ -48,9 +48,9 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                         <div className="powerup-settings-view-only-item">
                             Scramble: {powerUps.scramble}
                         </div>
-                        <div className="powerup-settings-view-only-item">
+                        {/* <div className="powerup-settings-view-only-item">
                             Freeze: {powerUps.freeze}
-                        </div>             
+                        </div>              */}
                     </div>
                 )}
             </div>
@@ -115,8 +115,8 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                             </div>
                         </div>
 
-                        {/* Freeze PowerUp */}
-                        <div className="powerup-settings-item">
+                        {/* Freeze PowerUp (commented out for now) */}
+                        {/* <div className="powerup-settings-item">
                             <span className="powerup-settings-label">Freeze</span>
                             <div className="powerup-settings-controls">
                                 <button
@@ -136,7 +136,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                                     +
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             )}

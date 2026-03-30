@@ -26,7 +26,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
     }, [isDropdownOpen]);
 
     const opponents = players.filter(player => player.username !== username);
-    const hasPowerUps = powerUps && (powerUps.swap > 0 || powerUps.scramble > 0 || powerUps.freeze > 0);
+    const hasPowerUps = powerUps && (powerUps.swap > 0 || powerUps.scramble > 0 /* || powerUps.freeze > 0 */);
 
     return (
         <div className="ingame-header">
@@ -87,7 +87,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                                             Scramble ({powerUps.scramble})
                                                         </button>
                                                     )}
-                                                    {powerUps.freeze > 0 && (
+                                                    {/* {powerUps.freeze > 0 && (
                                                         <button 
                                                             className="ingame-header-powerups-item"
                                                             onClick={() => {
@@ -98,7 +98,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                                         >
                                                             Freeze ({powerUps.freeze})
                                                         </button>
-                                                    )}
+                                                    )} */}
                                                 </div>
                                             )}
                                         </li>
