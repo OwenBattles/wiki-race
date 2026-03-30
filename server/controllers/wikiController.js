@@ -93,6 +93,25 @@ const fetchAndClean = async (pageTitle) => {
   };
 };
 
+const fetchRandomArticleTitle = async () => {
+  const wikipediaApiUrl = `https://en.wikipedia.org/w/api.php`;
+  const response = await axios.get(wikipediaApiUrl, {
+    params: {
+      action: 'query',
+      format: 'json',
+      list: 'random',
+      rnnamespace: 0,
+      rnlimit: 1,
+      origin: '*',
+    },
+    headers: { 'User-Agent': 'wiki-race-game' },
+  });
+
+  const title = response.data?.query?.random?.[0]?.title;
+  if (!title) throw new Error('Failed to fetch random article');
+  return title;
+};
+
 // Export for Socket.io
 exports.fetchWikiHtml = async (pageTitle) => {
     const result = await fetchAndClean(pageTitle);
@@ -117,4 +136,25 @@ exports.getWikiPage = async (req, res) => {
             res.status(500).json({ error: 'Failed to fetch article' });
         }
     }
+};
+
+// Export for REST API - Random page
+exports.getRandomPage = async (req, res) => {
+  try {
+    const randomTitle = await fetchRandomArticleTitle();
+    const result = await fetchAndClean(randomTitle);
+    res.json({
+      title: result.title,
+      content: result.html,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch random article' });
+  }
+};
+
+exports.fetchRandomPageHtml = async () => {
+  const randomTitle = await fetchRandomArticleTitle();
+  const result = await fetchAndClean(randomTitle);
+  return result.html;
 };

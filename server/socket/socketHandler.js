@@ -1,4 +1,4 @@
-const { fetchWikiHtml } = require('../controllers/wikiController');
+const { fetchWikiHtml, fetchRandomPageHtml } = require('../controllers/wikiController');
 const { use } = require('../routes/wikiRoutes');
 
 // Store room state in memory
@@ -253,6 +253,33 @@ module.exports = (io) => {
           [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
           player.powerUps[powerUpType]++; // Refund the power-up
         }
+      }
+
+      if (powerUpType === "scramble") {
+        const victimPlayer = room.players.find(p => p.id === victimId);
+        if (!victimPlayer) return;
+
+        try {
+          const victimHtml = await fetchRandomPageHtml();
+          victimPlayer.path.push({ title: victimPlayer.currentPageTitle, html: victimHtml });
+          
+          // Emit dedicated swap event to affected players with their new page data
+          io.to(victimPlayer.id).emit('pages_swapped', { 
+            newPageTitle: victimPlayer.currentPageTitle, 
+            newPageHtml: victimHtml 
+          });
+          io.to(victimPlayer.id).emit('power_up_used_on_you', {
+            attackerUsername: player.username,
+            powerUpType,
+          });
+          
+        } catch (error) {
+          console.error("Swap power-up error:", error);
+          socket.emit('error', "Could not load swapped pages.");
+          [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
+          player.powerUps[powerUpType]++; // Refund the power-up
+        }
+        
       }
     })
 
