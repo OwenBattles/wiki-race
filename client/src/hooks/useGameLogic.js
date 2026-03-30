@@ -55,7 +55,7 @@ export function useGameLogic() {
     }
 
     const handleSurrender = () => {
-        console.log("surrendering");
+        SocketService.surrender(roomCode);
     }
 
     const handleReturnToLobby = () => {

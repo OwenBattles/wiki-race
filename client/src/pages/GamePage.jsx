@@ -9,6 +9,7 @@ import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
 import { InGameSidebar } from '../components/InGameSidebar';
 import { PowerUpNotificationForVictim } from '../components/PowerUpNotificationForVictim';
+import { SurrenderedLobbyView } from '../components/SurrenderedLobbyView';
 import '../styles/GamePage.css';
 
 export default function GamePage() {
@@ -79,6 +80,22 @@ export default function GamePage() {
                     </div>
                 </div>
             </div>       
+            }
+
+            { gameState == "SURRENDERED" &&
+            <div className="game-lobby-container">
+                <div className="game-lobby-content">
+                    <div className="game-lobby-card">
+                        <div className="game-lobby-card-content">
+                            <SurrenderedLobbyView
+                                roomCode={roomCode}
+                                players={players}
+                                gameSettings={gameSettings}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
             }
             
             { gameState == "PLAYING" &&

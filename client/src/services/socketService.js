@@ -66,6 +66,10 @@ export const SocketService = {
         socket.emit('navigate_to_lobby', roomCode);
     },
 
+    surrender: (roomCode) => {
+        socket.emit('surrender', roomCode);
+    },
+
     // Used to sync the player list manually if needed
     requestPlayerList: (roomCode) => {
         socket.emit('request_player_list', roomCode);

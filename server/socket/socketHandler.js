@@ -161,16 +161,19 @@ module.exports = (io) => {
 
           room.gameState = "RACING";
 
+          for (const player of room.players) {
+            player.path = [{ title: room.startPage, html: startHtml }];
+            player.currentPageTitle = room.startPage;
+            player.isPlaying = true;
+          }
+
+          io.to(roomCode).emit('update_player_list', room.players);
+
           io.to(roomCode).emit('game_started', {
               startPage: room.startPage,
               targetPage: room.targetPage,
               initialHtml: startHtml
           });
-
-          for (const player of room.players) {
-            player.path = [{ title: room.startPage, html: startHtml }];
-            player.currentPageTitle = room.startPage;
-          }
 
       } catch (error) {
           console.error("Start Game Error:", error);
@@ -184,7 +187,7 @@ module.exports = (io) => {
       if (!room) return;
       
       const player = room.players.find(p => p.id === socket.id);
-      if (!player) return;
+      if (!player || !player.isPlaying) return;
       
       const win = pageTitle === room.targetPage;
       
@@ -217,7 +220,7 @@ module.exports = (io) => {
       const room = rooms[roomCode];
       if (!room) return;
       const player = room.players.find(p => p.id === socket.id);
-      if (!player) return;
+      if (!player || !player.isPlaying) return;
       player.powerUps[powerUpType]--;
       socket.emit('power_up_changed', { powerUpType, value: player.powerUps[powerUpType] });
 
@@ -302,23 +305,31 @@ module.exports = (io) => {
       //   player.powerUps = room.powerUps;
       // }
     
-      io.to(roomCode).emit('return_to_lobby');
+      for (const p of room.players) {
+        p.isPlaying = false;
+      }
+
+      io.to(roomCode).emit('return_to_lobby', room.powerUps);
     });
 
     // HANDLE SURRENDER: THIS IS NOT BEING USED FOR NOW
     socket.on('surrender', (roomCode) => {
       const room = rooms[roomCode];
-      if (!room) return;
+      if (!room || room.gameState !== "RACING") return;
 
       const player = room.players.find(p => p.id === socket.id);
-      if (!player) return;
+      if (!player || !player.isPlaying) return;
 
       player.isPlaying = false;
       player.path = [];
       player.currentPageTitle = "";
 
       io.to(roomCode).emit('update_player_list', room.players);
-      // ill need to send only that player to the lobby or to the game over screen
+      socket.emit('surrendered_to_lobby', {
+        startPage: room.startPage,
+        targetPage: room.targetPage,
+        powerUps: room.powerUps,
+      });
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////

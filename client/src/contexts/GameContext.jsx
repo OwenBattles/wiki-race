@@ -16,7 +16,7 @@ export const GameProvider = ({ children }) => {
     // Game Flow State
     const [startTime, setStartTime] = useState(null);
     const [totalTime, setTotalTime] = useState(0);
-    const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "RACING", "FINISHED"
+    const [gameState, setGameState] = useState("LOBBY"); // "LOBBY", "PLAYING", "SURRENDERED", "FINISHED"
     const [gameSettings, setGameSettings] = useState({ 
         startPage: "", 
         targetPage: ""
@@ -27,6 +27,7 @@ export const GameProvider = ({ children }) => {
     const currentPageHtml = path[path.length - 1]?.html || "";
     const [powerUps, setPowerUps] = useState({ swap: 0, scramble: 0, freeze: 0 });
     const [victimPowerUpNotice, setVictimPowerUpNotice] = useState(null);
+    const [awaitingRoundEnd, setAwaitingRoundEnd] = useState(false);
 
     const { fetchPage, isLoading } = useWikiPage({ setPath });
 
@@ -52,12 +53,23 @@ export const GameProvider = ({ children }) => {
             setPowerUps(powerUps);
         })
 
-        socket.on('return_to_lobby', () => {
+        socket.on('return_to_lobby', (lobbyPowerUps) => {
             setGameState("LOBBY");
             setGameSettings({ startPage: "", targetPage: "" });
-            setPowerUps({ swap: room.powerUps.swap, scramble: room.powerUps.scramble, freeze: room.powerUps.freeze });
+            setPowerUps(lobbyPowerUps || { swap: 0, scramble: 0, freeze: 0 });
+            setPath([]);
+            setAwaitingRoundEnd(false);
             setVictimPowerUpNotice(null);
         })
+
+        socket.on('surrendered_to_lobby', ({ startPage, targetPage, powerUps: roomPowerUps }) => {
+            setGameState("SURRENDERED");
+            setGameSettings({ startPage, targetPage });
+            setPowerUps(roomPowerUps || { swap: 0, scramble: 0, freeze: 0 });
+            setPath([]);
+            setAwaitingRoundEnd(true);
+            setVictimPowerUpNotice(null);
+        });
 
         socket.on('username_taken', ({ found, message }) => {
             if (found) {
@@ -112,12 +124,14 @@ export const GameProvider = ({ children }) => {
             setGameSettings({ startPage, targetPage });
             setPath([{ title: startPage, html: initialHtml }]);
             setGameState("PLAYING");
+            setAwaitingRoundEnd(false);
         });
 
         socket.on('game_won', ({ player, totalTime }) => {
             setWinner(player);
             setTotalTime(totalTime);
             setGameState("FINISHED");
+            setAwaitingRoundEnd(false);
             setVictimPowerUpNotice(null);
         });
 
@@ -135,9 +149,11 @@ export const GameProvider = ({ children }) => {
             socket.off('update_player_list');
             socket.off('pages_swapped');
             socket.off('power_up_used_on_you');
+            socket.off('surrendered_to_lobby');
             socket.off('start_page');
             socket.off('target_page')
             socket.off('game_started');
+            socket.off('game_won');
             socket.off('check_if_won');
             socket.off('error');
         };
@@ -162,6 +178,7 @@ export const GameProvider = ({ children }) => {
         totalTime, setTotalTime,
         powerUps, setPowerUps,
         victimPowerUpNotice,
+        awaitingRoundEnd,
     };
 
     return (
