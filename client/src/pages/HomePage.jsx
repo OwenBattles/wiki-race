@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { GameContext } from '../contexts/GameContext';
 import { useHomeLogic } from '../hooks/useHomeLogic'; 
 
@@ -17,14 +17,6 @@ export default function HomePage() {
     } = useContext(GameContext);
 
     const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
-
-    // Lock page scrolling
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, []);
 
     const handleJoin = () => {
         if (!usernameInput) {

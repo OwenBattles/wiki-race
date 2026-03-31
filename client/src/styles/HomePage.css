@@ -1,4 +1,8 @@
 /* Home Page Layout */
+html, body {
+    background: #F9F7F2;
+}
+
 .home-page {
     min-height: 100svh;
     background: #F9F7F2;
