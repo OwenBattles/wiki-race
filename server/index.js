@@ -11,7 +11,7 @@ const wikiRoutes = require('./routes/wikiRoutes');
 const socketHandler = require('./socket/socketHandler'); 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
@@ -42,6 +42,6 @@ const io = new Server(server, {
 
 socketHandler(io); 
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });
