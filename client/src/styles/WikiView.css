@@ -2,12 +2,12 @@
 
 /* 1. Base Layout */
 .wiki-view-wrapper {
-  margin-top: 88px; /* Header height */
+  margin-top: var(--ingame-header-height, 88px);
   padding-left: 2rem;
   padding-right: 2rem;
   padding-top: 2rem;
   padding-bottom: 2rem;
-  min-height: calc(100vh - 88px);
+  min-height: calc(100vh - var(--ingame-header-height, 88px));
   background: #F9F7F2;
   display: flex;
   justify-content: center;

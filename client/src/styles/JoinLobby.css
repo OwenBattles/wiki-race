@@ -8,6 +8,16 @@
     min-width: 0;
 }
 
+@media (max-width: 480px) {
+    .join-lobby-container {
+        flex-direction: column;
+    }
+
+    .join-lobby-button {
+        width: 100%;
+    }
+}
+
 .join-lobby-input {
     flex: 1;
     min-width: 0;

@@ -55,6 +55,17 @@
     overflow: hidden;
 }
 
+@media (max-width: 480px) {
+    .wiki-search-suggestions-list {
+        max-height: 12rem;
+        padding: 0.5rem;
+    }
+
+    .wiki-search-suggestion-item {
+        padding: 0.75rem 1rem;
+    }
+}
+
 .wiki-search-suggestions-list {
     max-height: 15rem;
     overflow-y: auto;
