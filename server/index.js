@@ -34,7 +34,9 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    // In single-service deploy (same origin), allow the browser origin by default.
+    // If you want to lock this down, set CLIENT_URL (or comma-separated list).
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : true,
     methods: ["GET", "POST"],
     credentials: true
   }
