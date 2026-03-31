@@ -22,7 +22,10 @@ app.use('/api/wiki', wikiRoutes);
 if (process.env.NODE_ENV === 'production') {
   const clientDistPath = path.resolve(__dirname, '../client/dist');
   app.use(express.static(clientDistPath));
-  app.get('*', (req, res) => {
+  // Express 5: use middleware for SPA fallback (app.get('*') throws)
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    if (req.path.startsWith('/api/')) return next();
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
