@@ -16,6 +16,8 @@ RUN npm run build
 
 FROM node:20-bookworm-slim AS server
 ENV NODE_ENV=production
+# Fly's proxy uses internal_port (8080). Must match listen port when Fly doesn't inject PORT.
+ENV PORT=8080
 WORKDIR /app/server
 
 COPY server/package.json server/package-lock.json ./

@@ -11,8 +11,8 @@ const wikiRoutes = require('./routes/wikiRoutes');
 const socketHandler = require('./socket/socketHandler'); 
 
 const app = express();
-// Fly sets PORT=8080 automatically. Locally we default to 3000.
-const PORT = process.env.PORT || 3000;
+// Fly normally sets PORT to match fly.toml internal_port; Dockerfile sets PORT=8080 as fallback.
+const PORT = Number(process.env.PORT) || (process.env.NODE_ENV === 'production' ? 8080 : 3000);
 
 app.use(cors());
 app.use(express.json());
