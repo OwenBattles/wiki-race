@@ -20,7 +20,8 @@
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  max-width: 1280px;
+  /* Let the article span the page width */
+  max-width: none;
   width: 100%;
   margin: 0;
   flex-shrink: 0;
@@ -172,6 +173,19 @@
     float: none;
     width: 100%;
     margin: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .wiki-view-wrapper {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .wiki-view-frame {
+    padding: 1rem;
   }
 }
 

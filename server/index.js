@@ -11,7 +11,8 @@ const wikiRoutes = require('./routes/wikiRoutes');
 const socketHandler = require('./socket/socketHandler'); 
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+// Fly sets PORT=8080 automatically. Locally we default to 3000.
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
