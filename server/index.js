@@ -22,11 +22,27 @@ app.use('/api/wiki', wikiRoutes);
 // Serve built frontend (single-service deploy)
 if (process.env.NODE_ENV === 'production') {
   const clientDistPath = path.resolve(__dirname, '../client/dist');
-  app.use(express.static(clientDistPath));
+  // Avoid stale SPAs: never cache the HTML shell; hashed Vite assets can cache long-term.
+  app.use(
+    express.static(clientDistPath, {
+      etag: true,
+      lastModified: true,
+      setHeaders(res, filepath) {
+        if (filepath.endsWith(`${path.sep}index.html`)) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          return;
+        }
+        if (filepath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
+    })
+  );
   // Express 5: use middleware for SPA fallback (app.get('*') throws)
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     if (req.path.startsWith('/api/')) return next();
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
