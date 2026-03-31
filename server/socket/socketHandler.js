@@ -1,4 +1,4 @@
-const { fetchWikiHtml, fetchRandomPageHtml } = require('../controllers/wikiController');
+const { fetchWikiHtml, fetchRandomPageHtml, fetchRandomPage } = require('../controllers/wikiController');
 const { use } = require('../routes/wikiRoutes');
 
 // Store room state in memory
@@ -31,6 +31,15 @@ const rooms = {};
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
+    const getEffectiveCurrentTitle = (player) => {
+      const last = player?.path?.[player.path.length - 1]?.title;
+      return last || player?.currentPageTitle || "";
+    };
+
+    const syncCurrentTitleFromPath = (player) => {
+      const last = player?.path?.[player.path.length - 1]?.title;
+      if (last) player.currentPageTitle = last;
+    };
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username }) => {
@@ -191,8 +200,8 @@ module.exports = (io) => {
       
       const win = pageTitle === room.targetPage;
       
-      player.currentPageTitle = pageTitle;
       player.path.push({ title: pageTitle, html: await fetchWikiHtml(pageTitle) });
+      syncCurrentTitleFromPath(player);
       
       if (win) {
           player.wins++;
@@ -228,13 +237,17 @@ module.exports = (io) => {
       if (powerUpType === "swap") {
         const victimPlayer = room.players.find(p => p.id === victimId);
         if (!victimPlayer) return;
-        console.log("swapping", player.currentPageTitle, victimPlayer.currentPageTitle);
-        [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
+        const attackerTitle = getEffectiveCurrentTitle(player);
+        const victimTitle = getEffectiveCurrentTitle(victimPlayer);
+        console.log("swapping", attackerTitle, victimTitle);
+        [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimTitle, attackerTitle];
         try {
           const playerHtml = await fetchWikiHtml(player.currentPageTitle);
           const victimHtml = await fetchWikiHtml(victimPlayer.currentPageTitle);
           player.path.push({ title: player.currentPageTitle, html: playerHtml });
           victimPlayer.path.push({ title: victimPlayer.currentPageTitle, html: victimHtml });
+          syncCurrentTitleFromPath(player);
+          syncCurrentTitleFromPath(victimPlayer);
           
           // Emit dedicated swap event to affected players with their new page data
           io.to(player.id).emit('pages_swapped', { 
@@ -263,13 +276,21 @@ module.exports = (io) => {
         if (!victimPlayer) return;
 
         try {
-          const victimHtml = await fetchRandomPageHtml();
-          victimPlayer.path.push({ title: victimPlayer.currentPageTitle, html: victimHtml });
+          const randomPage = fetchRandomPage ? await fetchRandomPage() : null;
+          if (randomPage) {
+            victimPlayer.path.push({ title: randomPage.title, html: randomPage.html });
+          } else {
+            // Back-compat: older helper only returned html
+            const victimHtml = await fetchRandomPageHtml();
+            const prevTitle = getEffectiveCurrentTitle(victimPlayer);
+            victimPlayer.path.push({ title: prevTitle, html: victimHtml });
+          }
+          syncCurrentTitleFromPath(victimPlayer);
           
           // Emit dedicated swap event to affected players with their new page data
           io.to(victimPlayer.id).emit('pages_swapped', { 
             newPageTitle: victimPlayer.currentPageTitle, 
-            newPageHtml: victimHtml 
+            newPageHtml: victimPlayer.path[victimPlayer.path.length - 1].html 
           });
           io.to(victimPlayer.id).emit('power_up_used_on_you', {
             attackerUsername: player.username,
@@ -277,9 +298,8 @@ module.exports = (io) => {
           });
           
         } catch (error) {
-          console.error("Swap power-up error:", error);
-          socket.emit('error', "Could not load swapped pages.");
-          [player.currentPageTitle, victimPlayer.currentPageTitle] = [victimPlayer.currentPageTitle, player.currentPageTitle];
+          console.error("Scramble power-up error:", error);
+          socket.emit('error', "Could not load scrambled page.");
           player.powerUps[powerUpType]++; // Refund the power-up
         }
         

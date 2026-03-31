@@ -224,3 +224,9 @@ exports.fetchRandomPageHtml = async () => {
   const result = await fetchAndClean(randomTitle);
   return result.html;
 };
+
+// Export for Socket.io (random page with canonical title + html)
+exports.fetchRandomPage = async () => {
+  const randomTitle = await fetchRandomArticleTitle();
+  return await fetchAndClean(randomTitle);
+};
