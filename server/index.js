@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
+const path = require('path');
 const wikiRoutes = require('./routes/wikiRoutes'); 
 
 // 1. Import your socket logic file
@@ -16,6 +17,15 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/wiki', wikiRoutes);
+
+// Serve built frontend (single-service deploy)
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.resolve(__dirname, '../client/dist');
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 const server = http.createServer(app);
 
