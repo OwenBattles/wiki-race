@@ -10,12 +10,14 @@ export function TitleEndpoints({ isHost, handleStartSelect, handleEndSelect, gam
                 value={gameSettings.startPage}
                 placeholder={"Starting Point"}
                 onSelect={handleStartSelect}
+                showDie={true}
                 disabled={!isHost}
             />
             <WikiSearchInput 
                 value={gameSettings.targetPage}
                 placeholder={"Ending Point"}
                 onSelect={handleEndSelect}
+                showDie={true}
                 disabled={!isHost}
             />
         </div>   

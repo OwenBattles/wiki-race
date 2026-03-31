@@ -24,7 +24,7 @@ const AnimatedSuggestionItem = ({ children, delay = 0, index, onMouseEnter, onCl
     );
 };
 
-export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
+export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDie = false }) {
     const [query, setQuery] = useState(value || "");
     const [suggestions, setSuggestions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -166,6 +166,32 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
 
     return (
         <div className="wiki-search-container">
+            {showDie && (
+                <button
+                    type="button"
+                    className="wiki-search-die"
+                    aria-label="Roll a random page"
+                    onClick={() => {}}
+                    disabled={disabled}
+                >
+                    <svg
+                        className="wiki-search-die__icon"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                    >
+                        <rect x="3.5" y="3.5" width="17" height="17" rx="3" stroke="currentColor" strokeWidth="1.5" />
+                        <circle cx="8" cy="8" r="1.4" fill="currentColor" />
+                        <circle cx="16" cy="16" r="1.4" fill="currentColor" />
+                        <circle cx="16" cy="8" r="1.4" fill="currentColor" />
+                        <circle cx="8" cy="16" r="1.4" fill="currentColor" />
+                        <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+                    </svg>
+                </button>
+            )}
             <input
                 type="text"
                 placeholder={placeholder}
@@ -173,7 +199,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value }) {
                 disabled={disabled}
                 onChange={(e) => setQuery(e.target.value)}
                 onClick={handleClick}
-                className="wiki-search-input"
+                className={`wiki-search-input ${showDie ? "wiki-search-input--with-die" : ""}`}
             />
             {!disabled && isOpen && suggestions.length > 0 && (
                 <div className="wiki-search-suggestions-container">
