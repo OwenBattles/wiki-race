@@ -10,7 +10,10 @@ export function useWikiPage({ setPath }) {
         
         try {
             // Backend automatically handles redirects with redirects: 1
-            const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, ''); // Remove trailing slash
+            const apiUrl = (
+                import.meta.env.VITE_API_URL ||
+                (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')
+            ).replace(/\/$/, ''); // Remove trailing slash
             const res = await fetch(`${apiUrl}/api/wiki/${encodeURIComponent(title)}`);
             
             if (!res.ok) {
