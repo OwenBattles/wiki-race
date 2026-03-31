@@ -1,6 +1,62 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+const escapeHtml = (s) =>
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+function buildTocFromSections(sections) {
+  if (!Array.isArray(sections) || sections.length === 0) return '';
+
+  // Filter out the lead section and any empty anchors.
+  const tocSections = sections
+    .filter((s) => s && s.index !== '0' && s.anchor && s.line)
+    .map((s) => ({
+      anchor: s.anchor,
+      line: s.line,
+      level: Number(s.toclevel || 1),
+      number: s.number,
+    }));
+
+  if (tocSections.length === 0) return '';
+
+  // Build nested <ul> based on toclevel.
+  let html = `<div id="toc" class="toc" role="navigation" aria-label="Contents">`;
+  html += `<div class="toctitle"><h2>Contents</h2></div>`;
+
+  let currentLevel = tocSections[0].level;
+  html += `<ul>`;
+  for (const sec of tocSections) {
+    while (sec.level > currentLevel) {
+      html += `<ul>`;
+      currentLevel += 1;
+    }
+    while (sec.level < currentLevel) {
+      html += `</ul>`;
+      currentLevel -= 1;
+    }
+
+    const num = sec.number ? `<span class="tocnumber">${escapeHtml(sec.number)}</span> ` : '';
+    html += `<li class="toclevel-${sec.level}">`;
+    html += `<a href="#${encodeURIComponent(sec.anchor)}">`;
+    html += `<span class="toctext">${num}${escapeHtml(sec.line)}</span>`;
+    html += `</a>`;
+    html += `</li>`;
+  }
+
+  while (currentLevel > tocSections[0].level) {
+    html += `</ul>`;
+    currentLevel -= 1;
+  }
+
+  html += `</ul></div>`;
+  return html;
+}
+
 // Helper function with redirect support
 const fetchAndClean = async (pageTitle) => {
   const wikipediaApiUrl = `https://en.wikipedia.org/w/api.php`;
@@ -8,6 +64,7 @@ const fetchAndClean = async (pageTitle) => {
       params: {
           action: 'parse',
           page: pageTitle,
+          prop: 'text|sections',
           format: 'json',
           origin: '*',
           redirects: 1
@@ -20,6 +77,7 @@ const fetchAndClean = async (pageTitle) => {
 
   const rawHtml = data.parse.text['*'];
   const finalTitle = data.parse.title;
+  const sections = data.parse.sections || [];
   const $ = cheerio.load(rawHtml);
 
   // Remove gameplay-hindering elements (but keep TOC!)
@@ -87,9 +145,13 @@ const fetchAndClean = async (pageTitle) => {
       }
   });
 
+  const articleBody = $('.mw-parser-output').html();
+  const headerHtml = `<h1 id="firstHeading" class="firstHeading">${escapeHtml(finalTitle)}</h1>`;
+  const tocHtml = buildTocFromSections(sections);
+
   return {
       title: finalTitle,
-      html: $('.mw-parser-output').html()
+      html: `${headerHtml}${tocHtml}${articleBody || ''}`
   };
 };
 

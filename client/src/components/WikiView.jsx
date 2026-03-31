@@ -11,9 +11,11 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
         const anchor = e.target.closest('a');
         if (!anchor || !anchor.getAttribute('href')) return;
 
-        e.preventDefault(); 
-
         const href = anchor.getAttribute('href');
+        // Allow in-page navigation (e.g. Table of Contents)
+        if (href.startsWith('#')) return;
+
+        e.preventDefault(); 
         if (href.startsWith('/wiki/')) {
             const title = decodeURIComponent(href.replace('/wiki/', '')).trim().replace(/_/g, ' ').replace(/\s+/g, ' ');
             onNavigate(title);
