@@ -20,7 +20,7 @@
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  max-width: 1000px;
+  max-width: 1280px;
   width: 100%;
   margin: 0;
   flex-shrink: 0;
@@ -32,6 +32,8 @@
   line-height: 1.6;
   color: #202122;
   background-color: #ffffff;
+  /* Keep TOC + article in the same scroll flow */
+  overflow: visible;
 }
 
 /* Wikipedia-like layout: TOC beside article on desktop */
@@ -44,8 +46,7 @@
 .wiki-view-container .wiki-article-toc {
   flex: 0 0 260px;
   max-width: 260px;
-  position: sticky;
-  top: 1rem;
+  position: static;
 }
 
 .wiki-view-container .wiki-article-content {
@@ -148,6 +149,15 @@
 /* 7. Mobile Responsiveness */
 /* On small screens, force the infobox to stack instead of float */
 @media (max-width: 768px) {
+  .wiki-view-wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .wiki-view-frame {
+    padding: 1.25rem;
+  }
+
   .wiki-view-container .wiki-article-layout {
     flex-direction: column;
   }
