@@ -24,7 +24,7 @@ const AnimatedSuggestionItem = ({ children, delay = 0, index, onMouseEnter, onCl
     );
 };
 
-export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDie = false }) {
+export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDie = false, onDieClick }) {
     const [query, setQuery] = useState(value || "");
     const [suggestions, setSuggestions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -171,7 +171,18 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
                     type="button"
                     className="wiki-search-die"
                     aria-label="Roll a random page"
-                    onClick={() => {}}
+                    onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (disabled) return;
+                        if (!onDieClick) return;
+                        try {
+                            const title = await onDieClick();
+                            if (title) handleSelect(title);
+                        } catch (err) {
+                            console.error("Die roll failed:", err);
+                        }
+                    }}
                     disabled={disabled}
                 >
                     <svg
