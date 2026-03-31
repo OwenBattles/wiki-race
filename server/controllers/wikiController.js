@@ -148,10 +148,14 @@ const fetchAndClean = async (pageTitle) => {
   const articleBody = $('.mw-parser-output').html();
   const headerHtml = `<h1 id="firstHeading" class="firstHeading">${escapeHtml(finalTitle)}</h1>`;
   const tocHtml = buildTocFromSections(sections);
+  const layoutHtml = `<div class="wiki-article-layout">` +
+    `<aside class="wiki-article-toc">${tocHtml}</aside>` +
+    `<div class="wiki-article-content">${articleBody || ''}</div>` +
+    `</div>`;
 
   return {
       title: finalTitle,
-      html: `${headerHtml}${tocHtml}${articleBody || ''}`
+      html: `${headerHtml}${layoutHtml}`
   };
 };
 

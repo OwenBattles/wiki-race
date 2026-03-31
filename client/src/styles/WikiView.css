@@ -34,6 +34,25 @@
   background-color: #ffffff;
 }
 
+/* Wikipedia-like layout: TOC beside article on desktop */
+.wiki-view-container .wiki-article-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.wiki-view-container .wiki-article-toc {
+  flex: 0 0 260px;
+  max-width: 260px;
+  position: sticky;
+  top: 1rem;
+}
+
+.wiki-view-container .wiki-article-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 /* 2. The "Infobox" (The table on the right in your screenshot) */
 .wiki-view-container .infobox {
   border: 1px solid #a2a9b1;
@@ -67,7 +86,7 @@
   border: 1px solid #a2a9b1;
   padding: 7px;
   font-size: 95%;
-  display: table; /* Shrink to fit content */
+  width: 100%;
   margin-bottom: 1em;
 }
 
@@ -129,6 +148,16 @@
 /* 7. Mobile Responsiveness */
 /* On small screens, force the infobox to stack instead of float */
 @media (max-width: 768px) {
+  .wiki-view-container .wiki-article-layout {
+    flex-direction: column;
+  }
+
+  .wiki-view-container .wiki-article-toc {
+    position: static;
+    max-width: none;
+    flex-basis: auto;
+  }
+
   .wiki-view-container .infobox {
     float: none;
     width: 100%;
