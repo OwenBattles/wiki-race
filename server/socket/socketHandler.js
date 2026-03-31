@@ -313,7 +313,7 @@ module.exports = (io) => {
     });
 
     // HANDLE SURRENDER: THIS IS NOT BEING USED FOR NOW
-    socket.on('surrender', (roomCode) => {
+    socket.on('surrender', (roomCode, elapsedTime) => {
       const room = rooms[roomCode];
       if (!room || room.gameState !== "RACING") return;
 
@@ -327,11 +327,22 @@ module.exports = (io) => {
       totalPlayingPlayers = room.players.filter(p => p.isPlaying).length;
       console.log("totalPlayingPlayers", totalPlayingPlayers);
 
-      if (totalPlayingPlayers == 1) {
-        remainingPlayer = room.players.find(p => p.isPlaying);
+      if (totalPlayingPlayers == 0) {
+        placeholderPlayer = {
+          id: "placeholder",
+          username: "Nobody",
+          isHost: false,
+          isPlaying: false,
+          path: [],
+          wins: 0,
+          powerUps: {
+            swap: 0,
+            scramble: 0,
+          }
+        }
         io.to(roomCode).emit('game_won', { 
-          player: remainingPlayer, 
-          totalTime: room.totalTime 
+          player: placeholderPlayer, 
+          totalTime: elapsedTime 
         });
       } else {
         io.to(roomCode).emit('update_player_list', room.players);

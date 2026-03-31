@@ -55,7 +55,8 @@ export function useGameLogic() {
     }
 
     const handleSurrender = () => {
-        SocketService.surrender(roomCode);
+        const elapsedTime = startTime ? Date.now() - startTime : 0;
+        SocketService.surrender(roomCode, elapsedTime);
     }
 
     const handleReturnToLobby = () => {
