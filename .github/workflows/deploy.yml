@@ -1,23 +1,25 @@
-name: Deploy
+name: CI
 
-# Merging to main now updates production. Previously nothing watched the repo, so a merge
-# changed the code and left the running app untouched until someone ran `fly deploy` by hand.
 on:
+  # Merging to main updates production. Previously nothing watched the repo, so a merge
+  # changed the code and left the running app untouched until someone ran `fly deploy`.
   push:
     branches: [main]
-  # Lets you re-run a deploy from the Actions tab without pushing anything.
+  # Every pull request, whatever it targets. Runs the checks only — see the deploy job's
+  # condition below.
+  pull_request:
+  # Lets you exercise the deploy from the Actions tab without pushing anything, which is
+  # the only way to prove the Fly token works before a real merge depends on it.
   workflow_dispatch:
 
-# A second push while a deploy is mid-flight cancels the older one, so the newest commit
-# is what ends up live rather than whichever build happens to finish last.
 concurrency:
-  group: deploy-production
-  cancel-in-progress: true
+  # Per-ref, so a pull request's runs never cancel a deploy or another branch's checks.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Cheap gate. The Docker build would fail on a broken client anyway, but failing here
-  # takes seconds and says plainly which step is wrong.
   check:
+    name: Lint and build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,11 @@ jobs:
         run: npm run build
 
   deploy:
+    name: Deploy to Fly
     needs: check
+    # Never on a pull request: a PR from a fork cannot read secrets anyway, and a PR should
+    # not be able to change production.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
