@@ -1,0 +1,56 @@
+name: Deploy
+
+# Merging to main now updates production. Previously nothing watched the repo, so a merge
+# changed the code and left the running app untouched until someone ran `fly deploy` by hand.
+on:
+  push:
+    branches: [main]
+  # Lets you re-run a deploy from the Actions tab without pushing anything.
+  workflow_dispatch:
+
+# A second push while a deploy is mid-flight cancels the older one, so the newest commit
+# is what ends up live rather than whichever build happens to finish last.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  # Cheap gate. The Docker build would fail on a broken client anyway, but failing here
+  # takes seconds and says plainly which step is wrong.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Lint
+        working-directory: client
+        run: npm run lint
+
+      - name: Build client
+        working-directory: client
+        run: npm run build
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # --remote-only builds on Fly's builders rather than in the runner, so the runner
+      # doesn't need Docker and the build layers stay cached between deploys.
+      - name: Deploy to Fly
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
