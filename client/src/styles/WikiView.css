@@ -1,12 +1,20 @@
-/* client/src/WikiView.css */
+/* client/src/styles/WikiView.css
+ *
+ * The article is meant to read as a real Wikipedia page mounted inside the app: the frame
+ * around it belongs to wiki-race, everything inside it should look like en.wikipedia.org.
+ *
+ * MediaWiki's action=parse gives us its markup but none of its stylesheets (we strip
+ * <style>/<link>), so the rules below reproduce the Vector skin for the classes that
+ * actually appear in the output. Current parser output uses <figure> for thumbnails and
+ * wraps headings in .mw-heading — the older div.thumb markup is gone, so styling that
+ * instead silently does nothing.
+ */
 
-/* 1. Base Layout */
+/* ── Frame ─────────────────────────────────────────────────────────────────────── */
+
 .wiki-view-wrapper {
   margin-top: var(--ingame-header-height, 88px);
-  padding-left: 2rem;
-  padding-right: 2rem;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding: 2rem;
   min-height: calc(100vh - var(--ingame-header-height, 88px));
   background: #F9F7F2;
   display: flex;
@@ -19,35 +27,219 @@
   border: 1px solid #d4d4d4;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
-  /* Let the article span the page width */
-  max-width: none;
+  padding: 2rem 2.5rem;
   width: 100%;
-  margin: 0;
-  flex-shrink: 0;
+  /* Wikipedia constrains its content column; unbounded lines on a wide monitor are both
+     unlike the real thing and hard to scan for links. */
+  max-width: 1280px;
 }
 
+/* ── Loading ───────────────────────────────────────────────────────────────────── */
+
+.wiki-loading-bar {
+  position: fixed;
+  top: var(--ingame-header-height, 88px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(178, 34, 34, 0.12);
+  overflow: hidden;
+  z-index: 150;
+}
+
+.wiki-loading-bar-fill {
+  height: 100%;
+  width: 40%;
+  background: #B22222;
+  animation: wiki-loading-slide 0.9s ease-in-out infinite;
+}
+
+@keyframes wiki-loading-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wiki-loading-bar-fill {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+
+.wiki-view-container.is-loading {
+  opacity: 0.45;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+/* ── Body text ─────────────────────────────────────────────────────────────────── */
+
 .wiki-view-container {
-  font-family: sans-serif;
-  font-size: 16px; /* Wikipedia standard */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.875rem;
   line-height: 1.6;
   color: #202122;
   background-color: #ffffff;
-  /* Keep TOC + article in the same scroll flow */
-  overflow: visible;
+  overflow-wrap: break-word;
 }
 
-/* Wikipedia-like layout: TOC beside article on desktop */
+.wiki-view-container p {
+  margin: 0.5em 0;
+}
+
+.wiki-view-container ul,
+.wiki-view-container ol {
+  margin: 0.3em 0 0 1.6em;
+  padding: 0;
+}
+
+.wiki-view-container li {
+  margin-bottom: 0.1em;
+}
+
+.wiki-view-container dl {
+  margin: 0.2em 0 0.5em;
+}
+
+.wiki-view-container dd {
+  margin-left: 1.6em;
+}
+
+.wiki-view-container dt {
+  font-weight: bold;
+}
+
+.wiki-view-container blockquote {
+  border-left: 3px solid #eaecf0;
+  margin: 1em 0;
+  padding: 0.4em 0 0.4em 1.2em;
+}
+
+.wiki-view-container hr {
+  border: 0;
+  border-top: 1px solid #a2a9b1;
+  margin: 0.5em 0;
+}
+
+.wiki-view-container sup,
+.wiki-view-container sub {
+  font-size: 80%;
+  line-height: 1;
+}
+
+.wiki-view-container code,
+.wiki-view-container pre {
+  font-family: monospace, monospace;
+  background-color: #f8f9fa;
+  border: 1px solid #eaecf0;
+  color: #000;
+}
+
+.wiki-view-container code {
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.wiki-view-container pre {
+  padding: 1em;
+  overflow-x: auto;
+  line-height: 1.3;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────────────── */
+
+/* Current parser output wraps each heading in <div class="mw-heading mw-heading2">, so
+   spacing has to live on the wrapper as well as on bare headings. */
+.wiki-view-container .mw-heading {
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
+.wiki-view-container h1,
+.wiki-view-container h2 {
+  font-family: "Linux Libertine", Georgia, Times, serif;
+  font-weight: normal;
+  border-bottom: 1px solid #a2a9b1;
+  margin: 1em 0 0.25em;
+  padding-bottom: 0.17em;
+  line-height: 1.3;
+}
+
+.wiki-view-container .mw-heading h1,
+.wiki-view-container .mw-heading h2 {
+  margin: 0;
+}
+
+.wiki-view-container h1 { font-size: 1.8em; }
+.wiki-view-container h2 { font-size: 1.5em; }
+
+.wiki-view-container h3,
+.wiki-view-container h4,
+.wiki-view-container h5,
+.wiki-view-container h6 {
+  font-family: inherit;
+  font-weight: bold;
+  border: 0;
+  margin: 0.3em 0 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.wiki-view-container h3 { font-size: 1.2em; }
+.wiki-view-container h4 { font-size: 1.1em; }
+.wiki-view-container h5,
+.wiki-view-container h6 { font-size: 1em; }
+
+/* The article title we render ourselves, matching Wikipedia's firstHeading. */
+.wiki-view-container h1.firstHeading {
+  margin-top: 0;
+  margin-bottom: 0.6em;
+}
+
+/* ── Links ─────────────────────────────────────────────────────────────────────── */
+
+.wiki-view-container a {
+  color: #3366cc;
+  text-decoration: none;
+}
+
+.wiki-view-container a:visited {
+  color: #795cb2;
+}
+
+.wiki-view-container a:hover {
+  text-decoration: underline;
+}
+
+/* Articles that don't exist — Wikipedia's red links. */
+.wiki-view-container a.new,
+.wiki-view-container a.new:visited {
+  color: #d73333;
+}
+
+/* File links have their href stripped server-side; make that non-clickable state read
+   as plain content rather than a dead blue link. */
+.wiki-view-container a:not([href]) {
+  color: inherit;
+  cursor: default;
+}
+
+/* ── Layout: table of contents beside the article ──────────────────────────────── */
+
 .wiki-view-container .wiki-article-layout {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .wiki-view-container .wiki-article-toc {
-  flex: 0 0 260px;
-  max-width: 260px;
-  position: static;
+  flex: 0 0 250px;
+  max-width: 250px;
+  position: sticky;
+  top: calc(var(--ingame-header-height, 88px) + 1rem);
+  max-height: calc(100vh - var(--ingame-header-height, 88px) - 3rem);
+  overflow-y: auto;
 }
 
 .wiki-view-container .wiki-article-content {
@@ -55,26 +247,116 @@
   min-width: 0;
 }
 
-/* 2. The "Infobox" (The table on the right in your screenshot) */
+.wiki-view-container .toc {
+  background-color: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  border-radius: 2px;
+  padding: 0.6em 0.8em;
+  font-size: 95%;
+}
+
+.wiki-view-container .toc .toctitle h2 {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: bold;
+  border: 0;
+  padding: 0;
+  margin: 0 0 0.3em;
+}
+
+.wiki-view-container .toc ul {
+  list-style: none;
+  margin: 0.2em 0 0;
+  padding: 0;
+}
+
+.wiki-view-container .toc ul ul {
+  margin-left: 1.1em;
+}
+
+.wiki-view-container .toc li {
+  margin-bottom: 0.25em;
+  line-height: 1.4;
+}
+
+.wiki-view-container .tocnumber {
+  color: #202122;
+  padding-right: 0.4em;
+}
+
+/* ── Images: current <figure> markup ───────────────────────────────────────────── */
+
+.wiki-view-container figure {
+  margin: 0.5em 0 1.3em 1.4em;
+  padding: 0;
+  float: right;
+  clear: right;
+  background-color: #f8f9fa;
+  border: 1px solid #c8ccd1;
+  border-radius: 2px;
+  max-width: 100%;
+}
+
+.wiki-view-container figure > a,
+.wiki-view-container figure > span {
+  display: block;
+  padding: 3px;
+}
+
+.wiki-view-container figcaption {
+  font-size: 94%;
+  line-height: 1.4;
+  padding: 0 3px 3px;
+  color: #202122;
+}
+
+.wiki-view-container figure.mw-halign-left,
+.wiki-view-container figure[typeof~="mw:File/Thumb"].mw-halign-left {
+  float: left;
+  clear: left;
+  margin: 0.5em 1.4em 1.3em 0;
+}
+
+.wiki-view-container figure.mw-halign-center {
+  float: none;
+  clear: both;
+  margin: 0.5em auto 1.3em;
+}
+
+/* Inline images (no frame) should not pick up the thumbnail chrome. */
+.wiki-view-container figure[typeof~="mw:File"]:not([typeof~="mw:File/Thumb"]):not([typeof~="mw:File/Frame"]) {
+  background: none;
+  border: 0;
+}
+
+.wiki-view-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+.wiki-view-container audio,
+.wiki-view-container video {
+  max-width: 100%;
+}
+
+/* ── Infobox ───────────────────────────────────────────────────────────────────── */
+
 .wiki-view-container .infobox {
   border: 1px solid #a2a9b1;
+  border-spacing: 3px;
   background-color: #f8f9fa;
-  color: black;
+  color: #202122;
   margin: 0.5em 0 0.5em 1em;
   padding: 0.2em;
-  float: right; /* This makes it sit on the right side */
+  float: right;
   clear: right;
-  width: 22em; /* Standard width */
+  width: 22em;
+  max-width: 100%;
   font-size: 88%;
-  line-height: 1.5em;
+  line-height: 1.5;
 }
 
-.wiki-view-container .infobox td,
-.wiki-view-container .infobox th {
-  vertical-align: top;
-  text-align: left;
-}
-
+.wiki-view-container .infobox-title,
 .wiki-view-container .infobox caption {
   font-size: 125%;
   font-weight: bold;
@@ -82,77 +364,115 @@
   text-align: center;
 }
 
-/* 3. The "Table of Contents" (The box with the list of sections) */
-.wiki-view-container .toc {
-  background-color: #f8f9fa;
-  border: 1px solid #a2a9b1;
-  padding: 7px;
-  font-size: 95%;
-  width: 100%;
-  margin-bottom: 1em;
+.wiki-view-container .infobox td,
+.wiki-view-container .infobox th {
+  vertical-align: top;
+  text-align: left;
+  padding: 0.2em 0.4em;
+  /* Coordinate strings are stitched together with zero-width no-break spaces, producing
+     single chunks wider than the 22em box. Without this they overflow and clip. */
+  overflow-wrap: break-word;
 }
 
-.wiki-view-container .toc h2 {
-  font-family: sans-serif;
-  font-size: 100%;
-  font-weight: bold;
-  border: none;
-  padding: 0;
-  margin: 0;
-  display: inline;
+/* Kartographer embeds carry an inline min-width (270px) that is wider than the infobox
+   itself, forcing the whole box to overflow. */
+.wiki-view-container .mw-kartographer-map {
+  min-width: 0 !important;
+  max-width: 100%;
+  display: block;
 }
 
-.wiki-view-container .toc ul {
-  list-style-image: none;
-  list-style-type: none;
-  margin: 0.3em 0;
-  padding-left: 2em;
-}
-
-/* 4. Images & Thumbnails (If you decide to keep images) */
-.wiki-view-container .thumb {
-  margin-bottom: 0.5em;
-  border: 1px solid #c8ccd1;
-  background-color: #f8f9fa;
-  font-size: 94%;
+.wiki-view-container .infobox-header,
+.wiki-view-container .infobox-above,
+.wiki-view-container .infobox-below {
   text-align: center;
-  overflow: hidden;
 }
 
-.wiki-view-container .tright {
-  float: right;
-  clear: right;
-  margin: 0.5em 0 1.3em 1.4em;
+.wiki-view-container .infobox img {
+  display: block;
+  margin: 0 auto;
 }
 
-/* 5. Headings */
-.wiki-view-container h1,
-.wiki-view-container h2 {
-  font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
-  border-bottom: 1px solid #a2a9b1;
-  font-weight: normal;
-  margin-bottom: 0.25em;
-  margin-top: 1em;
+.wiki-view-container .infobox figure {
+  float: none;
+  margin: 0 auto;
+  border: 0;
+  background: none;
 }
 
-.wiki-view-container h1 { font-size: 1.8em; }
-.wiki-view-container h2 { font-size: 1.5em; }
+/* ── Tables ────────────────────────────────────────────────────────────────────── */
 
-/* 6. Standard Links */
-.wiki-view-container a {
-  color: #3366cc;
-  text-decoration: none;
-}
-.wiki-view-container a:hover {
-  text-decoration: underline;
+.wiki-view-container .wikitable {
+  background-color: #f8f9fa;
+  color: #202122;
+  margin: 1em 0;
+  border: 1px solid #a2a9b1;
+  border-collapse: collapse;
+  font-size: 100%;
 }
 
-/* 7. Mobile Responsiveness */
-/* On small screens, force the infobox to stack instead of float */
-@media (max-width: 768px) {
+.wiki-view-container .wikitable > * > tr > th,
+.wiki-view-container .wikitable > * > tr > td {
+  border: 1px solid #a2a9b1;
+  padding: 0.2em 0.4em;
+}
+
+.wiki-view-container .wikitable > * > tr > th {
+  background-color: #eaecf0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.wiki-view-container .wikitable caption {
+  font-weight: bold;
+  padding: 0.2em;
+}
+
+/* Wide tables should scroll rather than blow out the column. */
+.wiki-view-container .wiki-article-content > table,
+.wiki-view-container .wikitable {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* ── hlist: inline lists used heavily inside infoboxes ─────────────────────────── */
+
+.wiki-view-container .hlist ul,
+.wiki-view-container .hlist ol,
+.wiki-view-container .hlist dl {
+  margin: 0;
+  padding: 0;
+}
+
+.wiki-view-container .hlist li,
+.wiki-view-container .hlist dd,
+.wiki-view-container .hlist dt {
+  display: inline;
+  margin: 0;
+}
+
+.wiki-view-container .hlist li::after,
+.wiki-view-container .hlist dd::after {
+  content: " · ";
+  font-weight: bold;
+}
+
+.wiki-view-container .hlist li:last-child::after,
+.wiki-view-container .hlist dd:last-child::after,
+.wiki-view-container .hlist dt:last-child::after {
+  content: none;
+}
+
+.wiki-view-container .nowrap {
+  white-space: nowrap;
+}
+
+/* ── Narrow screens ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
   .wiki-view-wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 1rem;
   }
 
   .wiki-view-frame {
@@ -166,57 +486,27 @@
   .wiki-view-container .wiki-article-toc {
     position: static;
     max-width: none;
+    max-height: none;
     flex-basis: auto;
+    width: 100%;
   }
 
-  .wiki-view-container .infobox {
+  /* Floating a 22em infobox in a phone-width column leaves a sliver of text beside it. */
+  .wiki-view-container .infobox,
+  .wiki-view-container figure {
     float: none;
-    width: 100%;
-    margin: 0;
+    clear: both;
+    width: auto;
+    margin: 0.8em auto;
   }
 }
 
 @media (max-width: 430px) {
   .wiki-view-wrapper {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 0.75rem;
   }
 
   .wiki-view-frame {
     padding: 1rem;
   }
-}
-
-/* Make images responsive so they don't overflow */
-.wiki-view-container img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Style the thumbnail caption box */
-.wiki-view-container .thumb {
-  border: 1px solid #c8ccd1;
-  background-color: #f8f9fa;
-  margin-bottom: 0.5em;
-  /* Float logic handled by .tright/.tleft classes from Wikipedia */
-}
-
-.wiki-view-container .thumbinner {
-  padding: 3px;
-  text-align: center;
-}
-
-.wiki-view-container .thumbcaption {
-  font-size: 94%;
-  padding: 3px;
-  text-align: left;
-  line-height: 1.4em;
-}
-
-/* Ensure the infobox image centers correctly */
-.wiki-view-container .infobox img {
-  display: block;
-  margin: 0 auto;
 }

@@ -1,161 +1,120 @@
-.powerup-settings-container {
-    position: relative;
-    /* Above TitleEndpoints / WikiSearchInput suggestion lists (z-index: 10) */
-    z-index: 50;
-}
-
-.powerup-settings-toggle {
-    padding: 1rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    border-radius: 0.375rem;
-    border: 1.5px solid #d4d4d4;
-    background: #ffffff;
-    color: #1a1a1a;
-    cursor: pointer;
-    transition: all 0.25s ease;
+.powerup-settings {
+    /* Full width so the heading and rows share a left edge with the page inputs above. */
+    width: 100%;
     font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.6;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
-.powerup-settings-toggle:hover {
-    background: #F9F7F2;
-    border-color: #B22222;
-    color: #B22222;
-}
-
-.powerup-settings-panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    margin-top: 0.5rem;
-    background: #ffffff;
-    border: 1px solid #d4d4d4;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    min-width: 280px;
-    z-index: 1;
+.powerup-settings-heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.08em;
+    color: #6b6b6b;
 }
 
 .powerup-settings-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.5rem;
 }
 
-.powerup-settings-item {
+.powerup-settings-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 0.9rem;
+    background: #ffffff;
+    border: 1px solid #e5e2db;
+    border-left: 3px solid #e0ddd6;
+    border-radius: 0.5rem;
+    transition: border-color 0.2s ease;
+}
+
+/* A power-up that is actually in play picks up the accent, so the round's rules are
+   readable at a glance rather than by counting zeroes. */
+.powerup-settings-row.is-active {
+    border-color: rgba(178, 34, 34, 0.22);
+    border-left-color: rgba(178, 34, 34, 0.65);
+}
+
+.powerup-settings-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
 }
 
 .powerup-settings-label {
-    font-weight: 400;
+    font-size: 0.95rem;
     color: #1a1a1a;
-    font-size: 1rem;
-    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.4;
 }
 
-.powerup-settings-controls {
+.powerup-settings-description {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #8a8a8a;
+    line-height: 1.4;
+}
+
+.powerup-settings-stepper {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.15rem;
+    flex-shrink: 0;
 }
 
-.powerup-settings-button {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.25rem;
-    border: 1px solid #d4d4d4;
-    background: #ffffff;
-    color: #1a1a1a;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.powerup-settings-step {
+    width: 1.75rem;
+    height: 1.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.125rem;
-    font-weight: 400;
-    font-family: Georgia, "Times New Roman", serif;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+    background: none;
+    color: #6b6b6b;
+    font-family: inherit;
+    font-size: 1rem;
     line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-.powerup-settings-button:hover:not(:disabled) {
+.powerup-settings-step:hover:not(:disabled) {
     background: #F9F7F2;
-    border-color: #B22222;
+    border-color: rgba(178, 34, 34, 0.35);
     color: #B22222;
 }
 
-.powerup-settings-button:disabled {
-    background: #f0f0f0;
-    color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.6;
+.powerup-settings-step:disabled {
+    opacity: 0.3;
+    cursor: default;
 }
 
-.powerup-settings-button.increment:not(:disabled) {
-    background: #B22222;
-    color: #ffffff;
-    border-color: #B22222;
-}
-
-.powerup-settings-button.increment:not(:disabled):hover {
-    background: #991f1f;
-    border-color: #991f1f;
-}
-
-.powerup-settings-value {
-    width: 2rem;
+.powerup-settings-count {
+    min-width: 1.5rem;
     text-align: center;
-    font-weight: 400;
     font-size: 1rem;
     color: #1a1a1a;
-    font-family: Georgia, "Times New Roman", serif;
+    font-variant-numeric: tabular-nums;
 }
 
-.powerup-settings-view-only {
-    padding: 1.5rem;
-    background: #F9F7F2;
-    border: 1px solid #e5e5e5;
-    border-radius: 0.375rem;
+.powerup-settings-count.is-readonly {
+    color: #6b6b6b;
+    flex-shrink: 0;
 }
 
-.powerup-settings-view-only-item {
-    padding: 0.5rem 0;
-    color: #1a1a1a;
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    font-family: Georgia, "Times New Roman", serif;
-    border-bottom: 1px solid #e5e5e5;
+.powerup-settings-note {
+    margin: 0.7rem 0 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: #a5a19a;
+    line-height: 1.5;
 }
-
-.powerup-settings-view-only-item:last-child {
-    border-bottom: none;
-}
-
-.powerup-settings-view-toggle {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.8125rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    border-radius: 0.375rem;
-    border: 1.5px solid #d4d4d4;
-    background: #ffffff;
-    color: #1a1a1a;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.6;
-}
-
-.powerup-settings-view-toggle:hover {
-    background: #F9F7F2;
-    border-color: #B22222;
-    color: #B22222;
-}
-

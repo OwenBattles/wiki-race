@@ -33,7 +33,9 @@ export const GameProvider = ({ children }) => {
     const [powerUps, setPowerUps] = useState({ swap: 0, scramble: 0, freeze: 0 });
     const [inventory, setInventory] = useState({ swap: 0, scramble: 0, freeze: 0 });
     const [victimPowerUpNotice, setVictimPowerUpNotice] = useState(null);
-    const [moveError, setMoveError] = useState(null);
+    // One channel for anything the player needs told: rejected moves, socket errors,
+    // validation. Replaces three separate alert() calls.
+    const [notice, setNotice] = useState(null);
 
     // "pending" covers both a restore in flight on page load and a create/join we've just
     // fired. Routing waits on this so it never bounces a player home mid-handshake.
@@ -42,6 +44,11 @@ export const GameProvider = ({ children }) => {
     // fetchPage is a useCallback over the stable setPath, so its identity never changes —
     // safe to depend on from the socket effect below without re-registering handlers.
     const { fetchPage, isLoading } = useWikiPage({ setPath });
+
+    const showNotice = useCallback((message, tone = 'error') => {
+        // Re-set even for an identical message so the auto-dismiss timer restarts.
+        setNotice({ message, tone, at: Date.now() });
+    }, []);
 
     const beginSession = useCallback(() => setSessionStatus('pending'), []);
 
@@ -57,10 +64,10 @@ export const GameProvider = ({ children }) => {
     }, [victimPowerUpNotice]);
 
     useEffect(() => {
-        if (!moveError) return;
-        const id = window.setTimeout(() => setMoveError(null), 4000);
+        if (!notice) return;
+        const id = window.setTimeout(() => setNotice(null), 4500);
         return () => clearTimeout(id);
-    }, [moveError]);
+    }, [notice]);
 
     useEffect(() => {
         let rejoinTimer = null;
@@ -154,7 +161,7 @@ export const GameProvider = ({ children }) => {
             setInventory({ swap: 0, scramble: 0, freeze: 0 });
             setPath([]);
             setVictimPowerUpNotice(null);
-            setMoveError(null);
+            setNotice(null);
         });
 
         socket.on('surrendered_to_lobby', ({ startPage, targetPage, powerUps: roomPowerUps }) => {
@@ -180,7 +187,7 @@ export const GameProvider = ({ children }) => {
         // The server refused the move we already rendered optimistically. Rewind to the
         // page it says we're on rather than leaving the view ahead of the real state.
         socket.on('move_rejected', ({ currentPageTitle: serverTitle, reason }) => {
-            setMoveError(reason || "That move wasn't allowed.");
+            setNotice({ message: reason || "That move wasn't allowed.", tone: 'error', at: Date.now() });
             setPath(prev => {
                 if (prev.length < 2) return prev;
                 const rewound = prev.slice(0, -1);
@@ -226,7 +233,7 @@ export const GameProvider = ({ children }) => {
         });
 
         socket.on('error', (msg) => {
-            alert(msg);
+            setNotice({ message: String(msg), tone: 'error', at: Date.now() });
             // A failure while joining means there is no seat to hold; a failure mid-game
             // (e.g. a refunded power-up) must not evict an active player.
             setSessionStatus((prev) => (prev === 'pending' ? 'none' : prev));
@@ -276,7 +283,7 @@ export const GameProvider = ({ children }) => {
         powerUps,
         inventory,
         victimPowerUpNotice,
-        moveError,
+        notice, showNotice,
         // Page loading
         fetchPage, isLoading,
         // Reconnect

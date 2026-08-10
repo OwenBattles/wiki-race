@@ -11,7 +11,7 @@ export function useHomeLogic() {
     const [error, setError] = useState("");
 
     const handleCreateRoom = (username) => {
-        if (!username) return setError("Name required");
+        if (!username) return setError("Enter a username to continue.");
 
         setUsername(username);
         setIsHost(true);
@@ -35,5 +35,5 @@ export function useHomeLogic() {
         navigate('/game');
     };
 
-    return { handleCreateRoom, handleFindRoom, handleJoinRoom, error };
+    return { handleCreateRoom, handleFindRoom, handleJoinRoom, error, setError };
 }

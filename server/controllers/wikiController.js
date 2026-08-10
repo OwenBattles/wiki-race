@@ -215,15 +215,12 @@ const fetchAndClean = async (pageTitle) => {
 
       const srcset = $el.attr('srcset');
       if (srcset) {
-          // Per candidate, not a blanket replace: a global //->https:// rewrite also
-          // mangles any URL that is already absolute.
-          $el.attr(
-              'srcset',
-              srcset
-                  .split(',')
-                  .map((candidate) => absolutize(candidate.trim()))
-                  .join(', ')
-          );
+          // Rewrite only the "//" that begins a candidate. srcset cannot simply be split on
+          // commas — Wikipedia's Kartographer map URLs contain them
+          // (…/img/osm-intl,13,a,a,270x200.png) and splitting shreds the URL. Anchoring on
+          // start-or-comma also avoids the opposite bug of a blanket //->https:// replace,
+          // which mangles URLs that are already absolute.
+          $el.attr('srcset', srcset.replace(/(^|,\s*)\/\//g, '$1https://'));
       }
 
       $el.removeAttr('loading');

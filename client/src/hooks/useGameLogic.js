@@ -2,7 +2,7 @@ import { useGame } from "../contexts/gameContext";
 import { SocketService } from "../services/socketService";
 
 export function useGameLogic() {
-    const { roomCode, gameSettings, fetchPage } = useGame();
+    const { roomCode, gameSettings, fetchPage, showNotice } = useGame();
 
     const handleStartPoint = (pageTitle) => {
         SocketService.setStartPage(roomCode, pageTitle);
@@ -22,7 +22,7 @@ export function useGameLogic() {
 
     const handleStartGame = () => {
         if (!(gameSettings.startPage && gameSettings.targetPage)) {
-            alert("Enter a starting page and a target page");
+            showNotice("Choose a starting page and a destination first.");
             return;
         }
         SocketService.startGame(roomCode);

@@ -6,6 +6,7 @@ import { UsernameInput } from "../components/UsernameInput";
 import { JoinLobby } from "../components/JoinLobby";
 import { CreateLobby } from "../components/CreateLobby";
 import { Typewriter } from "../components/Typewriter";
+import { Notice } from "../components/Notice";
 import '../styles/HomePage.css';
 
 export default function HomePage() {
@@ -13,11 +14,11 @@ export default function HomePage() {
 
     const { roomCode, setRoomCode, validRoomCode } = useGame();
 
-    const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
+    const { handleCreateRoom, handleFindRoom, handleJoinRoom, error, setError } = useHomeLogic();
 
     const handleJoin = () => {
         if (!usernameInput) {
-            alert("Enter a Username");
+            setError("Enter a username to continue.");
             return;
         }
         handleJoinRoom(roomCode, usernameInput);
@@ -25,7 +26,7 @@ export default function HomePage() {
 
     const handleCreate = () => {
         if (!usernameInput) {
-            alert("Enter a Username");
+            setError("Enter a username to continue.");
             return;
         }
         handleCreateRoom(usernameInput);
@@ -46,11 +47,7 @@ export default function HomePage() {
                 <div className="home-card">
                     <div className="home-card-content">
                         {/* Error Message */}
-                        {error && (
-                            <div className="home-error">
-                                <p className="home-error-text">{error}</p>
-                            </div>
-                        )}
+                        {error && <Notice>{error}</Notice>}
 
                         {/* Username Input */}
                         <UsernameInput value={usernameInput} onChange={setUsernameInput} />

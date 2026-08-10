@@ -98,7 +98,7 @@
     font-size: 1.125rem;
     font-weight: 400;
     color: #1a1a1a;
-    margin: 0 0 1.25rem 0;
+    margin: 0 0 1rem 0;
     letter-spacing: 0.01em;
     border-bottom: 1px solid #e5e5e5;
     padding-bottom: 0.75rem;
@@ -113,72 +113,106 @@
     gap: 0.875rem;
 }
 
-.ingame-header-powerups-player {
-    padding: 0.875rem 1rem;
+/* Power-up cards: pick the power-up first, then a target. */
+.ingame-header-powerup-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0.9rem;
     background: #F9F7F2;
     border: 1px solid #e5e5e5;
     border-radius: 0.375rem;
-}
-
-.ingame-header-powerups-player-name {
-    margin: 0 0 0.5rem 0;
-    font-weight: 400;
-    font-size: 0.9375rem;
-    color: #1a1a1a;
-    line-height: 1.6;
-}
-
-.ingame-header-powerups-toggle {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    border-radius: 0.25rem;
-    border: 1px solid #d4d4d4;
-    background: #ffffff;
-    color: #1a1a1a;
     cursor: pointer;
-    transition: all 0.2s ease;
+    text-align: left;
     font-family: Georgia, "Times New Roman", serif;
-    width: 100%;
+    transition: all 0.2s ease;
 }
 
-.ingame-header-powerups-toggle:hover {
-    background: #F9F7F2;
-    border-color: #B22222;
-    color: #B22222;
-}
-
-.ingame-header-powerups-menu {
-    margin-top: 0.5rem;
-    padding: 0.75rem;
+.ingame-header-powerup-card:hover {
     background: #ffffff;
-    border: 1px solid #d4d4d4;
-    border-radius: 0.375rem;
+    border-color: #B22222;
+}
+
+.ingame-header-powerup-heading {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
 
-.ingame-header-powerups-item {
-    padding: 0.625rem 0.75rem;
+.ingame-header-powerup-name {
+    font-size: 1rem;
+    color: #1a1a1a;
+    letter-spacing: 0.01em;
+}
+
+.ingame-header-powerup-card:hover .ingame-header-powerup-name {
+    color: #B22222;
+}
+
+.ingame-header-powerup-count {
     font-size: 0.8125rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    border-radius: 0.25rem;
-    border: 1px solid #d4d4d4;
+    color: #6b6b6b;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+
+.ingame-header-powerup-description {
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: #6b6b6b;
+    line-height: 1.5;
+}
+
+.ingame-header-powerup-target {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9375rem;
+    border-radius: 0.375rem;
+    border: 1px solid #e5e5e5;
     background: #F9F7F2;
     color: #1a1a1a;
     cursor: pointer;
-    transition: all 0.2s ease;
+    text-align: left;
     font-family: Georgia, "Times New Roman", serif;
-    text-align: center;
+    transition: all 0.2s ease;
 }
 
-.ingame-header-powerups-item:hover {
+.ingame-header-powerup-target:hover {
     background: #ffffff;
     border-color: #B22222;
     color: #B22222;
+}
+
+.ingame-header-powerups-back {
+    margin-top: 1rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #6b6b6b;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 0.8125rem;
+    font-style: italic;
+    cursor: pointer;
+}
+
+.ingame-header-powerups-back:hover {
+    color: #B22222;
+}
+
+.ingame-header-powerups-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    min-width: 1.35rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    background: #B22222;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .ingame-header-surrender {
