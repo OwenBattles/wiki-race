@@ -5,13 +5,9 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 const path = require('path');
 const wikiRoutes = require('./routes/wikiRoutes'); 
-
-// 1. Import your socket logic file
-// (Ensure the path matches where you saved that file!)
 const socketHandler = require('./socket/socketHandler'); 
 
 const app = express();
-// Fly normally sets PORT to match fly.toml internal_port; Dockerfile sets PORT=8080 as fallback.
 const PORT = Number(process.env.PORT) || (process.env.NODE_ENV === 'production' ? 8080 : 3000);
 
 app.use(cors());
