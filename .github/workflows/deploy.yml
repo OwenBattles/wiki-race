@@ -46,6 +46,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Without this the run fails deep inside flyctl with an auth error that reads like a
+      # Fly outage rather than a missing secret.
+      - name: Check the deploy token is configured
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "::error::FLY_API_TOKEN is not set. Create a token with 'fly tokens create deploy'," \
+                 "then add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       # --remote-only builds on Fly's builders rather than in the runner, so the runner
