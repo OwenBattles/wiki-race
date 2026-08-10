@@ -50,11 +50,12 @@ jobs:
       # Fly outage rather than a missing secret.
       - name: Check the deploy token is configured
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_KEY }}
         run: |
           if [ -z "$FLY_API_TOKEN" ]; then
-            echo "::error::FLY_API_TOKEN is not set. Create a token with 'fly tokens create deploy'," \
-                 "then add it under Settings > Secrets and variables > Actions."
+            echo "::error::The FLY_API_KEY secret is empty or missing. Create a token with" \
+                 "'fly tokens create deploy', then set it under Settings > Secrets and" \
+                 "variables > Actions. flyctl reads it as FLY_API_TOKEN."
             exit 1
           fi
 
@@ -65,4 +66,4 @@ jobs:
       - name: Deploy to Fly
         run: flyctl deploy --remote-only
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_KEY }}
