@@ -6,6 +6,7 @@ import { UsernameInput } from "../components/UsernameInput";
 import { JoinLobby } from "../components/JoinLobby";
 import { CreateLobby } from "../components/CreateLobby";
 import { Typewriter } from "../components/Typewriter";
+import { Globe } from "../components/Globe";
 import { Notice } from "../components/Notice";
 import '../styles/HomePage.css';
 
@@ -37,6 +38,7 @@ export default function HomePage() {
             <div className="home-container">
                 {/* Header */}
                 <div className="home-header">
+                    <Globe />
                     <h1 className="home-title">
                         <Typewriter text="Wiki Race" speed={120} />
                     </h1>
