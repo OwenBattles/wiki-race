@@ -1,6 +1,17 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+const WIKIPEDIA_API_URL = 'https://en.wikipedia.org/w/api.php';
+
+// Every outbound call goes through this client so none of them can hang forever. An
+// unbounded request would stall the socket handler that awaited it, and a rejection with
+// no timeout attached is what used to surface as an unhandled rejection.
+const wikipedia = axios.create({
+  baseURL: WIKIPEDIA_API_URL,
+  timeout: 10000,
+  headers: { 'User-Agent': 'wiki-race-game (https://github.com/owenbattles/wiki-race)' },
+});
+
 const escapeHtml = (s) =>
   String(s)
     .replace(/&/g, '&amp;')
@@ -59,8 +70,7 @@ function buildTocFromSections(sections) {
 
 // Helper function with redirect support
 const fetchAndClean = async (pageTitle) => {
-  const wikipediaApiUrl = `https://en.wikipedia.org/w/api.php`;
-  const response = await axios.get(wikipediaApiUrl, {
+  const response = await wikipedia.get('', {
       params: {
           action: 'parse',
           page: pageTitle,
@@ -68,8 +78,7 @@ const fetchAndClean = async (pageTitle) => {
           format: 'json',
           origin: '*',
           redirects: 1
-      },
-      headers: { 'User-Agent': 'wiki-race-game' }
+      }
   });
 
   const data = response.data;
@@ -160,8 +169,7 @@ const fetchAndClean = async (pageTitle) => {
 };
 
 const fetchRandomArticleTitle = async () => {
-  const wikipediaApiUrl = `https://en.wikipedia.org/w/api.php`;
-  const response = await axios.get(wikipediaApiUrl, {
+  const response = await wikipedia.get('', {
     params: {
       action: 'query',
       format: 'json',
@@ -170,7 +178,6 @@ const fetchRandomArticleTitle = async () => {
       rnlimit: 1,
       origin: '*',
     },
-    headers: { 'User-Agent': 'wiki-race-game' },
   });
 
   const title = response.data?.query?.random?.[0]?.title;
@@ -178,11 +185,39 @@ const fetchRandomArticleTitle = async () => {
   return title;
 };
 
+// Resolve a title to its canonical form, following redirects, without parsing the whole
+// article. Used to pin down the target page once at the start of a round so the win check
+// compares like with like — "America" and "United States" must not read as different
+// pages just because the host typed one and the player arrived at the other.
+const resolveTitle = async (title) => {
+  const response = await wikipedia.get('', {
+    params: {
+      action: 'query',
+      format: 'json',
+      titles: title,
+      redirects: 1,
+      origin: '*',
+    },
+  });
+
+  const pages = response.data?.query?.pages;
+  if (!pages) throw new Error('Page not found');
+
+  const page = Object.values(pages)[0];
+  if (!page || page.missing !== undefined) throw new Error('Page not found');
+  return page.title;
+};
+
 // Export for Socket.io
 exports.fetchWikiHtml = async (pageTitle) => {
     const result = await fetchAndClean(pageTitle);
     return result.html;
 };
+
+// Export for Socket.io — canonical title plus html, for callers that need both.
+exports.fetchWikiPage = fetchAndClean;
+
+exports.resolveTitle = resolveTitle;
 
 // Export for REST API
 exports.getWikiPage = async (req, res) => {
@@ -217,12 +252,6 @@ exports.getRandomPage = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch random article' });
   }
-};
-
-exports.fetchRandomPageHtml = async () => {
-  const randomTitle = await fetchRandomArticleTitle();
-  const result = await fetchAndClean(randomTitle);
-  return result.html;
 };
 
 // Export for Socket.io (random page with canonical title + html)

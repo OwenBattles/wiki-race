@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Local secrets / overrides (client/.env.development and .env.production are
+# committed on purpose — they only hold the public API base URL)
+.env
+.env.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

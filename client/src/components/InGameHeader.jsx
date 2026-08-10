@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Timer } from './Timer';
 import '../styles/InGameHeader.css';
 
-export function InGameHeader({ targetPage, onSurrender, username, players, powerUps, handleUsePowerUp }) {
+export function InGameHeader({ targetPage, onSurrender, username, players, inventory, handleUsePowerUp }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [openPowerUpIndex, setOpenPowerUpIndex] = useState(null);
     const dropdownRef = useRef(null);
@@ -25,8 +25,10 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
         };
     }, [isDropdownOpen]);
 
-    const opponents = players.filter(player => player.username !== username);
-    const hasPowerUps = powerUps && (powerUps.swap > 0 || powerUps.scramble > 0 /* || powerUps.freeze > 0 */);
+    // Only racers can be targeted — the server rejects power-ups aimed at anyone who has
+    // surrendered or joined mid-round, so don't offer them as options.
+    const opponents = players.filter(player => player.username !== username && player.isPlaying);
+    const hasPowerUps = inventory && (inventory.swap > 0 || inventory.scramble > 0 /* || inventory.freeze > 0 */);
 
     return (
         <div className="ingame-header">
@@ -40,7 +42,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                 </div>
             </div>
             <div className="ingame-header-right">
-                {players.length > 1 && hasPowerUps && (
+                {opponents.length > 0 && hasPowerUps && (
                     <div className="ingame-header-powerups-container" ref={dropdownRef}>
                         <button 
                             className="ingame-header-powerups-button" 
@@ -63,7 +65,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                             </button>
                                             {openPowerUpIndex === player.id && (
                                                 <div className="ingame-header-powerups-menu">
-                                                    {powerUps.swap > 0 && (
+                                                    {inventory.swap > 0 && (
                                                         <button 
                                                             className="ingame-header-powerups-item"
                                                             onClick={() => {
@@ -72,10 +74,10 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                                                 setIsDropdownOpen(false);
                                                             }}
                                                         >
-                                                            Swap ({powerUps.swap})
+                                                            Swap ({inventory.swap})
                                                         </button>
                                                     )}
-                                                    {powerUps.scramble > 0 && (
+                                                    {inventory.scramble > 0 && (
                                                         <button 
                                                             className="ingame-header-powerups-item"
                                                             onClick={() => {
@@ -84,10 +86,10 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                                                 setIsDropdownOpen(false);
                                                             }}
                                                         >
-                                                            Scramble ({powerUps.scramble})
+                                                            Scramble ({inventory.scramble})
                                                         </button>
                                                     )}
-                                                    {/* {powerUps.freeze > 0 && (
+                                                    {/* {inventory.freeze > 0 && (
                                                         <button 
                                                             className="ingame-header-powerups-item"
                                                             onClick={() => {
@@ -96,7 +98,7 @@ export function InGameHeader({ targetPage, onSurrender, username, players, power
                                                                 setIsDropdownOpen(false);
                                                             }}
                                                         >
-                                                            Freeze ({powerUps.freeze})
+                                                            Freeze ({inventory.freeze})
                                                         </button>
                                                     )} */}
                                                 </div>

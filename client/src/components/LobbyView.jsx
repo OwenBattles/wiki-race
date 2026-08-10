@@ -3,7 +3,7 @@ import { PowerUpSettings } from "./PowerUpSettings";
 import '../styles/LobbyView.css';
 import '../styles/StartGameButton.css';
 
-export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpSettings, handlePowerUpChange, powerUps }) {
+export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpChange, powerUps }) {
     const canStartGame = gameSettings.startPage && gameSettings.targetPage;
 
     return (
@@ -22,8 +22,13 @@ export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect,
                 gameSettings={gameSettings}
             />
             <ul className="game-player-list">
-                {players.map((player, id) => (
-                    <li key={id} className="game-player-item">{player.username}</li>
+                {players.map((player) => (
+                    <li key={player.id} className="game-player-item">
+                        {player.username}
+                        {player.connected === false && (
+                            <span className="game-player-reconnecting"> (reconnecting…)</span>
+                        )}
+                    </li>
                 ))}
             </ul>
             {isHost ? (

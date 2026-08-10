@@ -18,22 +18,8 @@ export const SocketService = {
         socket.emit('find_room', roomCode);
     },
 
-    validateUsername: (roomCode, username) => {
-        const response = socket.emit('check_username', { roomCode, username });
-        return response;
-    },
-
     joinRoom: (roomCode, username) => {
-        // Ensure uppercase to match server logic
         socket.emit('join_room', { roomCode, username });
-    },
-
-    checkUsername: (roomCode, username) => {
-        socket.emit('check_username', { lobbyCode: roomCode, username });
-    },
-
-    leaveLobby: (roomCode) => {
-        socket.emit('leave_game', roomCode);
     },
 
     // --- GAME ACTIONS ---
@@ -58,7 +44,8 @@ export const SocketService = {
         socket.emit('set_power_up', { roomCode, powerUpType, value });
     },
 
-    usePowerUp: (roomCode, powerUpType, victimId) => {
+    // Named "send" rather than "use" so lint doesn't mistake it for a React hook.
+    sendPowerUp: (roomCode, powerUpType, victimId) => {
         socket.emit('use_power_up', { roomCode, powerUpType, victimId });
     },
 

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GameProvider } from './contexts/GameContext'; 
+import { GameProvider } from './contexts/GameProvider';
 import { NavigationBlocker } from './components/NavigationBlocker';
-import { RefreshRedirect } from './components/RefreshRedirect';
+import { SessionGate } from './components/SessionGate';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
 
@@ -10,7 +10,7 @@ function App() {
     <GameProvider> 
       <BrowserRouter>
         <NavigationBlocker />
-        <RefreshRedirect />
+        <SessionGate />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/game" element={<GamePage />} />

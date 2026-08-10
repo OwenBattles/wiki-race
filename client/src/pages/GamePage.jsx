@@ -1,37 +1,36 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 
-import { GameContext } from '../contexts/GameContext';
+import { useGame } from '../contexts/gameContext';
 import { useGameLogic } from '../hooks/useGameLogic';
 
 import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
-import { InGameSidebar } from '../components/InGameSidebar';
 import { PowerUpNotificationForVictim } from '../components/PowerUpNotificationForVictim';
 import { SurrenderedLobbyView } from '../components/SurrenderedLobbyView';
 import '../styles/GamePage.css';
 
 export default function GamePage() {
-    const { 
+    const {
         username,
         roomCode,
         isHost,
-        players, setPlayers,
-        gameState, setGameState,
-        gameSettings, setGameSettings,
-        path, setPath,
-        currentPageTitle, currentPageHtml,
-        htmlContent, currentTitle, fetchPage, isLoading, winner,
-        totalTime, setTotalTime,
-        powerUps, setPowerUps,
+        players,
+        gameState,
+        gameSettings,
+        currentPageHtml,
+        isLoading,
+        winner,
+        totalTime,
+        powerUps,
+        inventory,
         victimPowerUpNotice,
-    } = useContext(GameContext);
+    } = useGame();
 
     const {
         handleStartPoint,
         handleEndPoint,
-        handlePowerUpSettings,
         handleChangePage,
         handleStartGame,
         handleReturnToLobby,
@@ -72,8 +71,7 @@ export default function GamePage() {
                                 handleEndSelect={handleEndPoint}
                                 gameSettings={gameSettings}
                                 onStart={handleStartGame}
-                                handlePowerUpSettings={handlePowerUpSettings}
-                                handlePowerUpChange={handlePowerUpChange}   
+                                handlePowerUpChange={handlePowerUpChange}
                                 powerUps={powerUps}
                             />
                         </div>
@@ -111,7 +109,7 @@ export default function GamePage() {
                     onSurrender={handleSurrender}
                     username={username}
                     players={players}
-                    powerUps={powerUps}
+                    inventory={inventory}
                     handleUsePowerUp={handleUsePowerUp}
                 />
                 <WikiView

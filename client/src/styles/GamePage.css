@@ -97,6 +97,12 @@
     white-space: nowrap;
 }
 
+.game-player-reconnecting {
+    color: #6b6b6b;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
 /* Waiting Message */
 .game-waiting-message {
     text-align: center;

@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
-import { GameContext } from '../contexts/GameContext';
-import { useHomeLogic } from '../hooks/useHomeLogic'; 
+import { useState } from 'react';
+import { useGame } from '../contexts/gameContext';
+import { useHomeLogic } from '../hooks/useHomeLogic';
 
 import { UsernameInput } from "../components/UsernameInput";
 import { JoinLobby } from "../components/JoinLobby";
@@ -11,10 +11,7 @@ import '../styles/HomePage.css';
 export default function HomePage() {
     const [usernameInput, setUsernameInput] = useState("");
 
-    const {
-        roomCode, setRoomCode,
-        validRoomCode
-    } = useContext(GameContext);
+    const { roomCode, setRoomCode, validRoomCode } = useGame();
 
     const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
 

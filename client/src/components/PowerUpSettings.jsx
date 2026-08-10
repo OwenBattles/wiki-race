@@ -16,20 +16,14 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
         return () => document.removeEventListener('mousedown', onPointerDown);
     }, [isOpen]);
 
-    console.log("power ups", powerUps);
-
     const handleIncrement = (powerUpType) => {
-        console.log("incrementing", powerUpType);
         onPowerUpChange(powerUpType, powerUps[powerUpType] + 1);
     };
 
     const handleDecrement = (powerUpType) => {
         if (powerUps[powerUpType] <= 0) return;
-        console.log("decrementing", powerUpType);
         onPowerUpChange(powerUpType, powerUps[powerUpType] - 1);
     };
-
-    const totalPowerUps = Object.values(powerUps).reduce((sum, val) => sum + val, 0);
 
     if (!isHost) {
         return (
@@ -140,25 +134,6 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                     </div>
                 </div>
             )}
-        </div>
-    );
-}
-
-// Example usage:
-function Example() {
-    const [powerUps, setPowerUps] = useState({
-        swap: 0,
-        scramble: 0,
-        freeze: 0
-    });
-
-    return (
-        <div className="p-8">
-            <PowerUpSettings
-                isHost={true}
-                powerUps={powerUps}
-                onPowerUpChange={setPowerUps}
-            />
         </div>
     );
 }
