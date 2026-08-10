@@ -26,6 +26,7 @@ export default function GamePage() {
         powerUps,
         inventory,
         victimPowerUpNotice,
+        moveError,
     } = useGame();
 
     const {
@@ -103,6 +104,11 @@ export default function GamePage() {
                         attackerUsername={victimPowerUpNotice.attackerUsername}
                         powerUpType={victimPowerUpNotice.powerUpType}
                     />
+                )}
+                {moveError && (
+                    <div className="game-move-error" role="status" aria-live="polite">
+                        {moveError}
+                    </div>
                 )}
                 <InGameHeader 
                     targetPage={gameSettings.targetPage} 

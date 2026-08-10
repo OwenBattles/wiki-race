@@ -2,7 +2,7 @@ import { useGame } from "../contexts/gameContext";
 import { SocketService } from "../services/socketService";
 
 export function useGameLogic() {
-    const { roomCode, gameSettings, fetchPage, startTime } = useGame();
+    const { roomCode, gameSettings, fetchPage } = useGame();
 
     const handleStartPoint = (pageTitle) => {
         SocketService.setStartPage(roomCode, pageTitle);
@@ -29,12 +29,11 @@ export function useGameLogic() {
     };
 
     const handleChangePage = async (pageTitle) => {
+        // Optimistic: render the new page immediately and let the server confirm. If it
+        // rejects the move, the 'move_rejected' handler rewinds the path.
         try {
-            // fetchPage returns the title *after* Wikipedia's redirects resolve. Report that
-            // one, not the raw link text — otherwise reaching the target via a redirect
-            // (e.g. an "America" link landing on "United States") never counted as a win.
-            const canonicalTitle = await fetchPage(pageTitle);
-            SocketService.submitMove(roomCode, canonicalTitle, Date.now() - startTime);
+            await fetchPage(pageTitle);
+            SocketService.submitMove(roomCode, pageTitle);
         } catch (err) {
             // fetchPage already logged and surfaced the failure; the loading state clears
             // in its finally block, so the player just stays on the current page.
@@ -43,8 +42,7 @@ export function useGameLogic() {
     };
 
     const handleSurrender = () => {
-        const elapsedTime = startTime ? Date.now() - startTime : 0;
-        SocketService.surrender(roomCode, elapsedTime);
+        SocketService.surrender(roomCode);
     };
 
     const handleReturnToLobby = () => {

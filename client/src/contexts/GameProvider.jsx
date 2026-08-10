@@ -33,6 +33,7 @@ export const GameProvider = ({ children }) => {
     const [powerUps, setPowerUps] = useState({ swap: 0, scramble: 0, freeze: 0 });
     const [inventory, setInventory] = useState({ swap: 0, scramble: 0, freeze: 0 });
     const [victimPowerUpNotice, setVictimPowerUpNotice] = useState(null);
+    const [moveError, setMoveError] = useState(null);
 
     // "pending" covers both a restore in flight on page load and a create/join we've just
     // fired. Routing waits on this so it never bounces a player home mid-handshake.
@@ -54,6 +55,12 @@ export const GameProvider = ({ children }) => {
         const id = window.setTimeout(() => setVictimPowerUpNotice(null), 4000);
         return () => clearTimeout(id);
     }, [victimPowerUpNotice]);
+
+    useEffect(() => {
+        if (!moveError) return;
+        const id = window.setTimeout(() => setMoveError(null), 4000);
+        return () => clearTimeout(id);
+    }, [moveError]);
 
     useEffect(() => {
         let rejoinTimer = null;
@@ -147,6 +154,7 @@ export const GameProvider = ({ children }) => {
             setInventory({ swap: 0, scramble: 0, freeze: 0 });
             setPath([]);
             setVictimPowerUpNotice(null);
+            setMoveError(null);
         });
 
         socket.on('surrendered_to_lobby', ({ startPage, targetPage, powerUps: roomPowerUps }) => {
@@ -167,6 +175,19 @@ export const GameProvider = ({ children }) => {
 
         socket.on('pages_swapped', ({ newPageTitle, newPageHtml }) => {
             setPath(prev => [...prev, { title: newPageTitle, html: newPageHtml }]);
+        });
+
+        // The server refused the move we already rendered optimistically. Rewind to the
+        // page it says we're on rather than leaving the view ahead of the real state.
+        socket.on('move_rejected', ({ currentPageTitle: serverTitle, reason }) => {
+            setMoveError(reason || "That move wasn't allowed.");
+            setPath(prev => {
+                if (prev.length < 2) return prev;
+                const rewound = prev.slice(0, -1);
+                const landedOn = rewound[rewound.length - 1]?.title;
+                // Only rewind if we really are one step ahead of the server.
+                return (!serverTitle || landedOn === serverTitle) ? rewound : prev;
+            });
         });
 
         socket.on('power_up_used_on_you', ({ attackerUsername, powerUpType }) => {
@@ -224,6 +245,7 @@ export const GameProvider = ({ children }) => {
             socket.off('surrendered_to_lobby');
             socket.off('update_player_list');
             socket.off('pages_swapped');
+            socket.off('move_rejected');
             socket.off('power_up_used_on_you');
             socket.off('start_page');
             socket.off('target_page');
@@ -254,6 +276,7 @@ export const GameProvider = ({ children }) => {
         powerUps,
         inventory,
         victimPowerUpNotice,
+        moveError,
         // Page loading
         fetchPage, isLoading,
         // Reconnect

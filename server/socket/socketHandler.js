@@ -1,5 +1,11 @@
 const { randomUUID } = require('crypto');
-const { fetchWikiHtml, fetchWikiPage, fetchRandomPage, resolveTitle } = require('../controllers/wikiController');
+const {
+  fetchWikiHtml,
+  fetchWikiPage,
+  fetchWikiLinks,
+  fetchRandomPage,
+  resolveTitle,
+} = require('../controllers/wikiController');
 
 // Store room state in memory
 const rooms = {};
@@ -124,6 +130,10 @@ const moveTo = (player, title) => {
   player.currentPageTitle = title;
 };
 
+// The round clock belongs to the server. Clients used to report their own elapsed time,
+// which meant the recorded winning time was whatever the winner's browser claimed.
+const elapsedFor = (room) => (room.startedAt ? Date.now() - room.startedAt : 0);
+
 module.exports = (io) => {
   // Ends the round for everyone and remembers the outcome, so that a client reconnecting
   // during the game-over screen can be shown the same result.
@@ -168,6 +178,13 @@ module.exports = (io) => {
   };
 
   io.on('connection', (socket) => {
+    // Lobby configuration is host-only. The UI already hides these controls from everyone
+    // else, but the socket accepted them from any player in the room.
+    const asHost = (room) => {
+      const player = room?.players.find((p) => p.id === socket.id);
+      return player?.isHost ? player : null;
+    };
+
     // Hand the client the credential it needs to reclaim this seat after a reload.
     const establishSession = (roomCode, player) => {
       socket.emit('session_established', {
@@ -285,7 +302,7 @@ module.exports = (io) => {
     // SET THE STARTING PAGE
     socket.on('set_start_page', ({ roomCode, startPage } = {}) => {
       const room = rooms[roomCode];
-      if (!room) return;
+      if (!room || !asHost(room)) return;
 
       room.startPage = startPage;
       io.to(roomCode).emit('start_page', startPage);
@@ -294,7 +311,7 @@ module.exports = (io) => {
     // SET THE TARGET PAGE
     socket.on('set_target_page', ({ roomCode, targetPage } = {}) => {
       const room = rooms[roomCode];
-      if (!room) return;
+      if (!room || !asHost(room)) return;
 
       room.targetPage = targetPage;
       io.to(roomCode).emit('target_page', targetPage);
@@ -303,7 +320,7 @@ module.exports = (io) => {
     // START GAME
     socket.on('start_game', async ({ roomCode } = {}) => {
       const room = rooms[roomCode];
-      if (!room || room.gameState === 'RACING') return;
+      if (!room || !asHost(room) || room.gameState === 'RACING') return;
       if (!room.startPage || !room.targetPage) return;
 
       try {
@@ -347,34 +364,65 @@ module.exports = (io) => {
 
     // HANDLE PLAYER MOVED
     //
-    // The client sends the canonical title it got back from /api/wiki/:page, so there is
-    // no need to fetch the article again here. That fetch was pure duplicated work, and
-    // its unguarded await was a live crash path: any Wikipedia hiccup became an unhandled
-    // rejection that took the whole server down mid-game.
-    socket.on('player_moved', ({ roomCode, pageTitle, elapsedTime } = {}) => {
+    // The client sends the raw title it clicked; the server decides everything else. It
+    // checks the link genuinely exists on the page the player is standing on, resolves the
+    // redirect itself, and times the round off its own clock. Previously a client could
+    // simply emit the target page and win instantly in zero seconds.
+    socket.on('player_moved', async ({ roomCode, pageTitle } = {}) => {
       const room = rooms[roomCode];
       if (!room || room.gameState !== 'RACING') return;
-      if (!pageTitle) return;
+      if (!pageTitle || typeof pageTitle !== 'string') return;
 
       const player = room.players.find((p) => p.id === socket.id);
       if (!player || !player.isPlaying) return;
 
-      moveTo(player, pageTitle);
+      const currentTitle = getEffectiveCurrentTitle(player);
+      if (!currentTitle) return;
 
-      if (titlesMatch(pageTitle, room.targetPage)) {
-        player.wins += 1;
-        // endRound flips gameState before emitting, so a second player crossing the line
-        // in the same tick is ignored rather than overwriting the winner.
-        endRound(roomCode, room, serializePlayer(player, true), elapsedTime);
-        return;
+      try {
+        const allowed = await fetchWikiLinks(currentTitle);
+        if (!allowed.has(normalizeTitle(pageTitle))) {
+          console.warn(`Rejected move by ${player.username}: ${currentTitle} -> ${pageTitle}`);
+          socket.emit('move_rejected', {
+            attemptedTitle: pageTitle,
+            currentPageTitle: currentTitle,
+            reason: 'That page is not linked from your current article.',
+          });
+          return;
+        }
+
+        // Re-check: the awaits above mean someone else may have won in the meantime.
+        if (room.gameState !== 'RACING' || !player.isPlaying) return;
+
+        const canonicalTitle = await resolveTitle(pageTitle);
+        if (room.gameState !== 'RACING' || !player.isPlaying) return;
+
+        moveTo(player, canonicalTitle);
+
+        if (titlesMatch(canonicalTitle, room.targetPage)) {
+          player.wins += 1;
+          // endRound flips gameState before emitting, so a second player crossing the line
+          // in the same tick is ignored rather than overwriting the winner.
+          endRound(roomCode, room, serializePlayer(player, true), elapsedFor(room));
+          return;
+        }
+
+        broadcastPlayers(io, roomCode, room);
+      } catch (error) {
+        // A Wikipedia failure must not strand the player: tell them the move didn't take
+        // so the client can put them back where they were.
+        console.error('player_moved failed:', error.message);
+        socket.emit('move_rejected', {
+          attemptedTitle: pageTitle,
+          currentPageTitle: currentTitle,
+          reason: 'Could not verify that move, please try again.',
+        });
       }
-
-      broadcastPlayers(io, roomCode, room);
     });
 
     socket.on('set_power_up', ({ roomCode, powerUpType, value } = {}) => {
       const room = rooms[roomCode];
-      if (!room) return;
+      if (!room || !asHost(room)) return;
       if (!POWER_UP_TYPES.includes(powerUpType)) return;
 
       const count = Number(value);
@@ -454,7 +502,7 @@ module.exports = (io) => {
     // HANDLE RETURN TO LOBBY
     socket.on('navigate_to_lobby', (roomCode) => {
       const room = rooms[roomCode];
-      if (!room) return;
+      if (!room || !asHost(room)) return;
 
       room.gameState = 'LOBBY';
       room.startPage = '';
@@ -477,7 +525,7 @@ module.exports = (io) => {
     });
 
     // HANDLE SURRENDER
-    socket.on('surrender', (roomCode, elapsedTime) => {
+    socket.on('surrender', (roomCode) => {
       const room = rooms[roomCode];
       if (!room || room.gameState !== 'RACING') return;
 
@@ -491,7 +539,7 @@ module.exports = (io) => {
       const stillRacing = room.players.filter((p) => p.isPlaying).length;
 
       if (stillRacing === 0) {
-        endRound(roomCode, room, nobody(), elapsedTime);
+        endRound(roomCode, room, nobody(), elapsedFor(room));
         return;
       }
 

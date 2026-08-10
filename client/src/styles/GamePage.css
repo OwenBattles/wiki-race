@@ -97,6 +97,27 @@
     white-space: nowrap;
 }
 
+/* Rejected-move notice, floated over the article */
+.game-move-error {
+    position: fixed;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    max-width: min(90vw, 32rem);
+    padding: 0.7rem 1.1rem;
+    background: #fdf6f6;
+    border: 1px solid rgba(178, 34, 34, 0.35);
+    border-left: 3px solid rgba(178, 34, 34, 0.75);
+    border-radius: 0.5rem;
+    color: #7a1c1c;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
 .game-player-reconnecting {
     color: #6b6b6b;
     font-style: italic;
