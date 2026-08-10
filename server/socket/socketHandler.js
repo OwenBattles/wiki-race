@@ -69,6 +69,28 @@ const titlesMatch = (a, b) => {
   return normalized.length > 0 && normalized === normalizeTitle(b);
 };
 
+const USERNAME_MAX_LENGTH = 20;
+
+// Compared case- and whitespace-insensitively: "Owen" and "owen " are too easy to confuse
+// with each other in a player list to be treated as different people.
+const normalizeUsername = (name) =>
+  String(name ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+const validateUsername = (raw) => {
+  const value = String(raw ?? '').replace(/\s+/g, ' ').trim();
+
+  if (!value) return { ok: false, reason: 'Enter a username to continue.' };
+  if (value.length > USERNAME_MAX_LENGTH) {
+    return { ok: false, reason: `Usernames can be at most ${USERNAME_MAX_LENGTH} characters.` };
+  }
+  return { ok: true, value };
+};
+
+// Disconnected players still hold their seat during the reconnect window, so their name is
+// still theirs — taking it would leave them unable to return.
+const isNameTaken = (room, username) =>
+  room.players.some((p) => normalizeUsername(p.username) === normalizeUsername(username));
+
 const createPlayer = ({ id, username, isHost }) => ({
   token: randomUUID(),
   id,
@@ -196,11 +218,15 @@ module.exports = (io) => {
 
     // CREATE ROOM EVENT
     socket.on('create_room', ({ username } = {}) => {
-      if (!username) return;
+      const check = validateUsername(username);
+      if (!check.ok) {
+        socket.emit('join_error', { message: check.reason });
+        return;
+      }
 
       const roomCode = generateRoomCode();
       if (!roomCode) {
-        socket.emit('error', 'Room generation failed, try again');
+        socket.emit('join_error', { message: 'Could not create a room, please try again.' });
         return;
       }
 
@@ -217,10 +243,10 @@ module.exports = (io) => {
 
       // Join & Setup Host
       socket.join(roomCode);
-      const host = createPlayer({ id: socket.id, username, isHost: true });
+      const host = createPlayer({ id: socket.id, username: check.value, isHost: true });
       rooms[roomCode].players.push(host);
 
-      console.log(`User ${username} created room: ${roomCode}`);
+      console.log(`User ${check.value} created room: ${roomCode}`);
 
       // Send the new code back to the creator so they can share it
       socket.emit('room_created', roomCode);
@@ -238,16 +264,32 @@ module.exports = (io) => {
       const room = rooms[roomCode];
 
       if (!room) {
-        socket.emit('error', 'Cannot join lobby: Room not found');
+        socket.emit('join_error', { message: 'No room with that code.' });
         return;
       }
-      if (!username) return;
+
+      const check = validateUsername(username);
+      if (!check.ok) {
+        socket.emit('join_error', { message: check.reason });
+        return;
+      }
+
+      // Names have to be unique per room: the game identifies opponents by name in the
+      // power-up menu and marks "you" in the roster, so duplicates make players
+      // indistinguishable and untargetable.
+      if (isNameTaken(room, check.value)) {
+        socket.emit('join_error', {
+          message: `"${check.value}" is already taken in this room. Pick another name.`,
+          field: 'username',
+        });
+        return;
+      }
 
       socket.join(roomCode);
-      const player = createPlayer({ id: socket.id, username, isHost: false });
+      const player = createPlayer({ id: socket.id, username: check.value, isHost: false });
       room.players.push(player);
 
-      console.log(`${username} join room ${roomCode}`);
+      console.log(`${check.value} join room ${roomCode}`);
 
       establishSession(roomCode, player);
       broadcastPlayers(io, roomCode, room);

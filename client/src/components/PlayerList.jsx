@@ -3,7 +3,7 @@ import '../styles/PlayerList.css';
 // The lobby roster. Previously this was bare usernames, which left three useful facts
 // invisible: who the host is (so you know who everyone is waiting on), which row is you,
 // and who has dropped mid-reconnect.
-export function PlayerList({ players, username }) {
+export function PlayerList({ players, myId }) {
     return (
         <div className="player-list">
             <h2 className="player-list-heading">
@@ -12,7 +12,7 @@ export function PlayerList({ players, username }) {
             </h2>
             <ul className="player-list-items">
                 {players.map((player) => {
-                    const isYou = player.username === username;
+                    const isYou = player.id === myId;
                     const disconnected = player.connected === false;
 
                     return (

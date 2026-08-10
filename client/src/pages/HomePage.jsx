@@ -12,7 +12,7 @@ import '../styles/HomePage.css';
 export default function HomePage() {
     const [usernameInput, setUsernameInput] = useState("");
 
-    const { roomCode, setRoomCode, validRoomCode } = useGame();
+    const { roomCode, setRoomCode, validRoomCode, notice, sessionStatus } = useGame();
 
     const { handleCreateRoom, handleFindRoom, handleJoinRoom, error, setError } = useHomeLogic();
 
@@ -47,7 +47,7 @@ export default function HomePage() {
                 <div className="home-card">
                     <div className="home-card-content">
                         {/* Error Message */}
-                        {error && <Notice>{error}</Notice>}
+                        {(error || notice) && <Notice>{error || notice.message}</Notice>}
 
                         {/* Username Input */}
                         <UsernameInput value={usernameInput} onChange={setUsernameInput} />
@@ -58,7 +58,7 @@ export default function HomePage() {
                             checkLobbyCode={handleFindRoom}
                             setLobbyCode={setRoomCode}
                             onJoin={handleJoin}
-                            disabled={!validRoomCode}
+                            disabled={!validRoomCode || sessionStatus === 'pending'}
                         />
                         
                         {/* Divider */}
@@ -68,7 +68,7 @@ export default function HomePage() {
                         </div>
                         
                         {/* Create Lobby */}
-                        <CreateLobby onCreate={handleCreate}/>
+                        <CreateLobby onCreate={handleCreate} disabled={sessionStatus === 'pending'} />
                     </div>
                 </div>
             </div>

@@ -13,6 +13,9 @@ export const GameProvider = ({ children }) => {
     const [validRoomCode, setValidRoomCode] = useState(false);
     const [isHost, setIsHost] = useState(false);
     const [players, setPlayers] = useState([]);
+    // Our own socket id. Identity used to be inferred by matching usernames, which broke
+    // the moment two players shared one; ids are unique regardless.
+    const [myId, setMyId] = useState(null);
 
     // Game Flow State
     const [startTime, setStartTime] = useState(null);
@@ -51,6 +54,16 @@ export const GameProvider = ({ children }) => {
     }, []);
 
     const beginSession = useCallback(() => setSessionStatus('pending'), []);
+
+    // If a create/join is never answered, fall back to 'none' rather than leaving the home
+    // form permanently disabled behind a 'pending' that never resolves.
+    useEffect(() => {
+        if (sessionStatus !== 'pending') return;
+        const id = window.setTimeout(() => {
+            setSessionStatus((prev) => (prev === 'pending' ? 'none' : prev));
+        }, REJOIN_TIMEOUT_MS);
+        return () => clearTimeout(id);
+    }, [sessionStatus]);
 
     const endSession = useCallback(() => {
         clearSession();
@@ -98,6 +111,12 @@ export const GameProvider = ({ children }) => {
             setSessionStatus('active');
         });
 
+        socket.on('join_error', ({ message }) => {
+            clearSession();
+            setSessionStatus('none');
+            setNotice({ message, tone: 'error', at: Date.now() });
+        });
+
         socket.on('rejoin_failed', () => {
             clearTimeout(rejoinTimer);
             clearSession();
@@ -111,6 +130,7 @@ export const GameProvider = ({ children }) => {
             setUsername(state.username);
             setIsHost(state.isHost);
             setPlayers(state.players);
+            setMyId(socket.id);
             setGameSettings({ startPage: state.startPage, targetPage: state.targetPage });
             setPowerUps(state.powerUps);
             setInventory(state.inventory);
@@ -174,6 +194,7 @@ export const GameProvider = ({ children }) => {
 
         socket.on('update_player_list', (updatedPlayers) => {
             setPlayers(updatedPlayers);
+            setMyId(socket.id);
             const me = updatedPlayers.find(p => p.id === socket.id);
             if (me) {
                 setIsHost(me.isHost);
@@ -243,6 +264,7 @@ export const GameProvider = ({ children }) => {
             clearTimeout(rejoinTimer);
             socket.off('connect', attemptRejoin);
             socket.off('session_established');
+            socket.off('join_error');
             socket.off('rejoin_failed');
             socket.off('rejoin_success');
             socket.off('room_created');
@@ -271,6 +293,7 @@ export const GameProvider = ({ children }) => {
         validRoomCode,
         isHost, setIsHost,
         players,
+        myId,
         // Game flow
         gameState,
         gameSettings,

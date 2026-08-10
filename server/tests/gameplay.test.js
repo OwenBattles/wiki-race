@@ -287,6 +287,60 @@ const configure = async (host, guest, roomCode, { start, target, powerUps = {} }
     probe.close(); host.close(); guest.close(); after.close();
   }
 
+
+  // ------------------------------------------------------------ usernames are unique
+  console.log('\nusernames must be unique within a room');
+  {
+    const { host, roomCode } = await newRoom('Owen');
+
+    const taker = io(URL);
+    await wait(taker, 'connect');
+    taker.emit('join_room', { roomCode, username: 'Owen' });
+    const [refused] = await wait(taker, 'join_error');
+    check('an exact duplicate is refused', /already taken/i.test(refused.message), refused.message);
+
+    // Case and stray whitespace must not be a way around it.
+    taker.emit('join_room', { roomCode, username: '  oWeN ' });
+    const [refused2] = await wait(taker, 'join_error');
+    check('case/whitespace variants are refused', /already taken/i.test(refused2.message), refused2.message);
+
+    let players = await new Promise(res => { host.emit('request_player_list', roomCode); host.once('update_player_list', res); });
+    check('refused joins do not enter the room', players.length === 1, `${players.length} players`);
+
+    // A different name still works, and is stored trimmed.
+    const joined = wait(taker, 'session_established');
+    taker.emit('join_room', { roomCode, username: '  Bob  ' });
+    await joined;
+    players = await new Promise(res => { host.emit('request_player_list', roomCode); host.once('update_player_list', res); });
+    check('a distinct name is accepted', players.length === 2, `${players.length} players`);
+    check('name is stored trimmed', players.some(p => p.username === 'Bob'),
+      JSON.stringify(players.map(p => p.username)));
+
+    // Empty and over-long names are refused too.
+    const blank = io(URL);
+    await wait(blank, 'connect');
+    blank.emit('join_room', { roomCode, username: '   ' });
+    check('blank name is refused', (await wait(blank, 'join_error'))[0].message.length > 0);
+    blank.emit('join_room', { roomCode, username: 'x'.repeat(40) });
+    check('over-long name is refused', /at most/i.test((await wait(blank, 'join_error'))[0].message));
+    blank.emit('create_room', { username: '  ' });
+    check('blank name cannot create a room either', (await wait(blank, 'join_error'))[0].message.length > 0);
+
+    // A name freed by a departing player becomes available again.
+    taker.close();
+    await new Promise(r => setTimeout(r, 500));
+    const reuse = io(URL);
+    await wait(reuse, 'connect');
+    reuse.emit('join_room', { roomCode, username: 'Bob' });
+    const stillHeld = await Promise.race([
+      wait(reuse, 'join_error', 4000).then(() => true),
+      new Promise(r => setTimeout(() => r(false), 4000)),
+    ]);
+    check('name stays reserved while the seat is held for reconnect', stillHeld === true);
+
+    host.close(); blank.close(); reuse.close();
+  }
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail === 0 ? 0 : 1);
 })().catch((e) => { console.error('\nHARNESS ERROR:', e.message); process.exit(1); });

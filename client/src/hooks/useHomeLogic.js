@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useGame } from '../contexts/gameContext';
 import { SocketService } from '../services/socketService';
 
 export function useHomeLogic() {
-    const navigate = useNavigate();
-
+    // No navigation here on purpose. We used to route to /game the instant the socket
+    // message went out, so a rejected join (bad code, name already taken) flashed the game
+    // page and bounced back. SessionGate now routes once the server confirms the seat.
     const { setUsername, setIsHost, beginSession } = useGame();
 
     const [error, setError] = useState("");
@@ -16,11 +16,10 @@ export function useHomeLogic() {
         setUsername(username);
         setIsHost(true);
 
-        // Mark the session in flight before routing, so SessionGate doesn't see "no session"
-        // on /game and bounce us straight back home.
+        // Marks the session in flight; SessionGate waits on this rather than deciding
+        // where to route while the handshake is still going.
         beginSession();
         SocketService.createRoom(username);
-        navigate('/game');
     };
 
     const handleFindRoom = (code) => {
@@ -32,7 +31,6 @@ export function useHomeLogic() {
         setIsHost(false);
         beginSession();
         SocketService.joinRoom(code, username);
-        navigate('/game');
     };
 
     return { handleCreateRoom, handleFindRoom, handleJoinRoom, error, setError };

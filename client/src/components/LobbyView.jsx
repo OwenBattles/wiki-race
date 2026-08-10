@@ -4,7 +4,7 @@ import { PlayerList } from "./PlayerList";
 import '../styles/LobbyView.css';
 import '../styles/StartGameButton.css';
 
-export function LobbyView({ isHost, players, username, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpChange, powerUps }) {
+export function LobbyView({ isHost, players, myId, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpChange, powerUps }) {
     const canStartGame = gameSettings.startPage && gameSettings.targetPage;
 
     return (
@@ -22,7 +22,7 @@ export function LobbyView({ isHost, players, username, handleStartSelect, handle
                 handleEndSelect={handleEndSelect} 
                 gameSettings={gameSettings}
             />
-            <PlayerList players={players} username={username} />
+            <PlayerList players={players} myId={myId} />
             {isHost ? (
                 <button
                     className="start-game-button"

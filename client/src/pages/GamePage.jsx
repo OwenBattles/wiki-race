@@ -15,10 +15,10 @@ import '../styles/GamePage.css';
 
 export default function GamePage() {
     const {
-        username,
         roomCode,
         isHost,
         players,
+        myId,
         gameState,
         gameSettings,
         currentPageHtml,
@@ -71,7 +71,7 @@ export default function GamePage() {
                             <LobbyView
                                 isHost={isHost}
                                 players={players}
-                                username={username}
+                                myId={myId}
                                 handleStartSelect={handleStartPoint}
                                 handleEndSelect={handleEndPoint}
                                 gameSettings={gameSettings}
@@ -115,7 +115,7 @@ export default function GamePage() {
                 <InGameHeader 
                     targetPage={gameSettings.targetPage} 
                     onSurrender={handleSurrender}
-                    username={username}
+                    myId={myId}
                     players={players}
                     inventory={inventory}
                     handleUsePowerUp={handleUsePowerUp}

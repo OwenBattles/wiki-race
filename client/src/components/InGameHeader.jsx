@@ -9,7 +9,7 @@ const POWER_UPS = [
     { key: 'scramble', label: 'Scramble', description: 'Fling an opponent to a random article' },
 ];
 
-export function InGameHeader({ targetPage, onSurrender, username, players, inventory, handleUsePowerUp }) {
+export function InGameHeader({ targetPage, onSurrender, myId, players, inventory, handleUsePowerUp }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     // Which power-up is chosen and waiting for a target.
     const [armedPowerUp, setArmedPowerUp] = useState(null);
@@ -38,9 +38,11 @@ export function InGameHeader({ targetPage, onSurrender, username, players, inven
         };
     }, [isDropdownOpen]);
 
+    // Matched on id rather than username: names are unique per room now, but identity that
+    // depends on display text breaks quietly the moment that assumption slips.
     // Only racers can be targeted — the server rejects power-ups aimed at anyone who has
     // surrendered or joined mid-round, so don't offer them as options.
-    const opponents = players.filter(player => player.username !== username && player.isPlaying);
+    const opponents = players.filter(player => player.id !== myId && player.isPlaying);
     const owned = POWER_UPS.filter(({ key }) => (inventory?.[key] ?? 0) > 0);
     const totalOwned = owned.reduce((sum, { key }) => sum + inventory[key], 0);
 
