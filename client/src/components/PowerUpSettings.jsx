@@ -1,164 +1,75 @@
-import { useState, useRef, useEffect } from 'react';
 import '../styles/PowerUpSettings.css';
 
+// Only the power-ups the server implements — freeze exists in the data model but has no
+// behaviour, so it would be a control that does nothing.
+const POWER_UPS = [
+    { key: 'swap', label: 'Swap', description: 'Trade places with an opponent' },
+    { key: 'scramble', label: 'Scramble', description: 'Fling an opponent to a random article' },
+];
+
+const MAX_PER_POWER_UP = 9;
+
+// Laid out inline rather than behind a dropdown: hiding the round's rules behind a toggle
+// meant most players never learned power-ups existed, and the floating panel covered the
+// lobby underneath it. Host and guest now see the same rows; only the host gets controls.
 export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        const onPointerDown = (e) => {
-            if (containerRef.current && !containerRef.current.contains(e.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', onPointerDown);
-        return () => document.removeEventListener('mousedown', onPointerDown);
-    }, [isOpen]);
-
-    console.log("power ups", powerUps);
-
-    const handleIncrement = (powerUpType) => {
-        console.log("incrementing", powerUpType);
-        onPowerUpChange(powerUpType, powerUps[powerUpType] + 1);
+    const setCount = (key, next) => {
+        if (next < 0 || next > MAX_PER_POWER_UP) return;
+        onPowerUpChange(key, next);
     };
 
-    const handleDecrement = (powerUpType) => {
-        if (powerUps[powerUpType] <= 0) return;
-        console.log("decrementing", powerUpType);
-        onPowerUpChange(powerUpType, powerUps[powerUpType] - 1);
-    };
-
-    const totalPowerUps = Object.values(powerUps).reduce((sum, val) => sum + val, 0);
-
-    if (!isHost) {
-        return (
-            <div className="powerup-settings-container" ref={containerRef}>
-                <button 
-                    className="powerup-settings-view-toggle"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? 'Hide' : 'Show'} Power-Up Settings
-                </button>
-                {isOpen && (
-                    <div className="powerup-settings-view-only">
-                        <div className="powerup-settings-view-only-item">
-                            Swap: {powerUps.swap}
-                        </div>
-                        <div className="powerup-settings-view-only-item">
-                            Scramble: {powerUps.scramble}
-                        </div>
-                        {/* <div className="powerup-settings-view-only-item">
-                            Freeze: {powerUps.freeze}
-                        </div>              */}
-                    </div>
-                )}
-            </div>
-        );
-    }
-
     return (
-        <div className="powerup-settings-container" ref={containerRef}>
-            <button
-                className="powerup-settings-toggle"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                Power-Ups {isOpen ? '▲' : '▼'}
-            </button>
+        <div className="powerup-settings">
+            <h2 className="powerup-settings-heading">power-ups</h2>
 
-            {isOpen && (
-                <div className="powerup-settings-panel">
-                    <div className="powerup-settings-list">
-                        {/* Swap PowerUp */}
-                        <div className="powerup-settings-item">
-                            <span className="powerup-settings-label">Swap</span>
-                            <div className="powerup-settings-controls">
-                                <button
-                                    className="powerup-settings-button"
-                                    onClick={() => handleDecrement('swap')}
-                                    disabled={powerUps.swap === 0}
-                                >
-                                    -
-                                </button>
-                                <span className="powerup-settings-value">
-                                    {powerUps.swap}
+            <ul className="powerup-settings-list">
+                {POWER_UPS.map(({ key, label, description }) => {
+                    const count = powerUps?.[key] ?? 0;
+
+                    return (
+                        <li key={key} className={`powerup-settings-row${count > 0 ? ' is-active' : ''}`}>
+                            <span className="powerup-settings-text">
+                                <span className="powerup-settings-label">{label}</span>
+                                <span className="powerup-settings-description">{description}</span>
+                            </span>
+
+                            {isHost ? (
+                                <span className="powerup-settings-stepper">
+                                    <button
+                                        type="button"
+                                        className="powerup-settings-step"
+                                        onClick={() => setCount(key, count - 1)}
+                                        disabled={count === 0}
+                                        aria-label={`One fewer ${label}`}
+                                    >
+                                        −
+                                    </button>
+                                    <span className="powerup-settings-count" aria-live="polite">
+                                        {count}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="powerup-settings-step"
+                                        onClick={() => setCount(key, count + 1)}
+                                        disabled={count >= MAX_PER_POWER_UP}
+                                        aria-label={`One more ${label}`}
+                                    >
+                                        +
+                                    </button>
                                 </span>
-                                <button
-                                    className="powerup-settings-button increment"
-                                    onClick={() => handleIncrement('swap')}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
+                            ) : (
+                                <span className="powerup-settings-count is-readonly">{count}</span>
+                            )}
+                        </li>
+                    );
+                })}
+            </ul>
 
-                        {/* Scramble PowerUp */}
-                        <div className="powerup-settings-item">
-                            <span className="powerup-settings-label">Scramble</span>
-                            <div className="powerup-settings-controls">
-                                <button
-                                    className="powerup-settings-button"
-                                    onClick={() => handleDecrement('scramble')}
-                                    disabled={powerUps.scramble === 0}
-                                >
-                                    -
-                                </button>
-                                <span className="powerup-settings-value">
-                                    {powerUps.scramble}
-                                </span>
-                                <button
-                                    className="powerup-settings-button increment"
-                                    onClick={() => handleIncrement('scramble')}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Freeze PowerUp (commented out for now) */}
-                        {/* <div className="powerup-settings-item">
-                            <span className="powerup-settings-label">Freeze</span>
-                            <div className="powerup-settings-controls">
-                                <button
-                                    className="powerup-settings-button"
-                                    onClick={() => handleDecrement('freeze')}
-                                    disabled={powerUps.freeze === 0}
-                                >
-                                    -
-                                </button>
-                                <span className="powerup-settings-value">
-                                    {powerUps.freeze}
-                                </span>
-                                <button
-                                    className="powerup-settings-button increment"
-                                    onClick={() => handleIncrement('freeze')}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div> */}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Example usage:
-function Example() {
-    const [powerUps, setPowerUps] = useState({
-        swap: 0,
-        scramble: 0,
-        freeze: 0
-    });
-
-    return (
-        <div className="p-8">
-            <PowerUpSettings
-                isHost={true}
-                powerUps={powerUps}
-                onPowerUpChange={setPowerUps}
-            />
+            <p className="powerup-settings-note">
+                {isHost
+                    ? 'Each racer starts the round with this many of each.'
+                    : 'Set by the host. You start the round with this many of each.'}
+            </p>
         </div>
     );
 }

@@ -1,9 +1,10 @@
 import { TitleEndpoints } from "./TitleEndpoints";
 import { PowerUpSettings } from "./PowerUpSettings";
+import { PlayerList } from "./PlayerList";
 import '../styles/LobbyView.css';
 import '../styles/StartGameButton.css';
 
-export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpSettings, handlePowerUpChange, powerUps }) {
+export function LobbyView({ isHost, players, myId, handleStartSelect, handleEndSelect, gameSettings, onStart, handlePowerUpChange, powerUps }) {
     const canStartGame = gameSettings.startPage && gameSettings.targetPage;
 
     return (
@@ -21,11 +22,7 @@ export function LobbyView({ isHost, players, handleStartSelect, handleEndSelect,
                 handleEndSelect={handleEndSelect} 
                 gameSettings={gameSettings}
             />
-            <ul className="game-player-list">
-                {players.map((player, id) => (
-                    <li key={id} className="game-player-item">{player.username}</li>
-                ))}
-            </ul>
+            <PlayerList players={players} myId={myId} />
             {isHost ? (
                 <button
                     className="start-game-button"

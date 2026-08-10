@@ -1,37 +1,39 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 
-import { GameContext } from '../contexts/GameContext';
+import { useGame } from '../contexts/gameContext';
 import { useGameLogic } from '../hooks/useGameLogic';
 
 import { LobbyView } from '../components/LobbyView';
 import { WikiView } from '../components/WikiView';
 import { GameOverView } from '../components/GameOverView';
 import { InGameHeader } from '../components/InGameHeader';
-import { InGameSidebar } from '../components/InGameSidebar';
 import { PowerUpNotificationForVictim } from '../components/PowerUpNotificationForVictim';
 import { SurrenderedLobbyView } from '../components/SurrenderedLobbyView';
+import { RoomCode } from '../components/RoomCode';
+import { Notice } from '../components/Notice';
 import '../styles/GamePage.css';
 
 export default function GamePage() {
-    const { 
-        username,
+    const {
         roomCode,
         isHost,
-        players, setPlayers,
-        gameState, setGameState,
-        gameSettings, setGameSettings,
-        path, setPath,
-        currentPageTitle, currentPageHtml,
-        htmlContent, currentTitle, fetchPage, isLoading, winner,
-        totalTime, setTotalTime,
-        powerUps, setPowerUps,
+        players,
+        myId,
+        gameState,
+        gameSettings,
+        currentPageHtml,
+        isLoading,
+        winner,
+        totalTime,
+        powerUps,
+        inventory,
         victimPowerUpNotice,
-    } = useContext(GameContext);
+        notice,
+    } = useGame();
 
     const {
         handleStartPoint,
         handleEndPoint,
-        handlePowerUpSettings,
         handleChangePage,
         handleStartGame,
         handleReturnToLobby,
@@ -61,19 +63,20 @@ export default function GamePage() {
             <div className="game-lobby-container">
                 <div className="game-lobby-content">
                     <div className="game-lobby-header">
-                        <h1 className="game-lobby-title">Room: {roomCode}</h1>
+                        <RoomCode roomCode={roomCode} />
                     </div>
                     <div className="game-lobby-card">
                         <div className="game-lobby-card-content">
-                            <LobbyView 
+                            {notice && <Notice tone={notice.tone}>{notice.message}</Notice>}
+                            <LobbyView
                                 isHost={isHost}
                                 players={players}
+                                myId={myId}
                                 handleStartSelect={handleStartPoint}
                                 handleEndSelect={handleEndPoint}
                                 gameSettings={gameSettings}
                                 onStart={handleStartGame}
-                                handlePowerUpSettings={handlePowerUpSettings}
-                                handlePowerUpChange={handlePowerUpChange}   
+                                handlePowerUpChange={handlePowerUpChange}
                                 powerUps={powerUps}
                             />
                         </div>
@@ -106,12 +109,15 @@ export default function GamePage() {
                         powerUpType={victimPowerUpNotice.powerUpType}
                     />
                 )}
+                {notice && (
+                    <Notice tone={notice.tone} floating>{notice.message}</Notice>
+                )}
                 <InGameHeader 
                     targetPage={gameSettings.targetPage} 
                     onSurrender={handleSurrender}
-                    username={username}
+                    myId={myId}
                     players={players}
-                    powerUps={powerUps}
+                    inventory={inventory}
                     handleUsePowerUp={handleUsePowerUp}
                 />
                 <WikiView

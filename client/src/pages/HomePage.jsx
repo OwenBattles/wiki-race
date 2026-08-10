@@ -1,26 +1,24 @@
-import { useState, useContext } from 'react';
-import { GameContext } from '../contexts/GameContext';
-import { useHomeLogic } from '../hooks/useHomeLogic'; 
+import { useState } from 'react';
+import { useGame } from '../contexts/gameContext';
+import { useHomeLogic } from '../hooks/useHomeLogic';
 
 import { UsernameInput } from "../components/UsernameInput";
 import { JoinLobby } from "../components/JoinLobby";
 import { CreateLobby } from "../components/CreateLobby";
 import { Typewriter } from "../components/Typewriter";
+import { Notice } from "../components/Notice";
 import '../styles/HomePage.css';
 
 export default function HomePage() {
     const [usernameInput, setUsernameInput] = useState("");
 
-    const {
-        roomCode, setRoomCode,
-        validRoomCode
-    } = useContext(GameContext);
+    const { roomCode, setRoomCode, validRoomCode, notice, sessionStatus } = useGame();
 
-    const { handleCreateRoom, handleFindRoom, handleJoinRoom, error } = useHomeLogic();
+    const { handleCreateRoom, handleFindRoom, handleJoinRoom, error, setError } = useHomeLogic();
 
     const handleJoin = () => {
         if (!usernameInput) {
-            alert("Enter a Username");
+            setError("Enter a username to continue.");
             return;
         }
         handleJoinRoom(roomCode, usernameInput);
@@ -28,7 +26,7 @@ export default function HomePage() {
 
     const handleCreate = () => {
         if (!usernameInput) {
-            alert("Enter a Username");
+            setError("Enter a username to continue.");
             return;
         }
         handleCreateRoom(usernameInput);
@@ -49,11 +47,7 @@ export default function HomePage() {
                 <div className="home-card">
                     <div className="home-card-content">
                         {/* Error Message */}
-                        {error && (
-                            <div className="home-error">
-                                <p className="home-error-text">{error}</p>
-                            </div>
-                        )}
+                        {(error || notice) && <Notice>{error || notice.message}</Notice>}
 
                         {/* Username Input */}
                         <UsernameInput value={usernameInput} onChange={setUsernameInput} />
@@ -64,7 +58,7 @@ export default function HomePage() {
                             checkLobbyCode={handleFindRoom}
                             setLobbyCode={setRoomCode}
                             onJoin={handleJoin}
-                            disabled={!validRoomCode}
+                            disabled={!validRoomCode || sessionStatus === 'pending'}
                         />
                         
                         {/* Divider */}
@@ -74,7 +68,7 @@ export default function HomePage() {
                         </div>
                         
                         {/* Create Lobby */}
-                        <CreateLobby onCreate={handleCreate}/>
+                        <CreateLobby onCreate={handleCreate} disabled={sessionStatus === 'pending'} />
                     </div>
                 </div>
             </div>

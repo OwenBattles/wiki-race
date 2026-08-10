@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  # Merging to main updates production. Previously nothing watched the repo, so a merge
+  # changed the code and left the running app untouched until someone ran `fly deploy`.
+  push:
+    branches: [main]
+  # Every pull request, whatever it targets. Runs the checks only — see the deploy job's
+  # condition below.
+  pull_request:
+  # Lets you exercise the deploy from the Actions tab without pushing anything, which is
+  # the only way to prove the Fly token works before a real merge depends on it.
+  workflow_dispatch:
+
+concurrency:
+  # Per-ref, so a pull request's runs never cancel a deploy or another branch's checks.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Lint
+        working-directory: client
+        run: npm run lint
+
+      - name: Build client
+        working-directory: client
+        run: npm run build
+
+  deploy:
+    name: Deploy to Fly
+    needs: check
+    # Never on a pull request: a PR from a fork cannot read secrets anyway, and a PR should
+    # not be able to change production.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Without this the run fails deep inside flyctl with an auth error that reads like a
+      # Fly outage rather than a missing secret.
+      - name: Check the deploy token is configured
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_KEY }}
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "::error::The FLY_API_KEY secret is empty or missing. Create a token with" \
+                 "'fly tokens create deploy', then set it under Settings > Secrets and" \
+                 "variables > Actions. flyctl reads it as FLY_API_TOKEN."
+            exit 1
+          fi
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # --remote-only builds on Fly's builders rather than in the runner, so the runner
+      # doesn't need Docker and the build layers stay cached between deploys.
+      - name: Deploy to Fly
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_KEY }}

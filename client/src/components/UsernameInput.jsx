@@ -7,7 +7,8 @@ export function UsernameInput({ value, onChange }) {
                 type="text"
                 className="username-input"
                 placeholder="Enter your username"
-                value={value} 
+                value={value}
+                maxLength={20}
                 onChange={(e) => onChange(e.target.value)} 
             />
         </div>

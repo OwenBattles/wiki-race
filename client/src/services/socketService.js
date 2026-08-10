@@ -18,22 +18,8 @@ export const SocketService = {
         socket.emit('find_room', roomCode);
     },
 
-    validateUsername: (roomCode, username) => {
-        const response = socket.emit('check_username', { roomCode, username });
-        return response;
-    },
-
     joinRoom: (roomCode, username) => {
-        // Ensure uppercase to match server logic
         socket.emit('join_room', { roomCode, username });
-    },
-
-    checkUsername: (roomCode, username) => {
-        socket.emit('check_username', { lobbyCode: roomCode, username });
-    },
-
-    leaveLobby: (roomCode) => {
-        socket.emit('leave_game', roomCode);
     },
 
     // --- GAME ACTIONS ---
@@ -49,16 +35,19 @@ export const SocketService = {
         socket.emit('start_game', { roomCode });
     },
 
-    // Used when a player clicks a link in the WikiView
-    submitMove: (roomCode, newPageTitle, elapsedTime) => {
-        socket.emit('player_moved', { roomCode, pageTitle: newPageTitle, elapsedTime });
+    // Used when a player clicks a link in the WikiView. Sends the title exactly as it
+    // appeared in the link — the server validates it against that page's links, resolves
+    // any redirect itself, and times the round off its own clock.
+    submitMove: (roomCode, newPageTitle) => {
+        socket.emit('player_moved', { roomCode, pageTitle: newPageTitle });
     },
 
     setPowerUp: (roomCode, powerUpType, value) => {
         socket.emit('set_power_up', { roomCode, powerUpType, value });
     },
 
-    usePowerUp: (roomCode, powerUpType, victimId) => {
+    // Named "send" rather than "use" so lint doesn't mistake it for a React hook.
+    sendPowerUp: (roomCode, powerUpType, victimId) => {
         socket.emit('use_power_up', { roomCode, powerUpType, victimId });
     },
 
@@ -66,8 +55,8 @@ export const SocketService = {
         socket.emit('navigate_to_lobby', roomCode);
     },
 
-    surrender: (roomCode, elapsedTime) => {
-        socket.emit('surrender', roomCode, elapsedTime);
+    surrender: (roomCode) => {
+        socket.emit('surrender', roomCode);
     },
 
     // Used to sync the player list manually if needed

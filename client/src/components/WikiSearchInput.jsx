@@ -29,15 +29,22 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
     const [suggestions, setSuggestions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
-    const [keyboardNav, setKeyboardNav] = useState(false);
     const [topGradientOpacity, setTopGradientOpacity] = useState(0);
     const [bottomGradientOpacity, setBottomGradientOpacity] = useState(1);
     const isSelecting = useRef(false);
     const listRef = useRef(null);
+    // Set when the selection moved via arrow keys, so the scroll effect below knows to
+    // follow it. A ref rather than state: it must not itself trigger a render.
+    const keyboardNav = useRef(false);
 
-    useEffect(() => {
+    // Re-sync when the parent pushes a new value (e.g. the host's pick arriving over the
+    // socket). Adjusting state during render is React's recommended alternative to an
+    // effect here — it avoids the extra render pass an effect would cause.
+    const [prevValue, setPrevValue] = useState(value);
+    if (value !== prevValue) {
+        setPrevValue(value);
         setQuery(value || "");
-    }, [value]);
+    }
 
     useEffect(() => {
         if (disabled || isSelecting.current) {
@@ -101,7 +108,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
 
     const handleItemMouseEnter = useCallback((index) => {
         setSelectedIndex(index);
-        setKeyboardNav(false);
+        keyboardNav.current = false;
     }, []);
 
     const handleScroll = useCallback((e) => {
@@ -117,11 +124,11 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
         const handleKeyDown = (e) => {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                setKeyboardNav(true);
+                keyboardNav.current = true;
                 setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                setKeyboardNav(true);
+                keyboardNav.current = true;
                 setSelectedIndex(prev => Math.max(prev - 1, 0));
             } else if (e.key === 'Enter') {
                 if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
@@ -139,8 +146,9 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
     }, [isOpen, suggestions, selectedIndex, disabled, handleSelect]);
 
     useEffect(() => {
-        if (!keyboardNav || selectedIndex < 0 || !listRef.current) return;
-        
+        if (!keyboardNav.current || selectedIndex < 0 || !listRef.current) return;
+        keyboardNav.current = false;
+
         const container = listRef.current;
         const selectedItem = container.querySelector(`[data-index="${selectedIndex}"]`);
         
@@ -160,9 +168,7 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
                 });
             }
         }
-        
-        setKeyboardNav(false);
-    }, [selectedIndex, keyboardNav]);
+    }, [selectedIndex]);
 
     return (
         <div className="wiki-search-container">

@@ -7,7 +7,6 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
     const containerRef = useRef(null);
 
     const handleClick = (e) => {
-        console.log("handleClick");
         const anchor = e.target.closest('a');
         if (!anchor || !anchor.getAttribute('href')) return;
 
@@ -15,7 +14,7 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
         // Allow in-page navigation (e.g. Table of Contents)
         if (href.startsWith('#')) return;
 
-        e.preventDefault(); 
+        e.preventDefault();
         if (href.startsWith('/wiki/')) {
             const title = decodeURIComponent(href.replace('/wiki/', '')).trim().replace(/_/g, ' ').replace(/\s+/g, ' ');
             onNavigate(title);
@@ -24,28 +23,22 @@ export function WikiView({ htmlContent, onNavigate, isLoading }) {
 
     useEffect(() => {
         if (containerRef.current) containerRef.current.scrollTop = 0;
+        window.scrollTo({ top: 0 });
     }, [htmlContent]);
-
-    if (isLoading) {
-        return (
-            <div className="wiki-loading-container">
-                <div className="loading-content">
-                    <p className="loading-text">Loading next article...</p>
-                    <div className="loading-dots">
-                        <div className="loading-dot"></div>
-                        <div className="loading-dot"></div>
-                        <div className="loading-dot"></div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="wiki-view-wrapper">
+            {/* A loading bar rather than a blank pane: swapping the whole article out on
+                every click made each move feel like a page reload. The current article
+                stays put and dims slightly until the next one arrives. */}
+            {isLoading && (
+                <div className="wiki-loading-bar" role="status" aria-label="Loading next article">
+                    <div className="wiki-loading-bar-fill" />
+                </div>
+            )}
             <div className="wiki-view-frame">
-                <div 
-                    className="wiki-view-container"
+                <div
+                    className={`wiki-view-container${isLoading ? ' is-loading' : ''}`}
                     ref={containerRef}
                     onClick={handleClick}
                 >
