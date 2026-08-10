@@ -1,59 +1,53 @@
+/* The room code is a reference number: set like one, and click to copy. */
+
 .room-code {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.75rem;
-    padding: 0.35rem 1rem 0.45rem;
-    margin: 0 auto;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    margin-left: calc(-1 * var(--space-3));
     border: 1px solid transparent;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     background: none;
-    cursor: pointer;
-    font-family: Georgia, "Times New Roman", serif;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition:
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease);
 }
 
 .room-code:hover {
-    background: #ffffff;
-    border-color: #e0ddd6;
+    background: var(--leaf);
+    border-color: var(--rule);
 }
 
 .room-code-label {
-    font-size: 1.5rem;
+    font-size: var(--text-2xs);
     font-style: italic;
-    color: #6b6b6b;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-faint);
 }
 
 .room-code-value {
-    font-size: 2.5rem;
-    letter-spacing: 0.08em;
-    color: #1a1a1a;
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-data);
+    font-size: var(--text-xl);
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink);
 }
 
 .room-code-hint {
-    font-size: 0.75rem;
+    font-size: var(--text-2xs);
     font-style: italic;
-    letter-spacing: 0.06em;
-    color: #b0aca4;
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-faint);
     opacity: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
 }
 
-.room-code:hover .room-code-hint {
+.room-code:hover .room-code-hint,
+.room-code:focus-visible .room-code-hint {
     opacity: 1;
 }
 
 .room-code-hint.is-copied {
     opacity: 1;
-    color: #B22222;
-}
-
-@media (max-width: 600px) {
-    .room-code-value {
-        font-size: 1.9rem;
-    }
-
-    .room-code-label {
-        font-size: 1.15rem;
-    }
+    color: var(--seal);
 }

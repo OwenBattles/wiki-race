@@ -59,49 +59,37 @@ export default function GamePage() {
 
     return (
         <div className="game-page">
-            { gameState == "LOBBY" && 
-            <div className="game-lobby-container">
-                <div className="game-lobby-content">
-                    <div className="game-lobby-header">
-                        <RoomCode roomCode={roomCode} />
-                    </div>
-                    <div className="game-lobby-card">
-                        <div className="game-lobby-card-content">
-                            {notice && <Notice tone={notice.tone}>{notice.message}</Notice>}
-                            <LobbyView
-                                isHost={isHost}
-                                players={players}
-                                myId={myId}
-                                handleStartSelect={handleStartPoint}
-                                handleEndSelect={handleEndPoint}
-                                gameSettings={gameSettings}
-                                onStart={handleStartGame}
-                                handlePowerUpChange={handlePowerUpChange}
-                                powerUps={powerUps}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>       
-            }
-
-            { gameState == "SURRENDERED" &&
-            <div className="game-lobby-container">
-                <div className="game-lobby-content">
-                    <div className="game-lobby-card">
-                        <div className="game-lobby-card-content">
-                            <SurrenderedLobbyView
-                                roomCode={roomCode}
-                                players={players}
-                                gameSettings={gameSettings}
-                            />
-                        </div>
-                    </div>
-                </div>
+            { gameState === "LOBBY" &&
+            <div className="game-sheet">
+                <header className="game-sheet-header">
+                    <RoomCode roomCode={roomCode} />
+                </header>
+                {notice && <Notice tone={notice.tone}>{notice.message}</Notice>}
+                <LobbyView
+                    isHost={isHost}
+                    players={players}
+                    myId={myId}
+                    handleStartSelect={handleStartPoint}
+                    handleEndSelect={handleEndPoint}
+                    gameSettings={gameSettings}
+                    onStart={handleStartGame}
+                    handlePowerUpChange={handlePowerUpChange}
+                    powerUps={powerUps}
+                />
             </div>
             }
-            
-            { gameState == "PLAYING" &&
+
+            { gameState === "SURRENDERED" &&
+            <div className="game-sheet">
+                <SurrenderedLobbyView
+                    players={players}
+                    myId={myId}
+                    gameSettings={gameSettings}
+                />
+            </div>
+            }
+
+            { gameState === "PLAYING" &&
             <div>
                 {victimPowerUpNotice && (
                     <PowerUpNotificationForVictim
@@ -128,7 +116,7 @@ export default function GamePage() {
             </div>
             }
 
-            { gameState == "FINISHED" && 
+            { gameState === "FINISHED" && 
                 <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} totalTime={totalTime} />
             }
         </div>

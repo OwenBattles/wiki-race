@@ -1,0 +1,287 @@
+/* Design tokens.
+ *
+ * Every colour, size, space and duration in the app resolves to something here. Components
+ * that mix their own values are the reason the interface drifted: 22 different spacing
+ * steps, 25 type sizes and 10 corner radii, none of them related to each other.
+ *
+ * The subject is an encyclopedia, so the vocabulary is a printed one — paper, ink, rules,
+ * seals — and the interface borrows from reference books: hairlines, small-caps eyebrows,
+ * folio figures, index leaders.
+ */
+
+:root {
+    /* ── Colour ──────────────────────────────────────────────────────────────────
+     * The ground is warm, so the neutrals are warm too. The old greys were cold
+     * (#d4d4d4, #e5e5e5, #b0b0b0) on a cream page, which is subtle but reads cheap:
+     * every hairline looked slightly blue against the paper.
+     */
+    --paper: #F9F7F2;          /* page ground */
+    --leaf: #FFFFFF;           /* raised surface: cards, inputs, the article */
+    --paper-sunk: #F4F1EA;     /* recessed surface: fields at rest */
+
+    --ink: #1A1A1A;            /* primary text */
+    --ink-soft: #5F5B54;       /* secondary text, labels */
+    --ink-faint: #8A857C;      /* tertiary: captions, counts, hints */
+
+    --rule: #E3DFD6;           /* hairlines and borders */
+    --rule-strong: #CFC9BC;    /* emphasised edges, hover borders */
+
+    --seal: #B22222;           /* the accent — used sparingly, like a stamp */
+    --seal-deep: #8E1B1B;      /* pressed / hover */
+    --seal-tint: #FBF3F1;      /* wash behind seal-coloured content */
+    --seal-edge: rgba(178, 34, 34, 0.30);
+
+    --focus: #1F5C9E;          /* keyboard focus — deliberately not the accent, so it
+                                  never reads as "selected" */
+
+    /* ── Type ────────────────────────────────────────────────────────────────────
+     * Three roles. Display carries the personality, text is optimised for reading,
+     * data is used only where digits must not jitter as they change.
+     */
+    --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --font-text: Georgia, "Times New Roman", Times, serif;
+    --font-data: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* A minor-third scale off a 1rem base. */
+    --text-2xs: 0.6875rem;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.375rem;
+    --text-2xl: 1.75rem;
+    --text-3xl: 2.25rem;
+    --text-4xl: 3rem;
+
+    --leading-tight: 1.2;
+    --leading-snug: 1.4;
+    --leading-normal: 1.6;
+
+    /* Eyebrows and tags: lowercase, tracked, small. Used instead of ALL-CAPS, which
+       fights the bookish tone. */
+    --tracking-wide: 0.08em;
+    --tracking-wider: 0.14em;
+
+    /* ── Space ───────────────────────────────────────────────────────────────────
+     * 8px base with quarter steps at the small end, where fine adjustment matters.
+     */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+
+    /* ── Shape ───────────────────────────────────────────────────────────────────
+     * Small radii read as printed matter; the previous 0.5rem corners read as app
+     * chrome. Three values, not ten.
+     */
+    --radius-sm: 3px;
+    --radius-md: 6px;
+    --radius-pill: 999px;
+
+    /* Shadows are warm and shallow — paper lifted a millimetre, not a floating card. */
+    --shadow-raise: 0 1px 2px rgba(90, 78, 60, 0.06);
+    --shadow-lift: 0 6px 20px rgba(90, 78, 60, 0.10);
+
+    /* ── Motion ──────────────────────────────────────────────────────────────────
+     * Named durations, and never `transition: all` — that was in 14 places and meant
+     * layout properties animated by accident.
+     */
+    --ease: cubic-bezier(0.2, 0, 0.1, 1);
+    --duration-fast: 120ms;
+    --duration-base: 200ms;
+
+    /* Widths */
+    --measure-form: 30rem;     /* the width a single column of controls reads best at */
+    --measure-page: 74rem;     /* outer bound for the article view */
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
+}
+
+/* One focus treatment for the whole app. Previously there was none, so keyboard users
+   had nothing to follow. */
+:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ── Shared primitives ───────────────────────────────────────────────────────── */
+
+/* Section label: lowercase, tracked, hairline rule running to the end of the column.
+   This is the app's structural refrain — it marks every section without needing a box. */
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-text);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-faint);
+    white-space: nowrap;
+}
+
+.eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+}
+
+/* Buttons ------------------------------------------------------------------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-md);
+    background: var(--leaf);
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: var(--text-sm);
+    line-height: 1.2;
+    text-align: center;
+    transition:
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease),
+        color var(--duration-fast) var(--ease);
+}
+
+.btn:hover:not(:disabled) {
+    border-color: var(--seal);
+    color: var(--seal);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+}
+
+.btn--primary {
+    background: var(--seal);
+    border-color: var(--seal);
+    color: var(--leaf);
+}
+
+.btn--primary:hover:not(:disabled) {
+    background: var(--seal-deep);
+    border-color: var(--seal-deep);
+    color: var(--leaf);
+}
+
+.btn--primary:disabled {
+    background: var(--paper-sunk);
+    border-color: var(--rule);
+    color: var(--ink-faint);
+    opacity: 1;
+}
+
+.btn--quiet {
+    border-color: transparent;
+    background: none;
+    color: var(--ink-soft);
+}
+
+.btn--quiet:hover:not(:disabled) {
+    background: var(--paper-sunk);
+    color: var(--seal);
+}
+
+.btn--block {
+    width: 100%;
+}
+
+/* Fields -------------------------------------------------------------------- */
+
+.field {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    background: var(--paper-sunk);
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: var(--text-base);
+    transition:
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease);
+}
+
+.field::placeholder {
+    color: var(--ink-faint);
+}
+
+.field:hover:not(:disabled) {
+    border-color: var(--rule-strong);
+}
+
+.field:focus {
+    background: var(--leaf);
+    border-color: var(--rule-strong);
+}
+
+.field:disabled {
+    color: var(--ink-faint);
+    cursor: not-allowed;
+}

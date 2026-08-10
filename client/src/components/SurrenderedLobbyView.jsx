@@ -1,41 +1,31 @@
+import { PlayerList } from './PlayerList';
 import '../styles/SurrenderedLobbyView.css';
 
-export function SurrenderedLobbyView({ roomCode, players, gameSettings }) {
+// Where you wait out a round you've left. It states what happens next rather than just
+// reporting what you did.
+export function SurrenderedLobbyView({ players, myId, gameSettings }) {
     return (
         <div className="surrendered-lobby">
-            <div className="surrendered-lobby__header">
-                <h1 className="surrendered-lobby__title">Room: {roomCode}</h1>
+            <header className="surrendered-lobby__header">
+                <h1 className="surrendered-lobby__title">You gave up</h1>
                 <p className="surrendered-lobby__subtitle">
-                    You surrendered. You’ll stay here until someone reaches{' '}
+                    The round carries on without you until someone reaches{' '}
                     <span className="surrendered-lobby__dest">{gameSettings.targetPage}</span>.
                 </p>
-            </div>
+            </header>
 
-            <div className="surrendered-lobby__card">
-                <div className="surrendered-lobby__meta">
-                    <div className="surrendered-lobby__meta-row">
-                        <span className="surrendered-lobby__meta-label">Start</span>
-                        <span className="surrendered-lobby__meta-value">{gameSettings.startPage}</span>
-                    </div>
-                    <div className="surrendered-lobby__meta-row">
-                        <span className="surrendered-lobby__meta-label">Destination</span>
-                        <span className="surrendered-lobby__meta-value">{gameSettings.targetPage}</span>
-                    </div>
+            <div className="surrendered-lobby__meta">
+                <div className="surrendered-lobby__meta-row">
+                    <span className="surrendered-lobby__meta-label">Start</span>
+                    <span className="surrendered-lobby__meta-value">{gameSettings.startPage}</span>
                 </div>
-
-                <h2 className="surrendered-lobby__players-title">Players</h2>
-                <ul className="surrendered-lobby__players">
-                    {players.map((p) => (
-                        <li key={p.id} className="surrendered-lobby__player">
-                            <span className="surrendered-lobby__player-name">{p.username}</span>
-                            <span className="surrendered-lobby__player-status">
-                                {p.isPlaying ? 'Racing' : 'In lobby'}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
+                <div className="surrendered-lobby__meta-row">
+                    <span className="surrendered-lobby__meta-label">Destination</span>
+                    <span className="surrendered-lobby__meta-value">{gameSettings.targetPage}</span>
+                </div>
             </div>
+
+            <PlayerList players={players} myId={myId} />
         </div>
     );
 }
-

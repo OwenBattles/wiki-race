@@ -1,17 +1,5 @@
-.powerup-settings {
-    /* Full width so the heading and rows share a left edge with the page inputs above. */
-    width: 100%;
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-.powerup-settings-heading {
-    margin: 0 0 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: 0.08em;
-    color: #6b6b6b;
-}
+/* Round settings. Inline and always visible — behind a dropdown, most players never
+   discovered power-ups existed at all. */
 
 .powerup-settings-list {
     list-style: none;
@@ -19,27 +7,20 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
 }
 
 .powerup-settings-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 0.65rem 0.9rem;
-    background: #ffffff;
-    border: 1px solid #e5e2db;
-    border-left: 3px solid #e0ddd6;
-    border-radius: 0.5rem;
-    transition: border-color 0.2s ease;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--rule);
 }
 
-/* A power-up that is actually in play picks up the accent, so the round's rules are
-   readable at a glance rather than by counting zeroes. */
-.powerup-settings-row.is-active {
-    border-color: rgba(178, 34, 34, 0.22);
-    border-left-color: rgba(178, 34, 34, 0.65);
+.powerup-settings-row:last-child {
+    border-bottom: 0;
 }
 
 .powerup-settings-text {
@@ -50,22 +31,27 @@
 }
 
 .powerup-settings-label {
-    font-size: 0.95rem;
-    color: #1a1a1a;
-    line-height: 1.4;
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+}
+
+/* Dimmed until the power-up is actually in play, so the round's rules are legible at a
+   glance instead of by reading every number. */
+.powerup-settings-row:not(.is-active) .powerup-settings-label {
+    color: var(--ink-soft);
 }
 
 .powerup-settings-description {
-    font-size: 0.78rem;
+    font-size: var(--text-xs);
     font-style: italic;
-    color: #8a8a8a;
-    line-height: 1.4;
+    color: var(--ink-faint);
+    line-height: var(--leading-snug);
 }
 
 .powerup-settings-stepper {
     display: flex;
     align-items: center;
-    gap: 0.15rem;
+    gap: var(--space-1);
     flex-shrink: 0;
 }
 
@@ -77,44 +63,42 @@
     justify-content: center;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 0.35rem;
+    border-radius: var(--radius-sm);
     background: none;
-    color: #6b6b6b;
-    font-family: inherit;
-    font-size: 1rem;
+    color: var(--ink-faint);
+    font-size: var(--text-base);
     line-height: 1;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    transition:
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease),
+        color var(--duration-fast) var(--ease);
 }
 
 .powerup-settings-step:hover:not(:disabled) {
-    background: #F9F7F2;
-    border-color: rgba(178, 34, 34, 0.35);
-    color: #B22222;
+    background: var(--paper-sunk);
+    border-color: var(--rule-strong);
+    color: var(--seal);
 }
 
 .powerup-settings-step:disabled {
     opacity: 0.3;
-    cursor: default;
 }
 
 .powerup-settings-count {
     min-width: 1.5rem;
     text-align: center;
-    font-size: 1rem;
-    color: #1a1a1a;
+    font-family: var(--font-data);
+    font-size: var(--text-sm);
     font-variant-numeric: tabular-nums;
 }
 
-.powerup-settings-count.is-readonly {
-    color: #6b6b6b;
-    flex-shrink: 0;
+.powerup-settings-row:not(.is-active) .powerup-settings-count {
+    color: var(--ink-faint);
 }
 
 .powerup-settings-note {
-    margin: 0.7rem 0 0;
-    font-size: 0.75rem;
+    margin: var(--space-3) 0 0;
+    font-size: var(--text-xs);
     font-style: italic;
-    color: #a5a19a;
-    line-height: 1.5;
+    color: var(--ink-faint);
 }

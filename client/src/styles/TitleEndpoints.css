@@ -1,6 +1,79 @@
-.title-endpoints-container {
+/* The route: two markers joined by a rule, so the pair reads as one journey rather than
+   two unrelated fields.
+ *
+ * The connector is drawn as two half-segments — one running down from the first marker,
+ * one running up to the second — rather than as a single element spanning the gap. Each
+ * segment is anchored to its own marker, so the line always meets the dots exactly no
+ * matter how tall the fields grow.
+ */
+
+.route-legs {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--space-4);
 }
 
+.route-leg {
+    display: grid;
+    grid-template-columns: 9px 1fr;
+    gap: var(--space-4);
+    align-items: stretch;
+}
+
+.route-rail {
+    position: relative;
+    display: block;
+    width: 9px;
+}
+
+.route-marker {
+    position: absolute;
+    top: 0.3rem;              /* centred on the label beside it */
+    left: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--seal);
+    background: var(--paper);
+    z-index: 1;
+}
+
+.route-marker--end {
+    background: var(--seal);
+}
+
+/* Downward half: from the first marker to the bottom of its row, plus half the row gap. */
+.route-leg--first .route-rail::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: calc(0.3rem + 9px);
+    bottom: calc(-1 * var(--space-4) / 2);
+    width: 1px;
+    background: var(--rule);
+}
+
+/* Upward half: from above the row down to the second marker. */
+.route-leg--last .route-rail::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: calc(-1 * var(--space-4) / 2);
+    height: calc(var(--space-4) / 2 + 0.3rem);
+    width: 1px;
+    background: var(--rule);
+}
+
+.route-leg-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+}
+
+.route-leg-label {
+    font-size: var(--text-2xs);
+    font-style: italic;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-faint);
+}

@@ -1,28 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, useInView } from "motion/react";
 import '../styles/WikiSearchInput.css';
 
-const AnimatedSuggestionItem = ({ children, delay = 0, index, onMouseEnter, onClick, isSelected }) => {
-    const ref = useRef(null);
-    const inView = useInView(ref, { amount: 0.5, triggerOnce: false });
-    
-    return (
-        <motion.div
-            ref={ref}
-            data-index={index}
-            onMouseEnter={onMouseEnter}
-            onClick={onClick}
-            initial={{ opacity: 0, y: -10 }}
-            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, delay }}
-            style={{ marginBottom: '0.5rem', cursor: 'pointer' }}
-        >
-            <div className={`wiki-search-suggestion-item ${isSelected ? 'selected' : ''}`}>
-                {children}
-            </div>
-        </motion.div>
-    );
-};
+// Plain button rows. These used to fade and slide in one by one on a stagger, which meant
+// the list you were waiting for arrived slower than it had to and items moved under the
+// pointer as you reached for them.
+const SuggestionItem = ({ children, index, onMouseEnter, onClick, isSelected }) => (
+    <button
+        type="button"
+        data-index={index}
+        onMouseEnter={onMouseEnter}
+        onClick={onClick}
+        className={`wiki-search-suggestion-item ${isSelected ? 'selected' : ''}`}
+        style={{ display: 'block', width: '100%', textAlign: 'left', border: 0, background: 'none' }}
+    >
+        {children}
+    </button>
+);
 
 export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDie = false, onDieClick }) {
     const [query, setQuery] = useState(value || "");
@@ -226,16 +219,15 @@ export function WikiSearchInput({ placeholder, onSelect, disabled, value, showDi
                         onScroll={handleScroll}
                     >
                         {suggestions.map((title, index) => (
-                            <AnimatedSuggestionItem
-                                key={index}
-                                delay={index * 0.05}
+                            <SuggestionItem
+                                key={title}
                                 index={index}
                                 onMouseEnter={() => handleItemMouseEnter(index)}
                                 onClick={() => handleSelect(title)}
                                 isSelected={selectedIndex === index}
                             >
                                 {title}
-                            </AnimatedSuggestionItem>
+                            </SuggestionItem>
                         ))}
                     </div>
                     <div 

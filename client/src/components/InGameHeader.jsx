@@ -69,8 +69,8 @@ export function InGameHeader({ targetPage, onSurrender, myId, players, inventory
         <div className="ingame-header">
             <div className="ingame-header-left">
                 <h1 className="ingame-header-destination">
-                    <span className="ingame-header-destination-label">Destination:</span>
-                    {targetPage}
+                    <span className="ingame-header-destination-label">find</span>
+                    <span className="ingame-header-destination-title">{targetPage}</span>
                 </h1>
                 <div className="ingame-header-timer">
                     <Timer />
@@ -80,7 +80,7 @@ export function InGameHeader({ targetPage, onSurrender, myId, players, inventory
                 {opponents.length > 0 && owned.length > 0 && (
                     <div className="ingame-header-powerups-container" ref={dropdownRef}>
                         <button
-                            className="ingame-header-powerups-button"
+                            className="btn ingame-header-powerups-button"
                             onClick={() => (isDropdownOpen ? close() : setIsDropdownOpen(true))}
                             aria-expanded={isDropdownOpen}
                         >
@@ -145,8 +145,8 @@ export function InGameHeader({ targetPage, onSurrender, myId, players, inventory
                         )}
                     </div>
                 )}
-                <button className="ingame-header-surrender" onClick={onSurrender}>
-                    Surrender
+                <button className="btn btn--quiet ingame-header-surrender" onClick={onSurrender}>
+                    Give up
                 </button>
             </div>
         </div>

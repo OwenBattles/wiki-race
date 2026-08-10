@@ -19,8 +19,8 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
     };
 
     return (
-        <div className="powerup-settings">
-            <h2 className="powerup-settings-heading">power-ups</h2>
+        <section className="powerup-settings">
+            <h2 className="eyebrow">power-ups</h2>
 
             <ul className="powerup-settings-list">
                 {POWER_UPS.map(({ key, label, description }) => {
@@ -67,9 +67,9 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
 
             <p className="powerup-settings-note">
                 {isHost
-                    ? 'Each racer starts the round with this many of each.'
+                    ? 'Every racer starts the round with this many of each.'
                     : 'Set by the host. You start the round with this many of each.'}
             </p>
-        </div>
+        </section>
     );
 }

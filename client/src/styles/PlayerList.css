@@ -1,59 +1,35 @@
-.player-list {
-    /* Full width so the heading and rows share a left edge with the page inputs above. */
-    width: 100%;
-}
+/* Roster. Chips sized to their content so two players don't occupy two full rows. */
 
-.player-list-heading {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    margin: 0 0 0.75rem;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 0.8125rem;
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: 0.08em;
-    text-transform: lowercase;
-    color: #6b6b6b;
-}
-
-.player-list-count {
-    font-style: normal;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    color: #8a8a8a;
-}
-
-/* Content-sized chips that flow, rather than one full-width bar per player: with two or
-   three players the stacked bars left a large dead gap between name and tags. */
 .player-list-items {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 0.5rem;
+    gap: var(--space-2);
 }
 
 .player-list-item {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: var(--space-2);
     max-width: 100%;
-    padding: 0.35rem 0.75rem 0.4rem;
-    background: #ffffff;
-    border: 1px solid rgba(178, 34, 34, 0.22);
-    border-left: 3px solid rgba(178, 34, 34, 0.65);
-    border-radius: 0.4rem;
-    font-family: Georgia, "Times New Roman", serif;
-    color: #1a1a1a;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    background: var(--leaf);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+}
+
+.player-list-item.is-you {
+    border-color: var(--seal-edge);
 }
 
 .player-list-item.is-disconnected {
-    opacity: 0.55;
-    border-left-color: #c4c4c4;
+    background: none;
+    border-style: dashed;
+    color: var(--ink-faint);
 }
 
 .player-list-name {
@@ -65,35 +41,18 @@
 .player-list-tags {
     display: flex;
     align-items: baseline;
-    gap: 0.35rem;
+    gap: var(--space-2);
     flex-shrink: 0;
+    font-size: var(--text-2xs);
+    font-style: italic;
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-faint);
 }
 
-.player-list-tag {
-    padding: 0 0.4rem;
-    border: 1px solid #e0ddd6;
-    border-radius: 999px;
-    background: #F9F7F2;
-    color: #6b6b6b;
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    text-transform: lowercase;
-}
-
-.player-list-tag.is-host {
-    border-color: rgba(178, 34, 34, 0.35);
-    color: #B22222;
+.player-list-tag--host {
+    color: var(--seal);
 }
 
 .player-list-wins {
-    font-size: 0.75rem;
-    font-style: italic;
-    color: #8a8a8a;
     font-variant-numeric: tabular-nums;
-}
-
-.player-list-status {
-    font-size: 0.75rem;
-    font-style: italic;
-    color: #8a8a8a;
 }

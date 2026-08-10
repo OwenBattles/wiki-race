@@ -1,169 +1,175 @@
-/* Game Over View */
-.game-over-container {
-    min-height: 100vh;
-    background: #F9F7F2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    font-family: Georgia, "Times New Roman", serif;
+/* The result page. The routes are the content, so they get the typography. */
+
+.over {
+    max-width: var(--measure-form);
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-4);
 }
 
-.game-over-content {
-    width: 100%;
-    max-width: 50em;
-}
+/* ── Result ────────────────────────────────────────────────────────────────── */
 
-.game-over-header {
+.over-head {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: var(--space-7);
 }
 
-.game-over-title {
-    font-size: 3rem;
-    font-weight: 400;
-    color: #1a1a1a;
-    margin: 0 0 2rem 0;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-.game-over-winner {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    color: #1a1a1a;
-}
-
-.game-over-winner-label {
-    color: #6b6b6b;
+.over-kicker {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-2xs);
     font-style: italic;
-    margin-right: 0.5rem;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-faint);
 }
 
-.game-over-winner-name {
-    color: #B22222;
+.over-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
     font-weight: 400;
+    line-height: var(--leading-tight);
+    color: var(--seal);
+    text-wrap: balance;
 }
 
-.game-over-time {
-    font-size: 1.25rem;
-    color: #1a1a1a;
+.over-time {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 0;
 }
 
-.game-over-time-label {
-    color: #6b6b6b;
+.over-time-label {
+    font-size: var(--text-xs);
     font-style: italic;
-    margin-right: 0.5rem;
+    color: var(--ink-faint);
 }
 
-.game-over-time-value {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 0.05em;
+.over-time-value {
+    font-family: var(--font-data);
+    font-size: var(--text-lg);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
 }
 
-.game-over-players {
+/* ── Routes ────────────────────────────────────────────────────────────────── */
+
+.over-routes {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    gap: var(--space-6);
 }
 
-.game-over-player-card {
-    background: #ffffff;
-    border: 1px solid #d4d4d4;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+.route-card + .route-card {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--rule);
 }
 
-.game-over-player-header {
+/* Name, dot leaders, count — the index idiom, and the leaders genuinely do the job of
+   carrying the eye across the gap that annoyed us in the roster. */
+.route-card-head {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.game-over-player-name {
-    font-size: 1.25rem;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-4);
     font-weight: 400;
-    color: #1a1a1a;
-    letter-spacing: 0.01em;
 }
 
-.game-over-player-host {
-    font-size: 0.875rem;
-    color: #6b6b6b;
+.route-card-name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.is-winner .route-card-name {
+    color: var(--seal);
+}
+
+.route-card-leader {
+    flex: 1;
+    min-width: var(--space-4);
+    height: 2px;
+    align-self: baseline;
+    margin-bottom: 0.15em;
+    background-image: radial-gradient(circle, var(--rule-strong) 1px, transparent 1px);
+    background-size: 5px 2px;
+    background-repeat: repeat-x;
+}
+
+.route-card-count {
+    flex-shrink: 0;
+    font-size: var(--text-xs);
     font-style: italic;
+    color: var(--ink-faint);
+    white-space: nowrap;
 }
 
-.game-over-player-path {
-    padding-left: 0.5rem;
+/* Steps: a folio figure in the margin, a rule running down the column. */
+.route-steps {
+    list-style: none;
+    margin: 0 0 0 1.75rem;
+    padding: 0 0 0 var(--space-4);
+    border-left: 1px solid var(--rule);
 }
 
-.game-over-path-label {
-    font-size: 0.875rem;
-    color: #6b6b6b;
-    margin-bottom: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    font-size: 0.75rem;
+.route-step {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: var(--space-1) 0;
 }
 
-.game-over-path-list {
-    list-style: decimal;
-    margin: 0.5rem 0 0 1.5rem;
-    padding: 0;
-    font-size: 0.9375rem;
-    line-height: 1.8;
-    color: #1a1a1a;
+.route-step-figure {
+    position: absolute;
+    left: calc(-1 * var(--space-4) - 1.75rem);
+    width: 1.25rem;
+    text-align: right;
+    font-family: var(--font-data);
+    font-size: var(--text-2xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-faint);
+    line-height: var(--leading-normal);
 }
 
-.game-over-path-item {
-    margin: 0.25rem 0;
-    padding-left: 0.5rem;
+.route-step-title {
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
 }
 
-.game-over-path-empty {
-    font-size: 0.875rem;
-    color: #9b9b9b;
-    font-style: italic;
-    padding-left: 0.5rem;
+/* The article you were sent to find, marked where the route lands on it. */
+.is-winner .route-step:last-child .route-step-title {
+    color: var(--ink);
 }
 
-.game-over-actions {
-    text-align: center;
+.is-winner .route-step:last-child .route-step-figure {
+    color: var(--seal);
 }
 
-.game-over-return-button {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    border-radius: 0.375rem;
-    border: 1.5px solid #d4d4d4;
-    background: #ffffff;
-    color: #1a1a1a;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.6;
-}
-
-.game-over-return-button:hover {
-    background: #F9F7F2;
-    border-color: #B22222;
-    color: #B22222;
-}
-
-.game-over-waiting {
-    color: #6b6b6b;
-    font-size: 1rem;
-    font-style: italic;
+.route-empty {
     margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--ink-faint);
 }
 
+/* ── Actions ───────────────────────────────────────────────────────────────── */
+
+.over-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--rule);
+}
+
+@media (max-width: 30rem) {
+    .over {
+        padding-top: var(--space-6);
+    }
+
+    .over-name {
+        font-size: var(--text-2xl);
+    }
+}

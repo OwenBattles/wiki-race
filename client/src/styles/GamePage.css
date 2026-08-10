@@ -1,124 +1,41 @@
-/* Game Page Layout */
+/* Shell for every in-room state. The lobby used to sit inside six nested wrappers
+   (page > container > content > card > card-content > view); this is page > sheet. */
+
 .game-page {
     min-height: 100vh;
-    background: #F9F7F2;
-    font-family: Georgia, "Times New Roman", "Baskerville", "Caslon", serif;
+    min-height: 100dvh;
 }
 
-/* Lobby View */
-.game-lobby-container {
-    min-height: 100vh;
+.game-sheet {
+    max-width: var(--measure-form);
+    margin: 0 auto;
+    padding: var(--space-7) var(--space-4) var(--space-8);
+}
+
+.game-sheet-header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
 }
 
-.game-lobby-content {
-    width: 100%;
-    max-width: 50em;
-}
-
-.game-lobby-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.game-lobby-title {
-    font-size: 2.5rem;
-    font-weight: 400;
-    color: #1a1a1a;
-    margin: 0 0 0.5rem 0;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-.game-lobby-card {
-    background: #ffffff;
-    border-radius: 0.5rem;
-    border: 1px solid #d4d4d4;
-    padding: 3rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-@media (max-width: 768px) {
-    .game-lobby-container {
-        padding: 2rem 1rem;
-        align-items: flex-start;
-    }
-
-    .game-lobby-header {
-        margin-bottom: 1.5rem;
-    }
-
-    .game-lobby-title {
-        font-size: 2rem;
-    }
-
-    .game-lobby-card {
-        padding: 1.5rem;
-    }
-}
-
-.game-lobby-card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-/* Waiting Message */
-.game-waiting-message {
-    text-align: center;
-    color: #6b6b6b;
-    font-size: 1rem;
-    font-style: italic;
-    padding: 1.5rem;
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-/* Victim power-up toast (shown during PLAYING) */
-.power-up-notification-victim {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    max-width: min(28rem, calc(100vw - 2rem));
-    padding: 1rem 1.25rem;
-    background: #1a1a1a;
-    color: #f5f2eb;
-    border: 1px solid #3d3d3d;
-    border-radius: 0.375rem;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    animation: power-up-victim-in 0.35s ease-out;
-}
-
-@keyframes power-up-victim-in {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(0.75rem);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
-
-.power-up-notification-victim__text {
+.game-sheet-title {
     margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    color: var(--ink-soft);
 }
 
-.power-up-notification-victim__name {
-    font-weight: 600;
-    color: #fff;
-}
+@media (max-width: 30rem) {
+    .game-sheet {
+        padding-top: var(--space-5);
+    }
 
-.power-up-notification-victim__power {
-    font-style: italic;
-    color: #e8dcc8;
+    .game-sheet-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
 }
-

@@ -1,68 +1,79 @@
 import '../styles/GameOverView.css';
 
+const formatTime = (ms) => {
+    const totalSeconds = Math.floor((ms || 0) / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
+// The round's result is a set of routes, and a route is a sequence — so it's set the way a
+// book sets sequences: numbered, ruled down the margin, with leaders carrying the eye from
+// each name to its count. This is the one place the design spends its ink.
 export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTime }) {
-    const formatTime = (ms) => {    
-        const totalSeconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    };
+    const winnerName = winner?.username;
+    const nobodyWon = !winnerName || winnerName === 'Nobody';
+
+    // Longest route last: reading down the page goes from the sharpest run to the longest.
+    const ordered = [...players].sort((a, b) => (a.path?.length ?? 0) - (b.path?.length ?? 0));
 
     return (
-        <div className="game-over-container">
-            <div className="game-over-content">
-                <div className="game-over-header">
-                    <h1 className="game-over-title">Game Over</h1>
-                    <div className="game-over-winner">
-                        <span className="game-over-winner-label">Winner:</span>
-                        <span className="game-over-winner-name">{winner.username}</span>
-                    </div>
-                    <div className="game-over-time">
-                        <span className="game-over-time-label">Time Elapsed:</span>
-                        <span className="game-over-time-value">{formatTime(totalTime)}</span>
-                    </div>
-                </div>
+        <main className="over">
+            <header className="over-head">
+                <p className="over-kicker">{nobodyWon ? 'No winner' : 'Winner'}</p>
+                <h1 className="over-name">{nobodyWon ? 'Nobody reached it' : winnerName}</h1>
+                <p className="over-time">
+                    <span className="over-time-label">in</span>
+                    <span className="over-time-value">{formatTime(totalTime)}</span>
+                </p>
+            </header>
 
-                <div className="game-over-players">
-                    {players.map((player) => (
-                        <div key={player.id} className="game-over-player-card">
-                            <div className="game-over-player-header">
-                                <span className="game-over-player-name">
-                                    {player.username}
+            <section className="over-routes">
+                <h2 className="eyebrow">routes taken</h2>
+
+                {ordered.map((player) => {
+                    const path = player.path ?? [];
+                    const won = !nobodyWon && player.username === winnerName;
+
+                    return (
+                        <article
+                            key={player.id}
+                            className={`route-card${won ? ' is-winner' : ''}`}
+                        >
+                            <h3 className="route-card-head">
+                                <span className="route-card-name">{player.username}</span>
+                                <span className="route-card-leader" aria-hidden="true" />
+                                <span className="route-card-count">
+                                    {path.length ? `${path.length - 1} links` : 'no moves'}
                                 </span>
-                                {player.isHost && (
-                                    <span className="game-over-player-host">(Host)</span>
-                                )}
-                            </div>
-                            <div className="game-over-player-path">
-                                <div className="game-over-path-label">Path:</div>
-                                {player.path && player.path.length > 0 ? (
-                                    <ol className="game-over-path-list">
-                                        {player.path.map((page, index) => (
-                                            <li key={index} className="game-over-path-item">
-                                                {page.title}
-                                            </li>
-                                        ))}
-                                    </ol>
-                                ) : (
-                                    <div className="game-over-path-empty">No pages visited yet</div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            </h3>
 
-                <div className="game-over-actions">
-                    {isHost ? (
-                        <button className="game-over-return-button" onClick={onReturnToLobby}>
-                            Return to Lobby
-                        </button>
-                    ) : (
-                        <p className="game-over-waiting">Waiting for Host...</p>
-                    )}
-                </div>
-            </div>
-        </div>   
+                            {path.length > 0 ? (
+                                <ol className="route-steps">
+                                    {path.map((page, index) => (
+                                        <li key={index} className="route-step">
+                                            <span className="route-step-figure">{index + 1}</span>
+                                            <span className="route-step-title">{page.title}</span>
+                                        </li>
+                                    ))}
+                                </ol>
+                            ) : (
+                                <p className="route-empty">Left before making a move.</p>
+                            )}
+                        </article>
+                    );
+                })}
+            </section>
+
+            <footer className="over-actions">
+                {isHost ? (
+                    <button className="btn btn--primary" onClick={onReturnToLobby}>
+                        Back to the lobby
+                    </button>
+                ) : (
+                    <p className="lobby-hint">Waiting for the host to set up the next round.</p>
+                )}
+            </footer>
+        </main>
     )
 }
