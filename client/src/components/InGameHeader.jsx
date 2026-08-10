@@ -14,6 +14,37 @@ export function InGameHeader({ targetPage, onSurrender, myId, players, inventory
     // Which power-up is chosen and waiting for a target.
     const [armedPowerUp, setArmedPowerUp] = useState(null);
     const dropdownRef = useRef(null);
+    const headerRef = useRef(null);
+
+    // Publish the header's real height instead of hard-coding it.
+    //
+    // The article is offset by --ingame-header-height. That was a fixed 88px, overridden to
+    // 72px on mobile — but the mobile header stacks into two rows and actually renders
+    // nearer 90px, so the top of every article sat hidden underneath it. A destination title
+    // long enough to wrap would break the desktop value the same way. Measuring removes the
+    // guess entirely.
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el) return;
+
+        const publishHeight = () => {
+            const { height } = el.getBoundingClientRect();
+            document.documentElement.style.setProperty(
+                '--ingame-header-height',
+                `${Math.round(height)}px`
+            );
+        };
+
+        publishHeight();
+        const observer = new ResizeObserver(publishHeight);
+        observer.observe(el);
+
+        return () => {
+            observer.disconnect();
+            // Back to the stylesheet's value, so the next screen isn't offset by a stale one.
+            document.documentElement.style.removeProperty('--ingame-header-height');
+        };
+    }, []);
 
     const close = () => {
         setIsDropdownOpen(false);
@@ -66,7 +97,7 @@ export function InGameHeader({ targetPage, onSurrender, myId, players, inventory
     const soleOpponent = opponents.length === 1 ? opponents[0] : null;
 
     return (
-        <div className="ingame-header">
+        <div className="ingame-header" ref={headerRef}>
             <div className="ingame-header-left">
                 <h1 className="ingame-header-destination">
                     <span className="ingame-header-destination-label">Destination:</span>

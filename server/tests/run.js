@@ -13,7 +13,7 @@ const path = require('path');
 const PORT = Number(process.env.TEST_PORT) || 3199;
 const TEST_SERVER_URL = `http://localhost:${PORT}`;
 
-const FAST_SUITES = ['gameplay.test.js', 'authority.test.js', 'reconnect.test.js'];
+const FAST_SUITES = ['gameplay.test.js', 'authority.test.js', 'reconnect.test.js', 'leave.test.js'];
 const SLOW_SUITES = ['eviction.test.js'];
 
 const suites = process.argv.includes('--all') ? [...FAST_SUITES, ...SLOW_SUITES] : FAST_SUITES;

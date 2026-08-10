@@ -1,6 +1,6 @@
 import '../styles/GameOverView.css';
 
-export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTime }) {
+export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTime, onLeave }) {
     const formatTime = (ms) => {    
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
@@ -61,6 +61,9 @@ export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTi
                     ) : (
                         <p className="game-over-waiting">Waiting for Host...</p>
                     )}
+                    <button type="button" className="leave-room-button" onClick={onLeave}>
+                        Leave room
+                    </button>
                 </div>
             </div>
         </div>   

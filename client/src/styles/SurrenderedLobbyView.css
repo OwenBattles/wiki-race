@@ -110,3 +110,27 @@
     font-style: italic;
 }
 
+
+.surrendered-lobby__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+@media (max-width: 40rem) {
+    .surrendered-lobby__title {
+        font-size: 1.75rem;
+    }
+
+    .surrendered-lobby__meta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+    }
+
+    .surrendered-lobby__meta-label {
+        width: auto;
+    }
+}

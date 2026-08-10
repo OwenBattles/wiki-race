@@ -29,6 +29,7 @@ export default function GamePage() {
         inventory,
         victimPowerUpNotice,
         notice,
+        requestLeave,
     } = useGame();
 
     const {
@@ -64,6 +65,9 @@ export default function GamePage() {
                 <div className="game-lobby-content">
                     <div className="game-lobby-header">
                         <RoomCode roomCode={roomCode} />
+                        <button type="button" className="leave-room-button" onClick={requestLeave}>
+                            Leave room
+                        </button>
                     </div>
                     <div className="game-lobby-card">
                         <div className="game-lobby-card-content">
@@ -129,7 +133,7 @@ export default function GamePage() {
             }
 
             { gameState == "FINISHED" && 
-                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} totalTime={totalTime} />
+                <GameOverView players={players} winner={winner} onReturnToLobby={handleReturnToLobby} isHost={isHost} totalTime={totalTime} onLeave={requestLeave} />
             }
         </div>
     );

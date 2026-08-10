@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameProvider } from './contexts/GameProvider';
-import { NavigationBlocker } from './components/NavigationBlocker';
+import { ExitGuard } from './components/ExitGuard';
 import { SessionGate } from './components/SessionGate';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
@@ -9,7 +9,7 @@ function App() {
   return (
     <GameProvider> 
       <BrowserRouter>
-        <NavigationBlocker />
+        <ExitGuard />
         <SessionGate />
         <Routes>
           <Route path="/" element={<HomePage />} />

@@ -341,6 +341,23 @@ module.exports = (io) => {
       console.log(`${player.username} rejoined room ${roomCode}`);
     });
 
+    // LEAVE A ROOM ON PURPOSE
+    //
+    // Distinct from disconnecting: a disconnect might be a refresh, so the seat is held for
+    // the reconnect window. Leaving is a decision, so the seat and the name are freed at
+    // once and everyone else sees the room update immediately.
+    socket.on('leave_room', (roomCode) => {
+      const room = rooms[roomCode];
+      if (!room) return;
+
+      const player = room.players.find((p) => p.id === socket.id);
+      if (!player) return;
+
+      socket.leave(roomCode);
+      console.log(`${player.username} left room ${roomCode}`);
+      removePlayer(roomCode, player.token);
+    });
+
     // SET THE STARTING PAGE
     socket.on('set_start_page', ({ roomCode, startPage } = {}) => {
       const room = rooms[roomCode];

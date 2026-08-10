@@ -22,6 +22,12 @@ export const SocketService = {
         socket.emit('join_room', { roomCode, username });
     },
 
+    // Leaving on purpose, as opposed to dropping — the server frees the seat immediately
+    // rather than holding it for a possible reconnect.
+    leaveRoom: (roomCode) => {
+        socket.emit('leave_room', roomCode);
+    },
+
     // --- GAME ACTIONS ---
     setStartPage: (roomCode, startPage) => {
         socket.emit('set_start_page', { roomCode, startPage });

@@ -166,3 +166,19 @@
     transition: opacity 0.3s ease;
 }
 
+
+@media (pointer: coarse) {
+    .wiki-search-die {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+
+    .wiki-search-input--with-die {
+        padding-right: 3.25rem;
+    }
+
+    .wiki-search-suggestion-item {
+        padding-top: 0.7rem;
+        padding-bottom: 0.7rem;
+    }
+}
