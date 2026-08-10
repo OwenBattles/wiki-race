@@ -4,3 +4,11 @@
     gap: 2rem;
 }
 
+
+/* 2rem between every section is generous on a laptop and wasteful on a phone, where it
+   pushes the start button below the fold. */
+@media (max-width: 40rem) {
+    .lobby-view-container {
+        gap: 1.5rem;
+    }
+}

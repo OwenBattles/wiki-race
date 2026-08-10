@@ -118,3 +118,28 @@
     color: #a5a19a;
     line-height: 1.5;
 }
+
+/* Touch targets. 1.75rem is comfortable with a cursor and fiddly with a thumb; the WCAG
+   floor is 44px. Only raised for coarse pointers so the desktop control stays compact. */
+@media (pointer: coarse) {
+    .powerup-settings-step {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1.125rem;
+    }
+
+    .powerup-settings-count {
+        min-width: 2rem;
+    }
+}
+
+@media (max-width: 30rem) {
+    .powerup-settings-row {
+        gap: 0.75rem;
+        padding: 0.6rem 0.7rem;
+    }
+
+    .powerup-settings-description {
+        font-size: 0.72rem;
+    }
+}

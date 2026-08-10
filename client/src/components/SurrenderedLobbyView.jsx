@@ -1,6 +1,9 @@
+import { useGame } from '../contexts/gameContext';
 import '../styles/SurrenderedLobbyView.css';
 
 export function SurrenderedLobbyView({ roomCode, players, gameSettings }) {
+    const { requestLeave } = useGame();
+
     return (
         <div className="surrendered-lobby">
             <div className="surrendered-lobby__header">
@@ -34,6 +37,12 @@ export function SurrenderedLobbyView({ roomCode, players, gameSettings }) {
                         </li>
                     ))}
                 </ul>
+
+                <div className="surrendered-lobby__actions">
+                    <button type="button" className="leave-room-button" onClick={requestLeave}>
+                        Leave room
+                    </button>
+                </div>
             </div>
         </div>
     );

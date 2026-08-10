@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { socket } from '../services/socket';
 import { useWikiPage } from '../hooks/useWikiPage';
 import { saveSession, loadSession, clearSession } from '../services/session';
+import { SocketService } from '../services/socketService';
 import { GameContext } from './gameContext';
 
 // How long to wait for the server to answer a rejoin before giving up and going home.
@@ -66,6 +67,41 @@ export const GameProvider = ({ children }) => {
     }, [sessionStatus]);
 
     const endSession = useCallback(() => {
+        clearSession();
+        setSessionStatus('none');
+    }, []);
+
+    // Asked to leave, but not yet confirmed. Held here rather than in the guard component so
+    // the back button and the Leave buttons open the same dialog.
+    const [leaveRequested, setLeaveRequested] = useState(false);
+    const requestLeave = useCallback(() => setLeaveRequested(true), []);
+    const cancelLeave = useCallback(() => setLeaveRequested(false), []);
+
+    // Leaving on purpose. The server frees the seat and the name at once rather than holding
+    // them for the reconnect window, and the stored session is cleared so the next load does
+    // not try to rejoin a room we chose to walk out of. SessionGate does the routing.
+    const leaveRoom = useCallback(() => {
+        setLeaveRequested(false);
+        setRoomCode((code) => {
+            if (code) SocketService.leaveRoom(code);
+            return "";
+        });
+
+        setPlayers([]);
+        setMyId(null);
+        setIsHost(false);
+        setGameState("LOBBY");
+        setGameSettings({ startPage: "", targetPage: "" });
+        setPath([]);
+        setWinner("");
+        setStartTime(null);
+        setTotalTime(0);
+        setPowerUps({ swap: 0, scramble: 0, freeze: 0 });
+        setInventory({ swap: 0, scramble: 0, freeze: 0 });
+        setVictimPowerUpNotice(null);
+        setNotice(null);
+        setValidRoomCode(false);
+
         clearSession();
         setSessionStatus('none');
     }, []);
@@ -311,6 +347,8 @@ export const GameProvider = ({ children }) => {
         fetchPage, isLoading,
         // Reconnect
         sessionStatus, beginSession, endSession,
+        // Leaving
+        leaveRequested, requestLeave, cancelLeave, leaveRoom,
     };
 
     return (
