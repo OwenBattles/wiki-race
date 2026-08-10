@@ -207,6 +207,20 @@ const startRound = async (host, guest, roomCode, { start = 'Felidae', target = '
     check('article still has real content', content.length > 5000, `${content.length} bytes`);
   }
 
+  // Wide tables are the main cause of an article scrolling sideways on a phone, so each
+  // top-level one is wrapped in a scroll container server-side. Chess is used because it is
+  // dense with data tables; infoboxes must stay unwrapped or their float breaks.
+  console.log('\nwide tables are wrapped so they cannot widen the page');
+  {
+    const res = await fetch(`${URL}/api/wiki/Chess`);
+    const { content } = await res.json();
+    const wrapped = (content.match(/<div class="wiki-table-scroll">/g) || []).length;
+    check('top-level tables are wrapped', wrapped > 0, `${wrapped} wrapped`);
+    check('infoboxes are left alone',
+      !/<div class="wiki-table-scroll">\s*<table[^>]*infobox/.test(content));
+    check('wrappers do not nest', !/wiki-table-scroll[^]{0,200}?wiki-table-scroll[^]{0,40}?<table[^>]*>\s*<table/.test(content));
+  }
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail === 0 ? 0 : 1);
 })().catch((e) => { console.error('\nHARNESS ERROR:', e.message); process.exit(1); });

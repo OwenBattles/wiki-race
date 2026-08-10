@@ -226,6 +226,19 @@ const fetchAndClean = async (pageTitle) => {
       $el.removeAttr('loading');
   });
 
+  // Wide data tables are the main cause of an article scrolling sideways on a phone. Wrap
+  // each one so it scrolls inside its own box instead of widening the page. Done here
+  // rather than in CSS because the usual fix — display:block on the table — changes how the
+  // table lays out; a wrapper leaves the table alone.
+  //
+  // Infoboxes are already width-constrained, and nested tables travel with their parent.
+  $('table').each((i, table) => {
+      const $table = $(table);
+      if ($table.closest('.infobox').length) return;
+      if ($table.parents('table').length) return;
+      $table.wrap('<div class="wiki-table-scroll"></div>');
+  });
+
   // Every article link that survives this pass is one the player can actually click, so
   // collecting them here gives the move validator an exact allow-list rather than an
   // approximation.
