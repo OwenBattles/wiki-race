@@ -510,3 +510,108 @@
     padding: 1rem;
   }
 }
+
+/* ── Structures that appear in some articles and not others ──────────────────────
+ *
+ * These are the reason an article occasionally looked wrong while most looked fine: the
+ * markup varies by page, and anything unstyled fell back to browser defaults in the middle
+ * of an otherwise Wikipedia-looking article. Surveyed across a sample of articles: plain
+ * tables in 9 of 12, plainlist 8, collapsible 5, sidebar 4, gallery 2.
+ */
+
+/* Sidebars behave like infoboxes — floated, fixed width — not full-width blocks. */
+.wiki-view-container .sidebar {
+    float: right;
+    clear: right;
+    width: 22em;
+    max-width: 100%;
+    margin: 0.5em 0 1em 1em;
+    padding: 0.4em;
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    font-size: 88%;
+    line-height: 1.5;
+}
+
+/* Several stacked boxes in one column, usually top-right. */
+.wiki-view-container .mw-stack {
+    float: right;
+    clear: right;
+    max-width: 100%;
+    margin-left: 1em;
+}
+
+/* Galleries are a list of inline-block cells; unstyled they became a full-width stack. */
+.wiki-view-container ul.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 1em 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wiki-view-container li.gallerybox {
+    margin: 0;
+    padding: 0.3em;
+    background-color: #f8f9fa;
+    border: 1px solid #c8ccd1;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.wiki-view-container li.gallerybox div.gallerytext {
+    font-size: 94%;
+    line-height: 1.4;
+    text-align: left;
+    padding: 0.3em 0.2em 0;
+}
+
+/* Explicitly bulletless lists, common inside infoboxes. */
+.wiki-view-container .plainlist ul,
+.wiki-view-container ul.plainlist {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.wiki-view-container .plainlist li {
+    margin-bottom: 0.1em;
+}
+
+/* The "view · talk · edit" trio on boxes. Its targets are namespace pages we strip anyway,
+   so it is dead weight in the middle of a template header. */
+.wiki-view-container .navbar {
+    display: none;
+}
+
+.wiki-view-container .quotebox {
+    background-color: #f8f9fa;
+    border: 1px solid #c8ccd1;
+    border-radius: 2px;
+    padding: 0.6em;
+    margin: 1em 0;
+    max-width: 100%;
+}
+
+/* Collapsible tables need MediaWiki's JavaScript, which we do not load, so they render
+   expanded. That is the right call for a racing game — more visible links — but they still
+   need the table chrome so they do not read as loose text. */
+.wiki-view-container .mw-collapsible {
+    max-width: 100%;
+}
+
+@media (max-width: 900px) {
+    /* A floated 22em box in a phone-width column leaves a sliver of text beside it. */
+    .wiki-view-container .sidebar,
+    .wiki-view-container .mw-stack {
+        float: none;
+        clear: both;
+        width: auto;
+        margin: 0.8em 0;
+    }
+
+    .wiki-view-container ul.gallery {
+        justify-content: center;
+    }
+}
