@@ -6,7 +6,7 @@ import '../styles/InGameHeader.css';
 // has no behaviour behind it, so offering it would be a dead button.
 const POWER_UPS = [
     { key: 'swap', label: 'Swap', description: 'Trade places with an opponent' },
-    { key: 'scramble', label: 'Scramble', description: 'Fling an opponent to a random article' },
+    { key: 'scramble', label: 'Scramble', description: 'Send an opponent to a random article' },
 ];
 
 export function InGameHeader({ targetPage, onSurrender, myId, players, inventory, handleUsePowerUp }) {

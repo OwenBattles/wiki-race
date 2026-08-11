@@ -1,4 +1,5 @@
 .room-code {
+    position: relative;
     display: inline-flex;
     align-items: baseline;
     gap: 0.75rem;
@@ -30,7 +31,14 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Taken out of the flow: while hidden it still took up width, which pushed the room code
+   off centre by half the hint. */
 .room-code-hint {
+    position: absolute;
+    left: 100%;
+    bottom: 0.55rem;
+    margin-left: 0.4rem;
+    white-space: nowrap;
     font-size: 0.75rem;
     font-style: italic;
     letter-spacing: 0.06em;
@@ -39,7 +47,8 @@
     transition: opacity 0.2s ease, color 0.2s ease;
 }
 
-.room-code:hover .room-code-hint {
+.room-code:hover .room-code-hint,
+.room-code:focus-visible .room-code-hint {
     opacity: 1;
 }
 
@@ -55,5 +64,13 @@
 
     .room-code-label {
         font-size: 1.15rem;
+    }
+
+    /* No room beside the code on a narrow screen, so it tucks underneath instead. */
+    .room-code-hint {
+        left: auto;
+        right: 0.5rem;
+        bottom: -0.5rem;
+        margin-left: 0;
     }
 }

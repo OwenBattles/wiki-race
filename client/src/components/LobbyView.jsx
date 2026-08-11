@@ -9,6 +9,12 @@ export function LobbyView({ isHost, players, myId, handleStartSelect, handleEndS
 
     return (
         <div className="lobby-view-container">
+            <TitleEndpoints 
+                isHost={isHost} 
+                handleStartSelect={handleStartSelect} 
+                handleEndSelect={handleEndSelect} 
+                gameSettings={gameSettings}
+            />
             {players.length > 1 && (
                 <PowerUpSettings 
                     isHost={isHost} 
@@ -16,12 +22,6 @@ export function LobbyView({ isHost, players, myId, handleStartSelect, handleEndS
                     onPowerUpChange={handlePowerUpChange}
                 />
             )}
-            <TitleEndpoints 
-                isHost={isHost} 
-                handleStartSelect={handleStartSelect} 
-                handleEndSelect={handleEndSelect} 
-                gameSettings={gameSettings}
-            />
             <PlayerList players={players} myId={myId} />
             {isHost ? (
                 <button

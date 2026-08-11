@@ -615,3 +615,11 @@
         justify-content: center;
     }
 }
+
+/* Anchor targets clear the fixed header.
+ *
+ * Jumping to a section put the heading under the running head, so a contents link landed on
+ * the wrong place and looked broken. The header measures itself, so this tracks it. */
+.wiki-view-container [id] {
+    scroll-margin-top: calc(var(--ingame-header-height, 88px) + 1rem);
+}

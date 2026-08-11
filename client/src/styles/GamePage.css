@@ -127,19 +127,20 @@
 
 /* Leave room — the deliberate way out, so the back button is never the only exit.
  *
- * Anchored to the top-right of the content column and taken out of flow, which leaves the
- * room code centred on the page. An earlier version made this header a flex row, which
- * quietly cancelled the centring the original rule had set.
+ * Fixed to the corner of the page rather than to the content column, so it sits where an
+ * exit belongs no matter how wide the window is. Taken out of flow either way, which leaves
+ * the room code centred; an earlier version made this header a flex row, which quietly
+ * cancelled the centring the original rule had set.
  */
 .game-lobby-header {
     position: relative;
 }
 
 .leave-room-button {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 60;
     padding: 0.6rem 1.1rem;
     border: 1px solid #d4d4d4;
     border-radius: 0.375rem;
@@ -170,12 +171,18 @@
     }
 }
 
-/* Below this width the corner and the room code would collide, so it drops underneath. */
+/* On a narrow screen the corner button and the centred room code would overlap, so the
+   lobby starts lower down and the button keeps the corner to itself. */
 @media (max-width: 40rem) {
-    .game-lobby-header .leave-room-button {
-        position: static;
-        transform: none;
-        display: inline-flex;
-        margin-top: 1rem;
+    .leave-room-button {
+        top: 0.75rem;
+        right: 0.75rem;
+        padding: 0.5rem 0.85rem;
+        font-size: 0.875rem;
+    }
+
+    .game-lobby-container,
+    .surrendered-lobby-container {
+        padding-top: 4.25rem;
     }
 }

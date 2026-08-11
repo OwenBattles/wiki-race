@@ -53,13 +53,15 @@ export function GameOverView({ players, winner, onReturnToLobby, isHost, totalTi
                     ))}
                 </div>
 
+                {/* Above the buttons rather than beside them: it is a status line, not an
+                    action, and sitting in the row made it look like a disabled control. */}
+                {!isHost && <p className="game-over-waiting">Waiting for Host...</p>}
+
                 <div className="game-over-actions">
-                    {isHost ? (
+                    {isHost && (
                         <button className="game-over-return-button" onClick={onReturnToLobby}>
                             Return to Lobby
                         </button>
-                    ) : (
-                        <p className="game-over-waiting">Waiting for Host...</p>
                     )}
                     <button type="button" className="leave-room-button" onClick={onLeave}>
                         Leave room
