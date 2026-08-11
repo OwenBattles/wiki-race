@@ -1,0 +1,21 @@
+/* Global base.
+ *
+ * The one rule that matters here is box-sizing. Without it, padding is added *outside* a
+ * declared height, so every `min-height: 100vh` panel with padding ends up taller than the
+ * viewport and the page scrolls by exactly the padding — 128px on the landing page, 102px
+ * in a race — with nothing in that space. Border-box makes the declared height the final
+ * height, so a page that fits does not scroll at all and one that overflows scrolls only as
+ * far as its content actually goes.
+ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    background: #F9F7F2;
+}

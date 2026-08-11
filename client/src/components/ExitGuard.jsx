@@ -24,8 +24,21 @@ export function ExitGuard() {
     // A spare entry to absorb the first Back press. Without it, Back would leave the site
     // entirely and there would be nothing to intercept.
     window.history.pushState({ wikiRaceGuard: true }, "");
+    let lastHash = window.location.hash;
 
     const onPopState = () => {
+      // Clicking a link in an article's contents list is a fragment navigation, and Chrome
+      // fires popstate for those too. Treating every popstate as a back-press meant the
+      // contents list asked you whether you wanted to leave the race.
+      //
+      // A changed hash means the fragment moved, not that anyone tried to leave. Back out of
+      // a fragment jump then reads as undoing the jump, which is what it should do; only a
+      // traversal that leaves the hash alone is an attempt to leave the room.
+      if (window.location.hash !== lastHash) {
+        lastHash = window.location.hash;
+        return;
+      }
+
       // Put the entry back so the page stays put while the question is on screen, then ask.
       window.history.pushState({ wikiRaceGuard: true }, "");
       requestLeave();
