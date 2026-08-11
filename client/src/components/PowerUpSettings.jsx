@@ -4,7 +4,7 @@ import '../styles/PowerUpSettings.css';
 // behaviour, so it would be a control that does nothing.
 const POWER_UPS = [
     { key: 'swap', label: 'Swap', description: 'Trade places with an opponent' },
-    { key: 'scramble', label: 'Scramble', description: 'Fling an opponent to a random article' },
+    { key: 'scramble', label: 'Scramble', description: 'Send an opponent to a random article' },
 ];
 
 const MAX_PER_POWER_UP = 9;
@@ -20,7 +20,7 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
 
     return (
         <div className="powerup-settings">
-            <h2 className="powerup-settings-heading">power-ups</h2>
+            <h2 className="powerup-settings-heading">Power-ups</h2>
 
             <ul className="powerup-settings-list">
                 {POWER_UPS.map(({ key, label, description }) => {
@@ -65,11 +65,6 @@ export function PowerUpSettings({ isHost, powerUps, onPowerUpChange }) {
                 })}
             </ul>
 
-            <p className="powerup-settings-note">
-                {isHost
-                    ? 'Each racer starts the round with this many of each.'
-                    : 'Set by the host. You start the round with this many of each.'}
-            </p>
         </div>
     );
 }
